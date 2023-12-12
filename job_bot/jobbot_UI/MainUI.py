@@ -24,7 +24,24 @@ def updateFileVersion():
         tree.write('AppVersion.xml')
 
     return tree # return the file in case future access needed
+def buildUI(appVersionTitle):
+    # Build a UI, set default fields
+    sg.theme('GreenMono')
+    inputLayout = [ [sg.Text('Job Keywords:'), sg.InputText("(e.g. software jobs)")],
+                    [sg.Text('Minimum Salary:'), sg.InputText("(e.g. $40000)")],
+                    [sg.Button('Search')]]
+    UIWindow = sg.Window(title = appVersionTitle, layout = inputLayout, margins=(300,300))
+    return UIWindow
 
+def handleUI(UIWindow):
+    while True:
+        event, values = UIWindow.read()
+        if event == sg.WIN_CLOSED: # if user closes window or clicks cancel
+            break
+        else:
+            print(values)
+    UIWindow.close()
+    
 if __name__ == "__main__":
 
     ####### Code that handles the version control for the job bot #######
@@ -37,4 +54,7 @@ if __name__ == "__main__":
     print("Currently running: " + appVersionTitle)
 
     ####### Code that handles UI generation #######
-    sg.Window(title = appVersionTitle, layout = [[]], margins=(300,300)).read()
+    UIWindow = buildUI(appVersionTitle)
+
+    handleUI(UIWindow)
+    print("end of program")
