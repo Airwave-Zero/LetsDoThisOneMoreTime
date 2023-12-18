@@ -4,10 +4,12 @@ initialize all information needed to make connection to internet and stuff '''
 
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service as ChromeService # needed for selenium4
+from selenium.webdriver.common.by import By # needed for searching through the web page elements
 from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
 from bs4 import BeautifulSoup
 import time, gspread, os, sys
+import numpy as np #used for logical masking
 from oauth2client.service_account import ServiceAccountCredentials
 
 scope =  ["https://spreadsheets.google.com/feeds", 'https://www.googleapis.com/auth/spreadsheets', "https://www.googleapis.com/auth/drive.file", "https://www.googleapis.com/auth/drive"]
@@ -25,11 +27,42 @@ def initialize():
 
 def getResults(driver, userKeyWords):
     '''This is a function that takes in the web browser and user inputs to return 
-     a list of google results for those jobs '''
+     a dictionary of lists with all of the web links, where the key is the website name and the value is all the URLs'''
     
-def getIndeedJobs(searchResults):
-    '''This function parses the list of search page results and returns all of 
-    the Indeed Jobs'''
+    driver.get('https://www.google.com')
+    searchbar = driver.find_element(By.NAME, 'q') # Look for the search bar, this is the div NAME (could also search by ID or other elements)
+
+    searchbar.send_keys(userKeyWords)
+
+    clicksearch = driver.find_element(By.NAME, 'btnK')
+    clicksearch.submit()
+
+    page_source = driver.page_source
+
+    page_html = BeautifulSoup(page_source, 'html.parser') # convert so that it's simpler to parse through the web data in html format
+    allWebLinks = page_html.find_all('a') # returns all of the link divs
+    allLinks = filterJobByWebsite(allWebLinks) # returns a dictionary of lists of each posting, does the actual heavy lifting
+    return allLinks
+    
+def filterJobByWebsite(allWebLinks):
+    '''This function parses the list of a dictionary of lists, where the key is the website name and the values are the respective links for that website
+        Example:  {'Indeed': [...], 'LinkedIn':[...]}'''
+    indeedLinks = []
+    linkedInLinks = []
+    for linkNum in range(len(allWebLinks)):
+        currLink = allWebLinks[linkNum].get('href')
+        if(type(currLink) == type('str')):
+            isIndeed = currLink.startswith('https://www.indeed.com')
+            isLinked = currLink.startswith('https://www.linkedin.com')
+        if(isIndeed):
+            indeedLinks.append(currLink)
+        elif(isLinked):
+            linkedInLinks.append(currLink)
+    allLinks = dict()
+    allLinks['Indeed'] = indeedLinks
+    allLinks['LinkedIn'] = linkedInLinks
+    return allLinks
+
 
 def applyToJobs(all):
     '''This function actually goes through the web pages and handles applying to the jobs'''
@@ -42,17 +75,18 @@ if __name__ == "__main__":
     4) User can check which ones to apply to/which ones they did
     5) Export data into sheets
     '''
+    
     userInput = input("Please enter keywords to search for, then a comma for salary.\nExample: software jobs, 80000\n").split(',') # get user input, should be an array of keywords + salary range
     if userInput == "":
         sys.exit()
     userKeywords = userInput[0] # used for searching google / the actual job site
     userSalary = userInput[1] # used for filtering by salary on the actual job site
 
+    print("Now opening Chrome instance...")
     driver = initialize() # creates the chrome window to use
-    searchResults = getResults(driver, userKeywords) # returns a list of jobs on google (can be filtered by sites later)
-    indeedJobs = getIndeedJobs(searchResults) # opens and returns a list of indeed jobs
-    # LinkedinJobs = getLinkedJobs(searchResults)
-    allFoundJobs = indeedJobs # + wantedLinkedinJobs + ... etc
+    searchResults = getResults(driver, "software jobs") # returns a dictionary of lists of all the jobs, currently filtered by job site
+    indeedJobs = searchResults['Indeed']
+    linkedJobs = searchResults['LinkedIn']
 
     applyToJobs(allFoundJobs)
 
