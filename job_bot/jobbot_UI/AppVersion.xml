@@ -1,6 +1,9 @@
-<VersionInfo>
+<AppInfo>
     <Major>1</Major>
     <Minor>0</Minor>
-    <SuperMinor>17</SuperMinor>
-    <Date>2023-12-12 00:35:02</Date>
-</VersionInfo>
+    <SuperMinor>20</SuperMinor>
+    <Date>2023-12-19 17:22:42</Date>
+    <test>
+        <test2>lol</test2>
+    </test>
+</AppInfo>
