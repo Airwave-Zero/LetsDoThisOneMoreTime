@@ -5,10 +5,9 @@ import datetime
 def updateFileVersion():
     # check and update the version number prior to building/running the UI
     tree = ET.parse('AppVersion.xml') # opens the XML as an ElementTree object
-
     # set a couple of variables for ease of access
-    fileMajor = tree.find('Major').text
-    fileMinor = tree.find('Minor').text
+    # fileMajor = tree.find('Major').text #uncomment if needed, currently unused
+    # fileMinor = tree.find('Minor').text #uncomment if needed, currently unused
     fileSuperMinor = tree.find('SuperMinor').text
     fileDateString = tree.find('Date').text # returns a string like: '2023-12-11 22:27:56'
     fileDateDTObj = datetime.datetime.strptime(fileDateString, '%Y-%m-%d %H:%M:%S') # turn string into datetime obj to compare versions
@@ -42,6 +41,9 @@ def handleUI(UIWindow):
             print(values)
     UIWindow.close()
     
+
+# uncomment this out if running the script directly by itself
+
 if __name__ == "__main__":
 
     ####### Code that handles the version control for the job bot #######
