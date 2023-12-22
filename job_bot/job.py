@@ -12,7 +12,8 @@ import xml.etree.ElementTree as ET
 from oauth2client.service_account import ServiceAccountCredentials
 
 scope =  ["https://spreadsheets.google.com/feeds", 'https://www.googleapis.com/auth/spreadsheets', "https://www.googleapis.com/auth/drive.file", "https://www.googleapis.com/auth/drive"]
-creds = ServiceAccountCredentials.from_json_keyfile_name('personal_API_key.json', scope) # replace with personal API key 
+creds = ServiceAccountCredentials.from_json_keyfile_name('dec2023project-da899e9caf46.json', scope)
+#creds = ServiceAccountCredentials.from_json_keyfile_name('personal_API_key.json', scope) # replace with personal API key 
 client = gspread.authorize(creds)
 
 def initialize():
@@ -65,13 +66,28 @@ def filterJobByWebsite(allWebLinks):
 
 def applyIndeedJobs(indeedJobs, driver):
     '''This function actually goes through the indeed pages and handles applying to the jobs'''
-    driver.get(indeedJobs[0])
+
+    # TODO: update this to section to iterate through all indeed links? or move this higher up
+    # so that this function is called for each indeed job link which is technically cleaner code practice
+    driver.get(indeedJobs[0]) # loads in the first web page in the indeed job list
+
+    '''
+    TODO: implement 3rd party authorization to each website
+    googleAuth = driver.find_element(By.ID, 'login-google-button')
+    googleAuth.click()
+
+    if user has previous google accounts:
+        pause while they select it? or wait for user input?
+    else:
+        wait for them to sign in manually with google? 
+        https://stackoverflow.com/questions/16927354/how-can-i-make-selenium-python-wait-for-the-user-to-login-before-continuing-to-r
+        https://selenium-python.readthedocs.io/waits.html
+    '''
     login = driver.find_element(By.LINK_TEXT, 'Sign in')
     login.click()
 
     # XML file user can update/store credentials so they don't have to sign in every time;
     # this is better than hard coding a password into code program and forgetting about it later...
-    # TODO: implement 3rd party authorization to each website
     indeedUserInfoTree = ET.parse('UserInfo.xml') # or use 'UserInfoExample.xml' if running from repository
     userName = indeedUserInfoTree.find('Indeed').find('Username').text
     userPass = indeedUserInfoTree.find('Indeed').find('Password').text
@@ -91,7 +107,7 @@ def applyIndeedJobs(indeedJobs, driver):
 
     listofjobs = driver.find_elements(By.CSS_SELECTOR, '#pageContent tr td')
     print('length of jobs:' , len(listofjobs))
-    for x in range(0, len(listofjobs)-1):
+    for x in range(len(listofjobs)):
         a = listofjobs[x]
         a.click()
 
@@ -113,6 +129,7 @@ if __name__ == "__main__":
     1.5) Import the UI code/files and run that first
     2)   Select job websites? Indeed, GlassDoor, Monster, LinkedIn? etc
     2.5) run this backend code that parses the user info and grabs the web data, hook this backend code into the UI
+    2.75) add OAuth instead of grabbing raw user info (big issue if security breach)
     3)   Enter updates the UI and pulls out a list of all the postings
     4)   User can check which ones to apply to/which ones they did
     5)   Export data into sheets
