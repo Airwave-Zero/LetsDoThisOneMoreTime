@@ -5,7 +5,14 @@ initialize all information needed to make connection to internet and stuff '''
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service as ChromeService # needed for selenium4
 from selenium.webdriver.common.by import By # needed for searching through the web page elements
+import selenium.webdriver.support.ui as ui
+from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 from webdriver_manager.chrome import ChromeDriverManager
+
+
+
+
 from bs4 import BeautifulSoup
 import time, gspread, os, sys
 import xml.etree.ElementTree as ET
@@ -63,47 +70,60 @@ def filterJobByWebsite(allWebLinks):
     allLinks['LinkedIn'] = linkedInLinks
     return allLinks
 
+def signUserInIndeed(driver, signInCheck):
+    '''This function handles signing in the user (if they have opted to).
+    This function also handles both cases of whether the user wants to sign in manually
+    (for security reasons) or if they've opted to use the XML format of their credentials'''
 
-def applyIndeedJobs(indeedJobs, driver):
+    if signInCheck != 0:
+        login = driver.find_element(By.LINK_TEXT, 'Sign in')
+        login.click()
+    else:
+        return
+    
+    if signInCheck == 1:
+        print("doing the manual route with webdriver wait")
+        '''        
+        https://stackoverflow.com/questions/16927354/how-can-i-make-selenium-python-wait-for-the-user-to-login-before-continuing-to-r
+        https://selenium-python.readthedocs.io/waits.html
+
+        try:
+        element = WebDriverWait(driver, 20).until(
+            EC.presence_of_element_located((By.ID, "UserEmail"))
+        )
+        finally:
+        driver.quit()
+        '''
+    elif signInCheck == 2:
+        print("doing the XML route")
+        # XML file user can update/store credentials so they don't have to sign in every time;
+        # this is better than hard coding a password into code program and forgetting about it later...
+        indeedUserInfoTree = ET.parse('UserInfo.xml') # or use 'UserInfoExample.xml' if running from repository
+        userName = indeedUserInfoTree.find('Indeed').find('Username').text
+        userPass = indeedUserInfoTree.find('Indeed').find('Password').text
+
+        userField = driver.find_element(By.NAME, '__email')
+        userField.send_keys(userName)
+
+        passwordField = driver.find_element(By.NAME, '__password')
+        passwordField.send_keys(userPass)
+
+        sign_inButton = driver.find_element(By.ID, 'login-submit-button')
+        sign_inButton.click()
+        
+    # refresh the page in case random pop-up appears
+    # TODO: find a way to detect random pop-up or spam check?
+    popup = driver.refresh()
+
+def applyIndeedJobs(indeedJobs, driver, signInCheck):
     '''This function actually goes through the indeed pages and handles applying to the jobs'''
 
     # TODO: update this to section to iterate through all indeed links? or move this higher up
     # so that this function is called for each indeed job link which is technically cleaner code practice
     driver.get(indeedJobs[0]) # loads in the first web page in the indeed job list
 
-    '''
-    TODO: implement 3rd party authorization to each website
-    googleAuth = driver.find_element(By.ID, 'login-google-button')
-    googleAuth.click()
-
-    if user has previous google accounts:
-        pause while they select it? or wait for user input?
-    else:
-        wait for them to sign in manually with google? 
-        https://stackoverflow.com/questions/16927354/how-can-i-make-selenium-python-wait-for-the-user-to-login-before-continuing-to-r
-        https://selenium-python.readthedocs.io/waits.html
-    '''
-    login = driver.find_element(By.LINK_TEXT, 'Sign in')
-    login.click()
-
-    # XML file user can update/store credentials so they don't have to sign in every time;
-    # this is better than hard coding a password into code program and forgetting about it later...
-    indeedUserInfoTree = ET.parse('UserInfo.xml') # or use 'UserInfoExample.xml' if running from repository
-    userName = indeedUserInfoTree.find('Indeed').find('Username').text
-    userPass = indeedUserInfoTree.find('Indeed').find('Password').text
-
-    userField = driver.find_element(By.NAME, '__email')
-    userField.send_keys(userName)
-
-    passwordField = driver.find_element(By.NAME, '__password')
-    passwordField.send_keys(userPass)
-
-    sign_inButton = driver.find_element(By.ID, 'login-submit-button')
-    sign_inButton.click()
-    
-    # refresh the page in case random pop-up appears
-    # TODO: find a way to detect random pop-up or spam check?
-    popup = driver.refresh()
+    # handles all cases of signing in the user to indeed, or not signing them in at all
+    signUserInIndeed(driver, signInCheck)
 
     listofjobs = driver.find_elements(By.CSS_SELECTOR, '#pageContent tr td')
     print('length of jobs:' , len(listofjobs))
@@ -145,7 +165,17 @@ if __name__ == "__main__":
     searchResults = getGoogleResults(driver, "software jobs") # returns a dictionary of lists of all the jobs, currently filtered by job site
     indeedJobs = searchResults['Indeed']
     linkedJobs = searchResults['LinkedIn']
+    
+    '''
+    These are the following cases of how (if at all) a user signs in
+    based on what they've selected in the UI:
+    TODO: figure out the corresponding UI to regular logic assignment
+    case 0: no sign in
+    case 1: sign in with manual
+    case 2: sign in with XML 
+    '''
+    signUserIn = 0
 
-    applyIndeedJobs(indeedJobs, driver)
-    applyLinkedJobs(linkedJobs, driver)
+    applyIndeedJobs(indeedJobs, driver, signUserIn)
+    applyLinkedJobs(linkedJobs, driver, signUserIn)
 
