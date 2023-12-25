@@ -26,6 +26,10 @@ def updateFileVersion():
 def buildUI(appVersionTitle):
     # Build a UI, set default fields
     sg.theme('GreenMono')
+    # TODO: add in a checkbox field for if the user wants to apply with/without signing in to an account
+    #       add a second checkbox field for if the user wants to apply using the XML credentials, 
+    #       both cannot be checked at the same time
+
     inputLayout = [ [sg.Text('Job Keywords:'), sg.InputText("(e.g. software jobs)")],
                     [sg.Text('Minimum Salary:'), sg.InputText("(e.g. $40000)")],
                     [sg.Button('Search')]]
