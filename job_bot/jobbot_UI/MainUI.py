@@ -1,6 +1,7 @@
 import PySimpleGUI as sg
 import xml.etree.ElementTree as ET
 import datetime
+from .job import runJobScript
 
 def updateFileVersion():
     # check and update the version number prior to building/running the UI
@@ -37,6 +38,8 @@ def buildUI(appVersionTitle):
     return UIWindow
 
 def handleUI(UIWindow):
+    runJobScript()
+    '''
     while True:
         event, values = UIWindow.read()
         if event == sg.WIN_CLOSED: # if user closes window or clicks cancel
@@ -44,7 +47,7 @@ def handleUI(UIWindow):
         else:
             print(values)
     UIWindow.close()
-    
+    '''
 
 # uncomment this out if running the script directly by itself
 
