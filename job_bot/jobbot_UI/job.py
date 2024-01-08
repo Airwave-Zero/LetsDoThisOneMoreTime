@@ -11,11 +11,10 @@ from selenium.webdriver.support import expected_conditions as EC
 from webdriver_manager.chrome import ChromeDriverManager
 
 
-
-
 from bs4 import BeautifulSoup
 import time, gspread, os, sys
 import xml.etree.ElementTree as ET
+import MainUI as UI
 from oauth2client.service_account import ServiceAccountCredentials
 
 scope =  ["https://spreadsheets.google.com/feeds", 'https://www.googleapis.com/auth/spreadsheets', "https://www.googleapis.com/auth/drive.file", "https://www.googleapis.com/auth/drive"]
@@ -70,7 +69,7 @@ def filterJobByWebsite(allWebLinks):
     allLinks['LinkedIn'] = linkedInLinks
     return allLinks
 
-def signUserInIndeed(driver, signInCheck):
+def signUserIn(driver, signInCheck, jobSite):
     '''This function handles signing in the user (if they have opted to).
     This function also handles both cases of whether the user wants to sign in manually
     (for security reasons) or if they've opted to use the XML format of their credentials'''
@@ -81,66 +80,89 @@ def signUserInIndeed(driver, signInCheck):
     else:
         return
     
+    isIndeed = jobSite == "Indeed"
+    loginSuccessful = False
     if signInCheck == 1:
-        print("doing the manual route with webdriver wait")
-        '''        
-        https://stackoverflow.com/questions/16927354/how-can-i-make-selenium-python-wait-for-the-user-to-login-before-continuing-to-r
-        https://selenium-python.readthedocs.io/waits.html
-
+        print("doing the manual route with webdriver wait")       
+        #https://stackoverflow.com/questions/16927354/how-can-i-make-selenium-python-wait-for-the-user-to-login-before-continuing-to-r
+        #https://selenium-python.readthedocs.io/waits.html
         try:
-        element = WebDriverWait(driver, 20).until(
-            EC.presence_of_element_located((By.ID, "UserEmail"))
-        )
+            if isIndeed:
+                element = WebDriverWait(driver, 20).until(
+                    EC.presence_of_element_located((By.ID, "UserEmail")))
+            else:
+                element = WebDriverWait(driver, 20).until(
+                    EC.presence_of_element_located((By.ID, "UserEmail")))
+            print("lol")
+            loginSuccessful = True
+        except:
+            print("Unable to do the WebDriverWait")
         finally:
-        driver.quit()
-        '''
+            driver.refresh()
+            print("Manual log in was attempted. Login successful: " + str(loginSuccessful))
     elif signInCheck == 2:
         print("doing the XML route")
         # XML file user can update/store credentials so they don't have to sign in every time;
         # this is better than hard coding a password into code program and forgetting about it later...
-        indeedUserInfoTree = ET.parse('UserInfo.xml') # or use 'UserInfoExample.xml' if running from repository
-        userName = indeedUserInfoTree.find('Indeed').find('Username').text
-        userPass = indeedUserInfoTree.find('Indeed').find('Password').text
+        indeedUserInfoTree = ET.parse('jobbot_UI/UserInfo.xml') # or use 'UserInfoExample.xml' if running from repository
+        userName = indeedUserInfoTree.find(jobSite).find('Username').text
+        userPass = indeedUserInfoTree.find(jobSite).find('Password').text
 
         userField = driver.find_element(By.NAME, '__email')
+        userField.clear()
         userField.send_keys(userName)
-
-        passwordField = driver.find_element(By.NAME, '__password')
-        passwordField.send_keys(userPass)
-
-        sign_inButton = driver.find_element(By.ID, 'login-submit-button')
-        sign_inButton.click()
-        
-    # refresh the page in case random pop-up appears
     # TODO: find a way to detect random pop-up or spam check?
-    popup = driver.refresh()
+    driver.refresh()
 
-def applyIndeedJobs(indeedJobs, driver, signInCheck):
+def applyToJobs(jobsList, driver, signInCheck):
     '''This function actually goes through the indeed pages and handles applying to the jobs'''
 
     # TODO: update this to section to iterate through all indeed links? or move this higher up
     # so that this function is called for each indeed job link which is technically cleaner code practice
-    driver.get(indeedJobs[0]) # loads in the first web page in the indeed job list
+    
+    for eachJobLink in range(1, len(indeedJobs)):
+        if signInCheck == "Indeed":
+            listofjobs = driver.find_elements(By.CSS_SELECTOR, '#pageContent tr td')
+        else:
+            listofjobs = driver.find_elements(By.CSS_SELECTOR, 'lol')
+        print('length of jobs:' , len(listofjobs))
+        for x in range(len(listofjobs)):
+            a = listofjobs[x]
+            a.click()
 
-    # handles all cases of signing in the user to indeed, or not signing them in at all
-    signUserInIndeed(driver, signInCheck)
+        print('got to here')
+        time.sleep(5)
+        driver.switch_to.window(driver.window_handles[len(driver.window_handles)-1])
+        save = driver.find_element(By.ID, 'saveJobButtonContainer')
+        if save == 'Applied':
+            driver.close()
+            driver.switch_to.window(driver.window_handles[0])
+        driver.get(jobsList[eachJobLink]) # gets the next page
 
-    listofjobs = driver.find_elements(By.CSS_SELECTOR, '#pageContent tr td')
-    print('length of jobs:' , len(listofjobs))
-    for x in range(len(listofjobs)):
-        a = listofjobs[x]
-        a.click()
+def runJobScript():
+    print("Now opening Chrome instance...")
+    driver = initialize() # creates the chrome window to use
+    searchResults = getGoogleResults(driver, "software jobs") # returns a dictionary of lists of all the jobs, currently filtered by job site
+    indeedJobs = searchResults['Indeed']
+    linkedJobs = searchResults['LinkedIn']
+    
+    '''
+    These are the following cases of how (if at all) a user signs in
+    based on what they've selected in the UI:
+    TODO: figure out the corresponding UI to regular logic assignment
+    case 0: no sign in
+    case 1: sign in with manual
+    case 2: sign in with XML 
+    '''
+    signUserIn = 1
 
-    print('got to here')
-    time.sleep(5)
-    driver.switch_to.window(driver.window_handles[len(driver.window_handles)-1])
-    save = driver.find_element(By.ID, 'saveJobButtonContainer')
-    if save == 'Applied':
-        driver.close()
-        driver.switch_to.window(driver.window_handles[0])
+    driver.get(indeedJobs[0]) # this actually navigates to the indeed page, solves fencepost problem
+    signUserIn(driver, signUserIn, "Indeed")
+    applyToJobs(indeedJobs, driver, "Indeed")
+    driver.get(linkedJobs[0])
+    signUserIn(driver, signUserIn, "LinkedIn")
+    applyToJobs(linkedJobs, driver, "LinkedIn")
 
-def applyLinkedJobs(linedJobs, driver):
-    '''This function reads through LinkedIn pages and handles applying to the jobs'''
 
 if __name__ == "__main__":
     '''This is the core processes of the actual job bot. This function should:
@@ -149,7 +171,6 @@ if __name__ == "__main__":
     1.5) Import the UI code/files and run that first
     2)   Select job websites? Indeed, GlassDoor, Monster, LinkedIn? etc
     2.5) run this backend code that parses the user info and grabs the web data, hook this backend code into the UI
-    2.75) add OAuth instead of grabbing raw user info (big issue if security breach)
     3)   Enter updates the UI and pulls out a list of all the postings
     4)   User can check which ones to apply to/which ones they did
     5)   Export data into sheets
@@ -174,8 +195,12 @@ if __name__ == "__main__":
     case 1: sign in with manual
     case 2: sign in with XML 
     '''
-    signUserIn = 0
+    signUserIn = 1
 
-    applyIndeedJobs(indeedJobs, driver, signUserIn)
-    applyLinkedJobs(linkedJobs, driver, signUserIn)
+    driver.get(indeedJobs[0]) # this actually navigates to the indeed page, solves fencepost problem
+    signUserIn(driver, signUserIn, "Indeed")
+    applyToJobs(indeedJobs, driver, "Indeed")
+    driver.get(linkedJobs[0])
+    signUserIn(driver, signUserIn, "LinkedIn")
+    applyToJobs(linkedJobs, driver, "LinkedIn")
 
