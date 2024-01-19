@@ -1,7 +1,7 @@
 import PySimpleGUI as sg
 import xml.etree.ElementTree as ET
 import datetime
-from .job import runJobScript
+from job import runJobScript
 
 def updateFileVersion():
     # check and update the version number prior to building/running the UI
