@@ -1,0 +1,23 @@
+{
+    "Months": {
+        "January": {
+            "Robin": {
+                "Days": ["4", "20"]
+            },
+            "Jason":{
+                "Days":["17"]
+            }
+        },
+        "February":{},
+        "March":{},
+        "April":{},
+        "May":{},
+        "June":{},
+        "July":{},
+        "August":{},
+        "September":{},
+        "October":{},
+        "November":{},
+        "December":{}
+    }        
+}

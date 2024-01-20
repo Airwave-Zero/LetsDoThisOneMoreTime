@@ -1,0 +1,10 @@
+C:\Users\bboyf\OneDrive\Desktop\CODE\LetsDoThisOneMoreTime\shift_scheduler_bot\scheduler_test1\bin\Debug\scheduler_test1.exe.config
+C:\Users\bboyf\OneDrive\Desktop\CODE\LetsDoThisOneMoreTime\shift_scheduler_bot\scheduler_test1\bin\Debug\scheduler_test1.exe
+C:\Users\bboyf\OneDrive\Desktop\CODE\LetsDoThisOneMoreTime\shift_scheduler_bot\scheduler_test1\bin\Debug\scheduler_test1.pdb
+C:\Users\bboyf\OneDrive\Desktop\CODE\LetsDoThisOneMoreTime\shift_scheduler_bot\scheduler_test1\obj\Debug\scheduler_test1.csproj.AssemblyReference.cache
+C:\Users\bboyf\OneDrive\Desktop\CODE\LetsDoThisOneMoreTime\shift_scheduler_bot\scheduler_test1\obj\Debug\scheduler_test1.Form1.resources
+C:\Users\bboyf\OneDrive\Desktop\CODE\LetsDoThisOneMoreTime\shift_scheduler_bot\scheduler_test1\obj\Debug\scheduler_test1.Properties.Resources.resources
+C:\Users\bboyf\OneDrive\Desktop\CODE\LetsDoThisOneMoreTime\shift_scheduler_bot\scheduler_test1\obj\Debug\scheduler_test1.csproj.GenerateResource.cache
+C:\Users\bboyf\OneDrive\Desktop\CODE\LetsDoThisOneMoreTime\shift_scheduler_bot\scheduler_test1\obj\Debug\scheduler_test1.csproj.CoreCompileInputs.cache
+C:\Users\bboyf\OneDrive\Desktop\CODE\LetsDoThisOneMoreTime\shift_scheduler_bot\scheduler_test1\obj\Debug\scheduler_test1.exe
+C:\Users\bboyf\OneDrive\Desktop\CODE\LetsDoThisOneMoreTime\shift_scheduler_bot\scheduler_test1\obj\Debug\scheduler_test1.pdb

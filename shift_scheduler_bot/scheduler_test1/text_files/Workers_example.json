@@ -1,0 +1,25 @@
+{
+    "Employees": {
+            "Bill Nye": {
+                "Age": "30",
+                "Status": "Regular",
+                "Phone": "0000000000",
+                "Notes": ["Likes seafood"],
+                "Busy":["Sunday", "Monday Night", "Saturday"]
+            },
+            "Sam Smith": {
+                "Age": "41",
+                "Status": "New/Training",
+                "Phone": "9999999999",
+                "Notes": ["Fluent in Tagalog"],
+                "Busy":["Monday Night", "Wednesday"]
+            },
+            "Nathan Kim":{
+                "Age": "20",
+                "Status": "Manager",
+                "Phone": "1234567890",
+                "Notes": ["Too short to reach top shelf of fridge"],
+                "Busy":["Wednesday Morning", "Thursday Morning"]
+            }
+    }
+}
