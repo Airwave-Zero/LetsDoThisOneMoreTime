@@ -1,0 +1,68 @@
+{
+    "Months": {
+        "January": {
+            "New Years": {
+                "Day": "1",
+                "Working": "No"
+            },
+            "Martin Luther King Jr. Day":{
+                "Day": "15",
+                "Working": "Yes"
+            }
+        },
+        "February":{
+            "President's Day":{
+                "Day": "19",
+                "Working": "Yes"
+            }
+        },
+        "March":{},
+        "April":{
+            "Cesar Chavez Day":{
+                "Day": "1",
+                "Working": "Yes"
+            }
+        },
+        "May":{
+            "Memorial Day":{
+                "Day": "27",
+                "Working": "Yes"
+            }
+        },
+        "June":{},
+        "July":{
+            "Independence Day":{
+                "Day": "4",
+                "Working": "Yes"
+            }
+        },
+        "August":{},
+        "September":{
+            "Labor Day":{
+                "Day": "15",
+                "Working": "Yes"
+            }
+        },
+        "October":{},
+        "November":{
+            "Veteran's Day":{
+                "Day": "11",
+                "Working": "Yes"
+            },
+            "Thanksgiving":{
+                "Day": "28",
+                "Working": "Yes"
+            },
+            "Day after Thanksgiving":{
+                "Day": "29",
+                "Working": "Yes"
+            }
+        },
+        "December":{
+            "Christmas":{
+                "Day": "25",
+                "Working": "No"
+            }
+        }
+    }        
+}
