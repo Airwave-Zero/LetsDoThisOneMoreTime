@@ -31,13 +31,13 @@ namespace scheduler_test1
         /// </summary>
         private void InitializeComponent()
         {
-            this.button5 = new System.Windows.Forms.Button();
             this.button6 = new System.Windows.Forms.Button();
             this.button4 = new System.Windows.Forms.Button();
             this.panel1 = new System.Windows.Forms.Panel();
             this.Next = new System.Windows.Forms.Button();
             this.Previous = new System.Windows.Forms.Button();
             this.richTextBox1 = new System.Windows.Forms.RichTextBox();
+            this.button5 = new System.Windows.Forms.Button();
             this.panel2 = new System.Windows.Forms.Panel();
             this.panel10 = new System.Windows.Forms.Panel();
             this.panel9 = new System.Windows.Forms.Panel();
@@ -59,8 +59,6 @@ namespace scheduler_test1
             this.exportScheduleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveScheduleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.workersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.viewWorkersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.addEditWorkersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.addEditRulesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.addViewDaysOffToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.importWorkersToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
@@ -78,30 +76,20 @@ namespace scheduler_test1
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
-            // button5
-            // 
-            this.button5.Location = new System.Drawing.Point(785, 10);
-            this.button5.Name = "button5";
-            this.button5.Size = new System.Drawing.Size(95, 27);
-            this.button5.TabIndex = 6;
-            this.button5.Text = "Add Shift";
-            this.button5.UseVisualStyleBackColor = true;
-            this.button5.Click += new System.EventHandler(this.button5_Click);
-            // 
             // button6
             // 
             this.button6.Enabled = false;
-            this.button6.Location = new System.Drawing.Point(892, 10);
+            this.button6.Location = new System.Drawing.Point(928, 10);
             this.button6.Name = "button6";
-            this.button6.Size = new System.Drawing.Size(140, 27);
+            this.button6.Size = new System.Drawing.Size(95, 27);
             this.button6.TabIndex = 7;
-            this.button6.Text = "Edit/Delete Shift";
+            this.button6.Text = "WORKERS";
             this.button6.UseVisualStyleBackColor = true;
             this.button6.Click += new System.EventHandler(this.button6_Click);
             // 
             // button4
             // 
-            this.button4.Location = new System.Drawing.Point(1044, 10);
+            this.button4.Location = new System.Drawing.Point(1041, 10);
             this.button4.Name = "button4";
             this.button4.Size = new System.Drawing.Size(152, 27);
             this.button4.TabIndex = 5;
@@ -125,7 +113,7 @@ namespace scheduler_test1
             // Next
             // 
             this.Next.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Next.Location = new System.Drawing.Point(746, 10);
+            this.Next.Location = new System.Drawing.Point(770, 10);
             this.Next.Name = "Next";
             this.Next.Size = new System.Drawing.Size(27, 27);
             this.Next.TabIndex = 0;
@@ -146,13 +134,23 @@ namespace scheduler_test1
             // richTextBox1
             // 
             this.richTextBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.richTextBox1.Location = new System.Drawing.Point(467, 10);
+            this.richTextBox1.Location = new System.Drawing.Point(479, 10);
             this.richTextBox1.Name = "richTextBox1";
             this.richTextBox1.ReadOnly = true;
             this.richTextBox1.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.None;
             this.richTextBox1.Size = new System.Drawing.Size(273, 27);
             this.richTextBox1.TabIndex = 8;
             this.richTextBox1.Text = "Month D1-D7 Year";
+            // 
+            // button5
+            // 
+            this.button5.Location = new System.Drawing.Point(815, 10);
+            this.button5.Name = "button5";
+            this.button5.Size = new System.Drawing.Size(95, 27);
+            this.button5.TabIndex = 6;
+            this.button5.Text = "SHIFTS";
+            this.button5.UseVisualStyleBackColor = true;
+            this.button5.Click += new System.EventHandler(this.button5_Click);
             // 
             // panel2
             // 
@@ -328,8 +326,6 @@ namespace scheduler_test1
             // workersToolStripMenuItem
             // 
             this.workersToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.viewWorkersToolStripMenuItem,
-            this.addEditWorkersToolStripMenuItem,
             this.addEditRulesToolStripMenuItem,
             this.addViewDaysOffToolStripMenuItem,
             this.importWorkersToolStripMenuItem1,
@@ -338,41 +334,28 @@ namespace scheduler_test1
             this.workersToolStripMenuItem.Size = new System.Drawing.Size(76, 24);
             this.workersToolStripMenuItem.Text = "Workers";
             // 
-            // viewWorkersToolStripMenuItem
-            // 
-            this.viewWorkersToolStripMenuItem.Name = "viewWorkersToolStripMenuItem";
-            this.viewWorkersToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
-            this.viewWorkersToolStripMenuItem.Text = "View Workers";
-            this.viewWorkersToolStripMenuItem.Click += new System.EventHandler(this.viewWorkersToolStripMenuItem_Click);
-            // 
-            // addEditWorkersToolStripMenuItem
-            // 
-            this.addEditWorkersToolStripMenuItem.Name = "addEditWorkersToolStripMenuItem";
-            this.addEditWorkersToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
-            this.addEditWorkersToolStripMenuItem.Text = "Add/Edit Workers";
-            // 
             // addEditRulesToolStripMenuItem
             // 
             this.addEditRulesToolStripMenuItem.Name = "addEditRulesToolStripMenuItem";
-            this.addEditRulesToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.addEditRulesToolStripMenuItem.Size = new System.Drawing.Size(219, 26);
             this.addEditRulesToolStripMenuItem.Text = "Add/Edit Rules";
             // 
             // addViewDaysOffToolStripMenuItem
             // 
             this.addViewDaysOffToolStripMenuItem.Name = "addViewDaysOffToolStripMenuItem";
-            this.addViewDaysOffToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.addViewDaysOffToolStripMenuItem.Size = new System.Drawing.Size(219, 26);
             this.addViewDaysOffToolStripMenuItem.Text = "Add/View Days Off";
             // 
             // importWorkersToolStripMenuItem1
             // 
             this.importWorkersToolStripMenuItem1.Name = "importWorkersToolStripMenuItem1";
-            this.importWorkersToolStripMenuItem1.Size = new System.Drawing.Size(224, 26);
+            this.importWorkersToolStripMenuItem1.Size = new System.Drawing.Size(219, 26);
             this.importWorkersToolStripMenuItem1.Text = "Import Workers";
             // 
             // exportWorkersToolStripMenuItem1
             // 
             this.exportWorkersToolStripMenuItem1.Name = "exportWorkersToolStripMenuItem1";
-            this.exportWorkersToolStripMenuItem1.Size = new System.Drawing.Size(224, 26);
+            this.exportWorkersToolStripMenuItem1.Size = new System.Drawing.Size(219, 26);
             this.exportWorkersToolStripMenuItem1.Text = "Export Workers";
             // 
             // menuStrip1
@@ -478,7 +461,7 @@ namespace scheduler_test1
             this.textBox7.Text = "Saturday";
             this.textBox7.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
-            // Form1
+            // MainUIForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -494,7 +477,7 @@ namespace scheduler_test1
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
-            this.Name = "Form1";
+            this.Name = "MainUIForm";
             this.Text = "Dpot Scheduler v1.0";
             this.panel1.ResumeLayout(false);
             this.panel2.ResumeLayout(false);
@@ -506,7 +489,6 @@ namespace scheduler_test1
         }
 
         #endregion
-        private System.Windows.Forms.Button button5;
         private System.Windows.Forms.Button button6;
         private System.Windows.Forms.Button button4;
         private System.Windows.Forms.Panel panel1;
@@ -517,7 +499,6 @@ namespace scheduler_test1
         private System.Windows.Forms.ToolStripMenuItem exportScheduleToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveScheduleToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem workersToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem addEditWorkersToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem addEditRulesToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem addViewDaysOffToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem importWorkersToolStripMenuItem1;
@@ -547,7 +528,7 @@ namespace scheduler_test1
         private Panel panel14;
         private Panel panel15;
         private Panel panel16;
-        private ToolStripMenuItem viewWorkersToolStripMenuItem;
+        private Button button5;
     }
 }
 
