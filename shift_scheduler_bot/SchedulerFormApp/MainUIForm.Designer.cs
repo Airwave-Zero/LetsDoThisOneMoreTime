@@ -3,7 +3,7 @@ using System.Windows.Forms;
 
 namespace scheduler_test1
 {
-    partial class Form1
+    partial class MainUIForm
     {
         /// <summary>
         /// Required designer variable.
@@ -39,12 +39,19 @@ namespace scheduler_test1
             this.Previous = new System.Windows.Forms.Button();
             this.richTextBox1 = new System.Windows.Forms.RichTextBox();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.panel10 = new System.Windows.Forms.Panel();
             this.panel9 = new System.Windows.Forms.Panel();
+            this.panel11 = new System.Windows.Forms.Panel();
             this.panel8 = new System.Windows.Forms.Panel();
+            this.panel12 = new System.Windows.Forms.Panel();
             this.panel7 = new System.Windows.Forms.Panel();
+            this.panel13 = new System.Windows.Forms.Panel();
             this.panel6 = new System.Windows.Forms.Panel();
+            this.panel14 = new System.Windows.Forms.Panel();
             this.panel5 = new System.Windows.Forms.Panel();
+            this.panel15 = new System.Windows.Forms.Panel();
             this.panel4 = new System.Windows.Forms.Panel();
+            this.panel16 = new System.Windows.Forms.Panel();
             this.panel3 = new System.Windows.Forms.Panel();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadScheduleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -52,6 +59,7 @@ namespace scheduler_test1
             this.exportScheduleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveScheduleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.workersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.viewWorkersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.addEditWorkersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.addEditRulesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.addViewDaysOffToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -65,13 +73,6 @@ namespace scheduler_test1
             this.textBox5 = new System.Windows.Forms.TextBox();
             this.textBox6 = new System.Windows.Forms.TextBox();
             this.textBox7 = new System.Windows.Forms.TextBox();
-            this.panel10 = new System.Windows.Forms.Panel();
-            this.panel11 = new System.Windows.Forms.Panel();
-            this.panel12 = new System.Windows.Forms.Panel();
-            this.panel13 = new System.Windows.Forms.Panel();
-            this.panel14 = new System.Windows.Forms.Panel();
-            this.panel15 = new System.Windows.Forms.Panel();
-            this.panel16 = new System.Windows.Forms.Panel();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.menuStrip1.SuspendLayout();
@@ -89,6 +90,7 @@ namespace scheduler_test1
             // 
             // button6
             // 
+            this.button6.Enabled = false;
             this.button6.Location = new System.Drawing.Point(892, 10);
             this.button6.Name = "button6";
             this.button6.Size = new System.Drawing.Size(140, 27);
@@ -143,11 +145,14 @@ namespace scheduler_test1
             // 
             // richTextBox1
             // 
+            this.richTextBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.richTextBox1.Location = new System.Drawing.Point(467, 10);
             this.richTextBox1.Name = "richTextBox1";
+            this.richTextBox1.ReadOnly = true;
+            this.richTextBox1.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.None;
             this.richTextBox1.Size = new System.Drawing.Size(273, 27);
             this.richTextBox1.TabIndex = 8;
-            this.richTextBox1.Text = "";
+            this.richTextBox1.Text = "Month D1-D7 Year";
             // 
             // panel2
             // 
@@ -171,6 +176,14 @@ namespace scheduler_test1
             this.panel2.TabIndex = 10;
             this.panel2.Paint += new System.Windows.Forms.PaintEventHandler(this.panel2_Paint);
             // 
+            // panel10
+            // 
+            this.panel10.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panel10.Location = new System.Drawing.Point(1044, 265);
+            this.panel10.Name = "panel10";
+            this.panel10.Size = new System.Drawing.Size(152, 377);
+            this.panel10.TabIndex = 3;
+            // 
             // panel9
             // 
             this.panel9.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
@@ -178,6 +191,14 @@ namespace scheduler_test1
             this.panel9.Name = "panel9";
             this.panel9.Size = new System.Drawing.Size(152, 256);
             this.panel9.TabIndex = 1;
+            // 
+            // panel11
+            // 
+            this.panel11.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panel11.Location = new System.Drawing.Point(871, 265);
+            this.panel11.Name = "panel11";
+            this.panel11.Size = new System.Drawing.Size(152, 377);
+            this.panel11.TabIndex = 4;
             // 
             // panel8
             // 
@@ -187,6 +208,14 @@ namespace scheduler_test1
             this.panel8.Size = new System.Drawing.Size(152, 256);
             this.panel8.TabIndex = 1;
             // 
+            // panel12
+            // 
+            this.panel12.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panel12.Location = new System.Drawing.Point(698, 265);
+            this.panel12.Name = "panel12";
+            this.panel12.Size = new System.Drawing.Size(152, 377);
+            this.panel12.TabIndex = 5;
+            // 
             // panel7
             // 
             this.panel7.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
@@ -194,6 +223,14 @@ namespace scheduler_test1
             this.panel7.Name = "panel7";
             this.panel7.Size = new System.Drawing.Size(152, 256);
             this.panel7.TabIndex = 1;
+            // 
+            // panel13
+            // 
+            this.panel13.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panel13.Location = new System.Drawing.Point(525, 265);
+            this.panel13.Name = "panel13";
+            this.panel13.Size = new System.Drawing.Size(152, 377);
+            this.panel13.TabIndex = 6;
             // 
             // panel6
             // 
@@ -203,6 +240,14 @@ namespace scheduler_test1
             this.panel6.Size = new System.Drawing.Size(152, 256);
             this.panel6.TabIndex = 1;
             // 
+            // panel14
+            // 
+            this.panel14.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panel14.Location = new System.Drawing.Point(352, 265);
+            this.panel14.Name = "panel14";
+            this.panel14.Size = new System.Drawing.Size(152, 377);
+            this.panel14.TabIndex = 7;
+            // 
             // panel5
             // 
             this.panel5.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
@@ -211,6 +256,14 @@ namespace scheduler_test1
             this.panel5.Size = new System.Drawing.Size(152, 256);
             this.panel5.TabIndex = 1;
             // 
+            // panel15
+            // 
+            this.panel15.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panel15.Location = new System.Drawing.Point(179, 265);
+            this.panel15.Name = "panel15";
+            this.panel15.Size = new System.Drawing.Size(152, 377);
+            this.panel15.TabIndex = 8;
+            // 
             // panel4
             // 
             this.panel4.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
@@ -218,6 +271,14 @@ namespace scheduler_test1
             this.panel4.Name = "panel4";
             this.panel4.Size = new System.Drawing.Size(152, 256);
             this.panel4.TabIndex = 1;
+            // 
+            // panel16
+            // 
+            this.panel16.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panel16.Location = new System.Drawing.Point(6, 265);
+            this.panel16.Name = "panel16";
+            this.panel16.Size = new System.Drawing.Size(152, 377);
+            this.panel16.TabIndex = 2;
             // 
             // panel3
             // 
@@ -267,6 +328,7 @@ namespace scheduler_test1
             // workersToolStripMenuItem
             // 
             this.workersToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.viewWorkersToolStripMenuItem,
             this.addEditWorkersToolStripMenuItem,
             this.addEditRulesToolStripMenuItem,
             this.addViewDaysOffToolStripMenuItem,
@@ -276,34 +338,41 @@ namespace scheduler_test1
             this.workersToolStripMenuItem.Size = new System.Drawing.Size(76, 24);
             this.workersToolStripMenuItem.Text = "Workers";
             // 
+            // viewWorkersToolStripMenuItem
+            // 
+            this.viewWorkersToolStripMenuItem.Name = "viewWorkersToolStripMenuItem";
+            this.viewWorkersToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.viewWorkersToolStripMenuItem.Text = "View Workers";
+            this.viewWorkersToolStripMenuItem.Click += new System.EventHandler(this.viewWorkersToolStripMenuItem_Click);
+            // 
             // addEditWorkersToolStripMenuItem
             // 
             this.addEditWorkersToolStripMenuItem.Name = "addEditWorkersToolStripMenuItem";
-            this.addEditWorkersToolStripMenuItem.Size = new System.Drawing.Size(219, 26);
+            this.addEditWorkersToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
             this.addEditWorkersToolStripMenuItem.Text = "Add/Edit Workers";
             // 
             // addEditRulesToolStripMenuItem
             // 
             this.addEditRulesToolStripMenuItem.Name = "addEditRulesToolStripMenuItem";
-            this.addEditRulesToolStripMenuItem.Size = new System.Drawing.Size(219, 26);
+            this.addEditRulesToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
             this.addEditRulesToolStripMenuItem.Text = "Add/Edit Rules";
             // 
             // addViewDaysOffToolStripMenuItem
             // 
             this.addViewDaysOffToolStripMenuItem.Name = "addViewDaysOffToolStripMenuItem";
-            this.addViewDaysOffToolStripMenuItem.Size = new System.Drawing.Size(219, 26);
+            this.addViewDaysOffToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
             this.addViewDaysOffToolStripMenuItem.Text = "Add/View Days Off";
             // 
             // importWorkersToolStripMenuItem1
             // 
             this.importWorkersToolStripMenuItem1.Name = "importWorkersToolStripMenuItem1";
-            this.importWorkersToolStripMenuItem1.Size = new System.Drawing.Size(219, 26);
+            this.importWorkersToolStripMenuItem1.Size = new System.Drawing.Size(224, 26);
             this.importWorkersToolStripMenuItem1.Text = "Import Workers";
             // 
             // exportWorkersToolStripMenuItem1
             // 
             this.exportWorkersToolStripMenuItem1.Name = "exportWorkersToolStripMenuItem1";
-            this.exportWorkersToolStripMenuItem1.Size = new System.Drawing.Size(219, 26);
+            this.exportWorkersToolStripMenuItem1.Size = new System.Drawing.Size(224, 26);
             this.exportWorkersToolStripMenuItem1.Text = "Export Workers";
             // 
             // menuStrip1
@@ -409,62 +478,6 @@ namespace scheduler_test1
             this.textBox7.Text = "Saturday";
             this.textBox7.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
-            // panel10
-            // 
-            this.panel10.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.panel10.Location = new System.Drawing.Point(1044, 265);
-            this.panel10.Name = "panel10";
-            this.panel10.Size = new System.Drawing.Size(152, 377);
-            this.panel10.TabIndex = 3;
-            // 
-            // panel11
-            // 
-            this.panel11.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.panel11.Location = new System.Drawing.Point(871, 265);
-            this.panel11.Name = "panel11";
-            this.panel11.Size = new System.Drawing.Size(152, 377);
-            this.panel11.TabIndex = 4;
-            // 
-            // panel12
-            // 
-            this.panel12.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.panel12.Location = new System.Drawing.Point(698, 265);
-            this.panel12.Name = "panel12";
-            this.panel12.Size = new System.Drawing.Size(152, 377);
-            this.panel12.TabIndex = 5;
-            // 
-            // panel13
-            // 
-            this.panel13.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.panel13.Location = new System.Drawing.Point(525, 265);
-            this.panel13.Name = "panel13";
-            this.panel13.Size = new System.Drawing.Size(152, 377);
-            this.panel13.TabIndex = 6;
-            // 
-            // panel14
-            // 
-            this.panel14.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.panel14.Location = new System.Drawing.Point(352, 265);
-            this.panel14.Name = "panel14";
-            this.panel14.Size = new System.Drawing.Size(152, 377);
-            this.panel14.TabIndex = 7;
-            // 
-            // panel15
-            // 
-            this.panel15.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.panel15.Location = new System.Drawing.Point(179, 265);
-            this.panel15.Name = "panel15";
-            this.panel15.Size = new System.Drawing.Size(152, 377);
-            this.panel15.TabIndex = 8;
-            // 
-            // panel16
-            // 
-            this.panel16.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.panel16.Location = new System.Drawing.Point(6, 265);
-            this.panel16.Name = "panel16";
-            this.panel16.Size = new System.Drawing.Size(152, 377);
-            this.panel16.TabIndex = 2;
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -534,6 +547,7 @@ namespace scheduler_test1
         private Panel panel14;
         private Panel panel15;
         private Panel panel16;
+        private ToolStripMenuItem viewWorkersToolStripMenuItem;
     }
 }
 

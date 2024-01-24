@@ -10,9 +10,9 @@ using System.Windows.Forms;
 
 namespace scheduler_test1
 {
-    public partial class Form1 : Form
+    public partial class MainUIForm : Form
     {
-        public Form1()
+        public MainUIForm()
         {
             InitializeComponent();
         }
@@ -50,6 +50,11 @@ namespace scheduler_test1
         }
 
         private void Form1_Load_2(object sender, EventArgs e)
+        {
+
+        }
+
+        private void viewWorkersToolStripMenuItem_Click(object sender, EventArgs e)
         {
 
         }
