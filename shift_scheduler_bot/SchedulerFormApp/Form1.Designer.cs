@@ -28,59 +28,31 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.button1 = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
-            this.button3 = new System.Windows.Forms.Button();
-            this.button4 = new System.Windows.Forms.Button();
             this.button5 = new System.Windows.Forms.Button();
             this.button6 = new System.Windows.Forms.Button();
+            this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.loadScheduleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.exportScheduleAsJSONToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.exportScheduleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveScheduleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.workersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.addEditWorkersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.addEditRulesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.addViewDaysOffToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.importWorkersToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.exportWorkersToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuStrip1 = new System.Windows.Forms.MenuStrip();
+            this.button4 = new System.Windows.Forms.Button();
+            this.panel1 = new System.Windows.Forms.Panel();
+            this.menuStrip1.SuspendLayout();
+            this.panel1.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(601, 21);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(146, 38);
-            this.button1.TabIndex = 0;
-            this.button1.Text = "Add/Edit Workers";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
-            // 
-            // button2
-            // 
-            this.button2.Location = new System.Drawing.Point(601, 65);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(146, 42);
-            this.button2.TabIndex = 1;
-            this.button2.Text = "Add/Edit Rules";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
-            // 
-            // button3
-            // 
-            this.button3.Location = new System.Drawing.Point(601, 113);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(146, 41);
-            this.button3.TabIndex = 4;
-            this.button3.Text = "Add/View Days Off";
-            this.button3.UseVisualStyleBackColor = true;
-            this.button3.Click += new System.EventHandler(this.button3_Click);
-            // 
-            // button4
-            // 
-            this.button4.Location = new System.Drawing.Point(601, 160);
-            this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(146, 49);
-            this.button4.TabIndex = 5;
-            this.button4.Text = "Generate Schedule";
-            this.button4.UseVisualStyleBackColor = true;
-            this.button4.Click += new System.EventHandler(this.button4_Click);
             // 
             // button5
             // 
-            this.button5.Location = new System.Drawing.Point(601, 215);
+            this.button5.Location = new System.Drawing.Point(14, 10);
             this.button5.Name = "button5";
-            this.button5.Size = new System.Drawing.Size(68, 49);
+            this.button5.Size = new System.Drawing.Size(146, 49);
             this.button5.TabIndex = 6;
             this.button5.Text = "Add Shift";
             this.button5.UseVisualStyleBackColor = true;
@@ -88,39 +60,160 @@
             // 
             // button6
             // 
-            this.button6.Location = new System.Drawing.Point(675, 215);
+            this.button6.Location = new System.Drawing.Point(14, 65);
             this.button6.Name = "button6";
-            this.button6.Size = new System.Drawing.Size(94, 49);
+            this.button6.Size = new System.Drawing.Size(146, 49);
             this.button6.TabIndex = 7;
             this.button6.Text = "Edit/Delete Shift";
             this.button6.UseVisualStyleBackColor = true;
             this.button6.Click += new System.EventHandler(this.button6_Click);
             // 
+            // fileToolStripMenuItem
+            // 
+            this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.loadScheduleToolStripMenuItem,
+            this.exportScheduleAsJSONToolStripMenuItem,
+            this.exportScheduleToolStripMenuItem,
+            this.saveScheduleToolStripMenuItem});
+            this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
+            this.fileToolStripMenuItem.Size = new System.Drawing.Size(46, 24);
+            this.fileToolStripMenuItem.Text = "File";
+            // 
+            // loadScheduleToolStripMenuItem
+            // 
+            this.loadScheduleToolStripMenuItem.Name = "loadScheduleToolStripMenuItem";
+            this.loadScheduleToolStripMenuItem.Size = new System.Drawing.Size(256, 26);
+            this.loadScheduleToolStripMenuItem.Text = "Import Schedule";
+            // 
+            // exportScheduleAsJSONToolStripMenuItem
+            // 
+            this.exportScheduleAsJSONToolStripMenuItem.Name = "exportScheduleAsJSONToolStripMenuItem";
+            this.exportScheduleAsJSONToolStripMenuItem.Size = new System.Drawing.Size(256, 26);
+            this.exportScheduleAsJSONToolStripMenuItem.Text = "Export Schedule as JSON";
+            // 
+            // exportScheduleToolStripMenuItem
+            // 
+            this.exportScheduleToolStripMenuItem.Name = "exportScheduleToolStripMenuItem";
+            this.exportScheduleToolStripMenuItem.Size = new System.Drawing.Size(256, 26);
+            this.exportScheduleToolStripMenuItem.Text = "Export Schedule as PNG ";
+            this.exportScheduleToolStripMenuItem.Click += new System.EventHandler(this.exportScheduleToolStripMenuItem_Click);
+            // 
+            // saveScheduleToolStripMenuItem
+            // 
+            this.saveScheduleToolStripMenuItem.Name = "saveScheduleToolStripMenuItem";
+            this.saveScheduleToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
+            this.saveScheduleToolStripMenuItem.Size = new System.Drawing.Size(256, 26);
+            this.saveScheduleToolStripMenuItem.Text = "Save Schedule";
+            // 
+            // workersToolStripMenuItem
+            // 
+            this.workersToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.addEditWorkersToolStripMenuItem,
+            this.addEditRulesToolStripMenuItem,
+            this.addViewDaysOffToolStripMenuItem,
+            this.importWorkersToolStripMenuItem1,
+            this.exportWorkersToolStripMenuItem1});
+            this.workersToolStripMenuItem.Name = "workersToolStripMenuItem";
+            this.workersToolStripMenuItem.Size = new System.Drawing.Size(76, 24);
+            this.workersToolStripMenuItem.Text = "Workers";
+            // 
+            // addEditWorkersToolStripMenuItem
+            // 
+            this.addEditWorkersToolStripMenuItem.Name = "addEditWorkersToolStripMenuItem";
+            this.addEditWorkersToolStripMenuItem.Size = new System.Drawing.Size(219, 26);
+            this.addEditWorkersToolStripMenuItem.Text = "Add/Edit Workers";
+            // 
+            // addEditRulesToolStripMenuItem
+            // 
+            this.addEditRulesToolStripMenuItem.Name = "addEditRulesToolStripMenuItem";
+            this.addEditRulesToolStripMenuItem.Size = new System.Drawing.Size(219, 26);
+            this.addEditRulesToolStripMenuItem.Text = "Add/Edit Rules";
+            // 
+            // addViewDaysOffToolStripMenuItem
+            // 
+            this.addViewDaysOffToolStripMenuItem.Name = "addViewDaysOffToolStripMenuItem";
+            this.addViewDaysOffToolStripMenuItem.Size = new System.Drawing.Size(219, 26);
+            this.addViewDaysOffToolStripMenuItem.Text = "Add/View Days Off";
+            // 
+            // importWorkersToolStripMenuItem1
+            // 
+            this.importWorkersToolStripMenuItem1.Name = "importWorkersToolStripMenuItem1";
+            this.importWorkersToolStripMenuItem1.Size = new System.Drawing.Size(219, 26);
+            this.importWorkersToolStripMenuItem1.Text = "Import Workers";
+            // 
+            // exportWorkersToolStripMenuItem1
+            // 
+            this.exportWorkersToolStripMenuItem1.Name = "exportWorkersToolStripMenuItem1";
+            this.exportWorkersToolStripMenuItem1.Size = new System.Drawing.Size(219, 26);
+            this.exportWorkersToolStripMenuItem1.Text = "Export Workers";
+            // 
+            // menuStrip1
+            // 
+            this.menuStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
+            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.fileToolStripMenuItem,
+            this.workersToolStripMenuItem});
+            this.menuStrip1.Location = new System.Drawing.Point(0, 0);
+            this.menuStrip1.Name = "menuStrip1";
+            this.menuStrip1.Size = new System.Drawing.Size(929, 28);
+            this.menuStrip1.TabIndex = 8;
+            this.menuStrip1.Text = "menuStrip1";
+            // 
+            // button4
+            // 
+            this.button4.Location = new System.Drawing.Point(14, 120);
+            this.button4.Name = "button4";
+            this.button4.Size = new System.Drawing.Size(146, 49);
+            this.button4.TabIndex = 5;
+            this.button4.Text = "Generate Schedule";
+            this.button4.UseVisualStyleBackColor = true;
+            this.button4.Click += new System.EventHandler(this.button4_Click);
+            // 
+            // panel1
+            // 
+            this.panel1.Controls.Add(this.button5);
+            this.panel1.Controls.Add(this.button4);
+            this.panel1.Controls.Add(this.button6);
+            this.panel1.Location = new System.Drawing.Point(747, 31);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(170, 184);
+            this.panel1.TabIndex = 9;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(816, 565);
-            this.Controls.Add(this.button6);
-            this.Controls.Add(this.button5);
-            this.Controls.Add(this.button4);
-            this.Controls.Add(this.button3);
-            this.Controls.Add(this.button2);
-            this.Controls.Add(this.button1);
+            this.ClientSize = new System.Drawing.Size(929, 587);
+            this.Controls.Add(this.panel1);
+            this.Controls.Add(this.menuStrip1);
+            this.MainMenuStrip = this.menuStrip1;
             this.Name = "Form1";
             this.Text = "Form1";
+            this.menuStrip1.ResumeLayout(false);
+            this.menuStrip1.PerformLayout();
+            this.panel1.ResumeLayout(false);
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
         #endregion
-
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.Button button3;
-        private System.Windows.Forms.Button button4;
         private System.Windows.Forms.Button button5;
         private System.Windows.Forms.Button button6;
+        private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem loadScheduleToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem exportScheduleAsJSONToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem exportScheduleToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem saveScheduleToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem workersToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem addEditWorkersToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem addEditRulesToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem addViewDaysOffToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem importWorkersToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem exportWorkersToolStripMenuItem1;
+        private System.Windows.Forms.MenuStrip menuStrip1;
+        private System.Windows.Forms.Button button4;
+        private System.Windows.Forms.Panel panel1;
     }
 }
 
