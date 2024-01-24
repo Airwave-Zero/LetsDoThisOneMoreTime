@@ -30,6 +30,12 @@
         {
             this.button5 = new System.Windows.Forms.Button();
             this.button6 = new System.Windows.Forms.Button();
+            this.button4 = new System.Windows.Forms.Button();
+            this.panel1 = new System.Windows.Forms.Panel();
+            this.Previous = new System.Windows.Forms.Button();
+            this.richTextBox1 = new System.Windows.Forms.RichTextBox();
+            this.panel2 = new System.Windows.Forms.Panel();
+            this.Next = new System.Windows.Forms.Button();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadScheduleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportScheduleAsJSONToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -42,17 +48,15 @@
             this.importWorkersToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.exportWorkersToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
-            this.button4 = new System.Windows.Forms.Button();
-            this.panel1 = new System.Windows.Forms.Panel();
-            this.menuStrip1.SuspendLayout();
             this.panel1.SuspendLayout();
+            this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // button5
             // 
-            this.button5.Location = new System.Drawing.Point(14, 10);
+            this.button5.Location = new System.Drawing.Point(830, 7);
             this.button5.Name = "button5";
-            this.button5.Size = new System.Drawing.Size(146, 49);
+            this.button5.Size = new System.Drawing.Size(114, 28);
             this.button5.TabIndex = 6;
             this.button5.Text = "Add Shift";
             this.button5.UseVisualStyleBackColor = true;
@@ -60,13 +64,72 @@
             // 
             // button6
             // 
-            this.button6.Location = new System.Drawing.Point(14, 65);
+            this.button6.Location = new System.Drawing.Point(950, 7);
             this.button6.Name = "button6";
-            this.button6.Size = new System.Drawing.Size(146, 49);
+            this.button6.Size = new System.Drawing.Size(114, 28);
             this.button6.TabIndex = 7;
             this.button6.Text = "Edit/Delete Shift";
             this.button6.UseVisualStyleBackColor = true;
             this.button6.Click += new System.EventHandler(this.button6_Click);
+            // 
+            // button4
+            // 
+            this.button4.Location = new System.Drawing.Point(1070, 7);
+            this.button4.Name = "button4";
+            this.button4.Size = new System.Drawing.Size(114, 28);
+            this.button4.TabIndex = 5;
+            this.button4.Text = "Generate Schedule";
+            this.button4.UseVisualStyleBackColor = true;
+            this.button4.Click += new System.EventHandler(this.button4_Click);
+            // 
+            // panel1
+            // 
+            this.panel1.Controls.Add(this.Next);
+            this.panel1.Controls.Add(this.Previous);
+            this.panel1.Controls.Add(this.richTextBox1);
+            this.panel1.Controls.Add(this.button5);
+            this.panel1.Controls.Add(this.button4);
+            this.panel1.Controls.Add(this.button6);
+            this.panel1.Location = new System.Drawing.Point(12, 31);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(1188, 46);
+            this.panel1.TabIndex = 9;
+            // 
+            // Previous
+            // 
+            this.Previous.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.Previous.Location = new System.Drawing.Point(417, 10);
+            this.Previous.Name = "Previous";
+            this.Previous.Size = new System.Drawing.Size(26, 27);
+            this.Previous.TabIndex = 9;
+            this.Previous.Text = "◀";
+            this.Previous.UseVisualStyleBackColor = true;
+            this.Previous.Click += new System.EventHandler(this.Previous_Click);
+            // 
+            // richTextBox1
+            // 
+            this.richTextBox1.Location = new System.Drawing.Point(449, 10);
+            this.richTextBox1.Name = "richTextBox1";
+            this.richTextBox1.Size = new System.Drawing.Size(273, 27);
+            this.richTextBox1.TabIndex = 8;
+            this.richTextBox1.Text = "";
+            // 
+            // panel2
+            // 
+            this.panel2.Location = new System.Drawing.Point(12, 97);
+            this.panel2.Name = "panel2";
+            this.panel2.Size = new System.Drawing.Size(1176, 506);
+            this.panel2.TabIndex = 10;
+            // 
+            // Next
+            // 
+            this.Next.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.Next.Location = new System.Drawing.Point(728, 10);
+            this.Next.Name = "Next";
+            this.Next.Size = new System.Drawing.Size(27, 27);
+            this.Next.TabIndex = 0;
+            this.Next.Text = "▶";
+            this.Next.UseVisualStyleBackColor = true;
             // 
             // fileToolStripMenuItem
             // 
@@ -155,43 +218,24 @@
             this.workersToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(929, 28);
+            this.menuStrip1.Size = new System.Drawing.Size(1200, 30);
             this.menuStrip1.TabIndex = 8;
             this.menuStrip1.Text = "menuStrip1";
-            // 
-            // button4
-            // 
-            this.button4.Location = new System.Drawing.Point(14, 120);
-            this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(146, 49);
-            this.button4.TabIndex = 5;
-            this.button4.Text = "Generate Schedule";
-            this.button4.UseVisualStyleBackColor = true;
-            this.button4.Click += new System.EventHandler(this.button4_Click);
-            // 
-            // panel1
-            // 
-            this.panel1.Controls.Add(this.button5);
-            this.panel1.Controls.Add(this.button4);
-            this.panel1.Controls.Add(this.button6);
-            this.panel1.Location = new System.Drawing.Point(747, 31);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(170, 184);
-            this.panel1.TabIndex = 9;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(929, 587);
+            this.ClientSize = new System.Drawing.Size(1200, 674);
             this.Controls.Add(this.panel1);
+            this.Controls.Add(this.panel2);
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "Form1";
             this.Text = "Form1";
+            this.panel1.ResumeLayout(false);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
-            this.panel1.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -200,6 +244,9 @@
         #endregion
         private System.Windows.Forms.Button button5;
         private System.Windows.Forms.Button button6;
+        private System.Windows.Forms.Button button4;
+        private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem loadScheduleToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exportScheduleAsJSONToolStripMenuItem;
@@ -212,8 +259,9 @@
         private System.Windows.Forms.ToolStripMenuItem importWorkersToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem exportWorkersToolStripMenuItem1;
         private System.Windows.Forms.MenuStrip menuStrip1;
-        private System.Windows.Forms.Button button4;
-        private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.RichTextBox richTextBox1;
+        private System.Windows.Forms.Button Previous;
+        private System.Windows.Forms.Button Next;
     }
 }
 
