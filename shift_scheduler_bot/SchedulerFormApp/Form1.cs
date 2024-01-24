@@ -37,37 +37,19 @@ namespace scheduler_test1
 
         }
 
-        private void button1_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void button2_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void button3_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void Form1_Load(object sender, EventArgs e)
-        {
-
-        }
-
-        private void button1_Click_1(object sender, EventArgs e)
-        {
-
-        }
-
-        private void Next_Click(object sender, EventArgs e)
-        {
-
-        }
 
         private void Previous_Click(object sender, EventArgs e)
+        {
+
+        }
+
+
+        private void panel2_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void Form1_Load_2(object sender, EventArgs e)
         {
 
         }

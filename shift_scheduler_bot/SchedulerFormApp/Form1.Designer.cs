@@ -1,4 +1,7 @@
-﻿namespace scheduler_test1
+﻿using System.Drawing;
+using System.Windows.Forms;
+
+namespace scheduler_test1
 {
     partial class Form1
     {
@@ -32,10 +35,17 @@
             this.button6 = new System.Windows.Forms.Button();
             this.button4 = new System.Windows.Forms.Button();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.Next = new System.Windows.Forms.Button();
             this.Previous = new System.Windows.Forms.Button();
             this.richTextBox1 = new System.Windows.Forms.RichTextBox();
             this.panel2 = new System.Windows.Forms.Panel();
-            this.Next = new System.Windows.Forms.Button();
+            this.panel9 = new System.Windows.Forms.Panel();
+            this.panel8 = new System.Windows.Forms.Panel();
+            this.panel7 = new System.Windows.Forms.Panel();
+            this.panel6 = new System.Windows.Forms.Panel();
+            this.panel5 = new System.Windows.Forms.Panel();
+            this.panel4 = new System.Windows.Forms.Panel();
+            this.panel3 = new System.Windows.Forms.Panel();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadScheduleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportScheduleAsJSONToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -48,15 +58,30 @@
             this.importWorkersToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.exportWorkersToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
+            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.textBox2 = new System.Windows.Forms.TextBox();
+            this.textBox3 = new System.Windows.Forms.TextBox();
+            this.textBox4 = new System.Windows.Forms.TextBox();
+            this.textBox5 = new System.Windows.Forms.TextBox();
+            this.textBox6 = new System.Windows.Forms.TextBox();
+            this.textBox7 = new System.Windows.Forms.TextBox();
+            this.panel10 = new System.Windows.Forms.Panel();
+            this.panel11 = new System.Windows.Forms.Panel();
+            this.panel12 = new System.Windows.Forms.Panel();
+            this.panel13 = new System.Windows.Forms.Panel();
+            this.panel14 = new System.Windows.Forms.Panel();
+            this.panel15 = new System.Windows.Forms.Panel();
+            this.panel16 = new System.Windows.Forms.Panel();
             this.panel1.SuspendLayout();
+            this.panel2.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // button5
             // 
-            this.button5.Location = new System.Drawing.Point(830, 7);
+            this.button5.Location = new System.Drawing.Point(785, 10);
             this.button5.Name = "button5";
-            this.button5.Size = new System.Drawing.Size(114, 28);
+            this.button5.Size = new System.Drawing.Size(95, 27);
             this.button5.TabIndex = 6;
             this.button5.Text = "Add Shift";
             this.button5.UseVisualStyleBackColor = true;
@@ -64,9 +89,9 @@
             // 
             // button6
             // 
-            this.button6.Location = new System.Drawing.Point(950, 7);
+            this.button6.Location = new System.Drawing.Point(892, 10);
             this.button6.Name = "button6";
-            this.button6.Size = new System.Drawing.Size(114, 28);
+            this.button6.Size = new System.Drawing.Size(140, 27);
             this.button6.TabIndex = 7;
             this.button6.Text = "Edit/Delete Shift";
             this.button6.UseVisualStyleBackColor = true;
@@ -74,9 +99,9 @@
             // 
             // button4
             // 
-            this.button4.Location = new System.Drawing.Point(1070, 7);
+            this.button4.Location = new System.Drawing.Point(1044, 10);
             this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(114, 28);
+            this.button4.Size = new System.Drawing.Size(152, 27);
             this.button4.TabIndex = 5;
             this.button4.Text = "Generate Schedule";
             this.button4.UseVisualStyleBackColor = true;
@@ -92,15 +117,25 @@
             this.panel1.Controls.Add(this.button6);
             this.panel1.Location = new System.Drawing.Point(12, 31);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(1188, 46);
+            this.panel1.Size = new System.Drawing.Size(1207, 46);
             this.panel1.TabIndex = 9;
+            // 
+            // Next
+            // 
+            this.Next.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.Next.Location = new System.Drawing.Point(746, 10);
+            this.Next.Name = "Next";
+            this.Next.Size = new System.Drawing.Size(27, 27);
+            this.Next.TabIndex = 0;
+            this.Next.Text = "▶";
+            this.Next.UseVisualStyleBackColor = true;
             // 
             // Previous
             // 
             this.Previous.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Previous.Location = new System.Drawing.Point(417, 10);
+            this.Previous.Location = new System.Drawing.Point(434, 10);
             this.Previous.Name = "Previous";
-            this.Previous.Size = new System.Drawing.Size(26, 27);
+            this.Previous.Size = new System.Drawing.Size(27, 27);
             this.Previous.TabIndex = 9;
             this.Previous.Text = "◀";
             this.Previous.UseVisualStyleBackColor = true;
@@ -108,7 +143,7 @@
             // 
             // richTextBox1
             // 
-            this.richTextBox1.Location = new System.Drawing.Point(449, 10);
+            this.richTextBox1.Location = new System.Drawing.Point(467, 10);
             this.richTextBox1.Name = "richTextBox1";
             this.richTextBox1.Size = new System.Drawing.Size(273, 27);
             this.richTextBox1.TabIndex = 8;
@@ -116,20 +151,81 @@
             // 
             // panel2
             // 
-            this.panel2.Location = new System.Drawing.Point(12, 97);
+            this.panel2.Controls.Add(this.panel10);
+            this.panel2.Controls.Add(this.panel9);
+            this.panel2.Controls.Add(this.panel11);
+            this.panel2.Controls.Add(this.panel8);
+            this.panel2.Controls.Add(this.panel12);
+            this.panel2.Controls.Add(this.panel7);
+            this.panel2.Controls.Add(this.panel13);
+            this.panel2.Controls.Add(this.panel6);
+            this.panel2.Controls.Add(this.panel14);
+            this.panel2.Controls.Add(this.panel5);
+            this.panel2.Controls.Add(this.panel15);
+            this.panel2.Controls.Add(this.panel4);
+            this.panel2.Controls.Add(this.panel16);
+            this.panel2.Controls.Add(this.panel3);
+            this.panel2.Location = new System.Drawing.Point(12, 112);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(1176, 506);
+            this.panel2.Size = new System.Drawing.Size(1207, 645);
             this.panel2.TabIndex = 10;
+            this.panel2.Paint += new System.Windows.Forms.PaintEventHandler(this.panel2_Paint);
             // 
-            // Next
+            // panel9
             // 
-            this.Next.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Next.Location = new System.Drawing.Point(728, 10);
-            this.Next.Name = "Next";
-            this.Next.Size = new System.Drawing.Size(27, 27);
-            this.Next.TabIndex = 0;
-            this.Next.Text = "▶";
-            this.Next.UseVisualStyleBackColor = true;
+            this.panel9.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panel9.Location = new System.Drawing.Point(1044, 3);
+            this.panel9.Name = "panel9";
+            this.panel9.Size = new System.Drawing.Size(152, 256);
+            this.panel9.TabIndex = 1;
+            // 
+            // panel8
+            // 
+            this.panel8.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panel8.Location = new System.Drawing.Point(871, 3);
+            this.panel8.Name = "panel8";
+            this.panel8.Size = new System.Drawing.Size(152, 256);
+            this.panel8.TabIndex = 1;
+            // 
+            // panel7
+            // 
+            this.panel7.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panel7.Location = new System.Drawing.Point(698, 3);
+            this.panel7.Name = "panel7";
+            this.panel7.Size = new System.Drawing.Size(152, 256);
+            this.panel7.TabIndex = 1;
+            // 
+            // panel6
+            // 
+            this.panel6.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panel6.Location = new System.Drawing.Point(525, 3);
+            this.panel6.Name = "panel6";
+            this.panel6.Size = new System.Drawing.Size(152, 256);
+            this.panel6.TabIndex = 1;
+            // 
+            // panel5
+            // 
+            this.panel5.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panel5.Location = new System.Drawing.Point(352, 3);
+            this.panel5.Name = "panel5";
+            this.panel5.Size = new System.Drawing.Size(152, 256);
+            this.panel5.TabIndex = 1;
+            // 
+            // panel4
+            // 
+            this.panel4.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panel4.Location = new System.Drawing.Point(179, 3);
+            this.panel4.Name = "panel4";
+            this.panel4.Size = new System.Drawing.Size(152, 256);
+            this.panel4.TabIndex = 1;
+            // 
+            // panel3
+            // 
+            this.panel3.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panel3.Location = new System.Drawing.Point(6, 3);
+            this.panel3.Name = "panel3";
+            this.panel3.Size = new System.Drawing.Size(152, 256);
+            this.panel3.TabIndex = 0;
             // 
             // fileToolStripMenuItem
             // 
@@ -218,22 +314,177 @@
             this.workersToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(1200, 30);
+            this.menuStrip1.Size = new System.Drawing.Size(1231, 28);
             this.menuStrip1.TabIndex = 8;
             this.menuStrip1.Text = "menuStrip1";
+            // 
+            // textBox1
+            // 
+            this.textBox1.BackColor = this.BackColor;
+            this.textBox1.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.textBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.textBox1.Location = new System.Drawing.Point(18, 83);
+            this.textBox1.Name = "textBox1";
+            this.textBox1.ReadOnly = true;
+            this.textBox1.Size = new System.Drawing.Size(152, 23);
+            this.textBox1.TabIndex = 11;
+            this.textBox1.Text = "Sunday";
+            this.textBox1.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // textBox2
+            // 
+            this.textBox2.BackColor = this.BackColor;
+            this.textBox2.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.textBox2.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.textBox2.Location = new System.Drawing.Point(191, 84);
+            this.textBox2.Name = "textBox2";
+            this.textBox2.ReadOnly = true;
+            this.textBox2.Size = new System.Drawing.Size(152, 23);
+            this.textBox2.TabIndex = 12;
+            this.textBox2.Text = "Monday";
+            this.textBox2.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // textBox3
+            // 
+            this.textBox3.BackColor = this.BackColor;
+            this.textBox3.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.textBox3.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.textBox3.Location = new System.Drawing.Point(364, 84);
+            this.textBox3.Name = "textBox3";
+            this.textBox3.ReadOnly = true;
+            this.textBox3.Size = new System.Drawing.Size(152, 23);
+            this.textBox3.TabIndex = 13;
+            this.textBox3.Text = "Tuesday";
+            this.textBox3.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // textBox4
+            // 
+            this.textBox4.BackColor = this.BackColor;
+            this.textBox4.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.textBox4.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.textBox4.Location = new System.Drawing.Point(537, 85);
+            this.textBox4.Name = "textBox4";
+            this.textBox4.ReadOnly = true;
+            this.textBox4.Size = new System.Drawing.Size(152, 23);
+            this.textBox4.TabIndex = 14;
+            this.textBox4.Text = "Wednesday";
+            this.textBox4.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // textBox5
+            // 
+            this.textBox5.BackColor = this.BackColor;
+            this.textBox5.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.textBox5.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.textBox5.Location = new System.Drawing.Point(710, 84);
+            this.textBox5.Name = "textBox5";
+            this.textBox5.ReadOnly = true;
+            this.textBox5.Size = new System.Drawing.Size(152, 23);
+            this.textBox5.TabIndex = 15;
+            this.textBox5.Text = "Thursday";
+            this.textBox5.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // textBox6
+            // 
+            this.textBox6.BackColor = this.BackColor;
+            this.textBox6.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.textBox6.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.textBox6.Location = new System.Drawing.Point(883, 84);
+            this.textBox6.Name = "textBox6";
+            this.textBox6.ReadOnly = true;
+            this.textBox6.Size = new System.Drawing.Size(152, 23);
+            this.textBox6.TabIndex = 16;
+            this.textBox6.Text = "Friday";
+            this.textBox6.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // textBox7
+            // 
+            this.textBox7.BackColor = this.BackColor;
+            this.textBox7.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.textBox7.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.textBox7.Location = new System.Drawing.Point(1056, 83);
+            this.textBox7.Name = "textBox7";
+            this.textBox7.ReadOnly = true;
+            this.textBox7.Size = new System.Drawing.Size(152, 23);
+            this.textBox7.TabIndex = 17;
+            this.textBox7.Text = "Saturday";
+            this.textBox7.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // panel10
+            // 
+            this.panel10.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panel10.Location = new System.Drawing.Point(1044, 265);
+            this.panel10.Name = "panel10";
+            this.panel10.Size = new System.Drawing.Size(152, 377);
+            this.panel10.TabIndex = 3;
+            // 
+            // panel11
+            // 
+            this.panel11.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panel11.Location = new System.Drawing.Point(871, 265);
+            this.panel11.Name = "panel11";
+            this.panel11.Size = new System.Drawing.Size(152, 377);
+            this.panel11.TabIndex = 4;
+            // 
+            // panel12
+            // 
+            this.panel12.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panel12.Location = new System.Drawing.Point(698, 265);
+            this.panel12.Name = "panel12";
+            this.panel12.Size = new System.Drawing.Size(152, 377);
+            this.panel12.TabIndex = 5;
+            // 
+            // panel13
+            // 
+            this.panel13.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panel13.Location = new System.Drawing.Point(525, 265);
+            this.panel13.Name = "panel13";
+            this.panel13.Size = new System.Drawing.Size(152, 377);
+            this.panel13.TabIndex = 6;
+            // 
+            // panel14
+            // 
+            this.panel14.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panel14.Location = new System.Drawing.Point(352, 265);
+            this.panel14.Name = "panel14";
+            this.panel14.Size = new System.Drawing.Size(152, 377);
+            this.panel14.TabIndex = 7;
+            // 
+            // panel15
+            // 
+            this.panel15.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panel15.Location = new System.Drawing.Point(179, 265);
+            this.panel15.Name = "panel15";
+            this.panel15.Size = new System.Drawing.Size(152, 377);
+            this.panel15.TabIndex = 8;
+            // 
+            // panel16
+            // 
+            this.panel16.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panel16.Location = new System.Drawing.Point(6, 265);
+            this.panel16.Name = "panel16";
+            this.panel16.Size = new System.Drawing.Size(152, 377);
+            this.panel16.TabIndex = 2;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1200, 674);
+            this.ClientSize = new System.Drawing.Size(1231, 769);
+            this.Controls.Add(this.textBox7);
+            this.Controls.Add(this.textBox6);
+            this.Controls.Add(this.textBox5);
+            this.Controls.Add(this.textBox4);
+            this.Controls.Add(this.textBox3);
+            this.Controls.Add(this.textBox2);
+            this.Controls.Add(this.textBox1);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "Form1";
-            this.Text = "Form1";
+            this.Text = "Dpot Scheduler v1.0";
             this.panel1.ResumeLayout(false);
+            this.panel2.ResumeLayout(false);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.ResumeLayout(false);
@@ -262,6 +513,27 @@
         private System.Windows.Forms.RichTextBox richTextBox1;
         private System.Windows.Forms.Button Previous;
         private System.Windows.Forms.Button Next;
+        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.TextBox textBox2;
+        private System.Windows.Forms.TextBox textBox3;
+        private System.Windows.Forms.TextBox textBox4;
+        private System.Windows.Forms.TextBox textBox5;
+        private System.Windows.Forms.TextBox textBox6;
+        private System.Windows.Forms.TextBox textBox7;
+        private Panel panel3;
+        private Panel panel9;
+        private Panel panel8;
+        private Panel panel7;
+        private Panel panel6;
+        private Panel panel5;
+        private Panel panel4;
+        private Panel panel10;
+        private Panel panel11;
+        private Panel panel12;
+        private Panel panel13;
+        private Panel panel14;
+        private Panel panel15;
+        private Panel panel16;
     }
 }
 
