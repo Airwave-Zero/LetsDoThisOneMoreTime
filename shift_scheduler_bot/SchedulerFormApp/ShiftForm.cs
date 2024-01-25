@@ -21,5 +21,10 @@ namespace scheduler_test1
         {
 
         }
+
+        private void ShiftForm_Load(object sender, EventArgs e)
+        {
+
+        }
     }
 }

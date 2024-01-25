@@ -71,6 +71,7 @@ namespace scheduler_test1
             this.textBox5 = new System.Windows.Forms.TextBox();
             this.textBox6 = new System.Windows.Forms.TextBox();
             this.textBox7 = new System.Windows.Forms.TextBox();
+            this.button1 = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.menuStrip1.SuspendLayout();
@@ -78,10 +79,9 @@ namespace scheduler_test1
             // 
             // button6
             // 
-            this.button6.Enabled = false;
-            this.button6.Location = new System.Drawing.Point(928, 10);
+            this.button6.Location = new System.Drawing.Point(847, 13);
             this.button6.Name = "button6";
-            this.button6.Size = new System.Drawing.Size(95, 27);
+            this.button6.Size = new System.Drawing.Size(107, 24);
             this.button6.TabIndex = 7;
             this.button6.Text = "WORKERS";
             this.button6.UseVisualStyleBackColor = true;
@@ -89,16 +89,17 @@ namespace scheduler_test1
             // 
             // button4
             // 
-            this.button4.Location = new System.Drawing.Point(1041, 10);
+            this.button4.Location = new System.Drawing.Point(1004, 13);
             this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(152, 27);
+            this.button4.Size = new System.Drawing.Size(188, 24);
             this.button4.TabIndex = 5;
-            this.button4.Text = "Generate Schedule";
+            this.button4.Text = "GENERATE SCHEDULE";
             this.button4.UseVisualStyleBackColor = true;
             this.button4.Click += new System.EventHandler(this.button4_Click);
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.button1);
             this.panel1.Controls.Add(this.Next);
             this.panel1.Controls.Add(this.Previous);
             this.panel1.Controls.Add(this.richTextBox1);
@@ -123,7 +124,7 @@ namespace scheduler_test1
             // Previous
             // 
             this.Previous.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Previous.Location = new System.Drawing.Point(434, 10);
+            this.Previous.Location = new System.Drawing.Point(433, 10);
             this.Previous.Name = "Previous";
             this.Previous.Size = new System.Drawing.Size(27, 27);
             this.Previous.TabIndex = 9;
@@ -144,11 +145,11 @@ namespace scheduler_test1
             // 
             // button5
             // 
-            this.button5.Location = new System.Drawing.Point(815, 10);
+            this.button5.Location = new System.Drawing.Point(233, 13);
             this.button5.Name = "button5";
-            this.button5.Size = new System.Drawing.Size(95, 27);
+            this.button5.Size = new System.Drawing.Size(125, 24);
             this.button5.TabIndex = 6;
-            this.button5.Text = "SHIFTS";
+            this.button5.Text = "EDIT SHIFT";
             this.button5.UseVisualStyleBackColor = true;
             this.button5.Click += new System.EventHandler(this.button5_Click);
             // 
@@ -461,6 +462,15 @@ namespace scheduler_test1
             this.textBox7.Text = "Saturday";
             this.textBox7.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(33, 13);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(125, 24);
+            this.button1.TabIndex = 10;
+            this.button1.Text = "ADD SHIFT";
+            this.button1.UseVisualStyleBackColor = true;
+            // 
             // MainUIForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -529,6 +539,7 @@ namespace scheduler_test1
         private Panel panel15;
         private Panel panel16;
         private Button button5;
+        private Button button1;
     }
 }
 
