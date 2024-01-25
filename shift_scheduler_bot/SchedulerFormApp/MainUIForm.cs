@@ -24,12 +24,14 @@ namespace scheduler_test1
 
         private void button6_Click(object sender, EventArgs e)
         {
-
+            WorkerForm wForm = new WorkerForm();
+            wForm.Show();
         }
 
         private void button5_Click(object sender, EventArgs e)
         {
-
+            ShiftForm sForm = new ShiftForm();
+            sForm.Show();
         }
 
         private void exportScheduleToolStripMenuItem_Click(object sender, EventArgs e)
@@ -49,14 +51,5 @@ namespace scheduler_test1
 
         }
 
-        private void Form1_Load_2(object sender, EventArgs e)
-        {
-
-        }
-
-        private void viewWorkersToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-
-        }
     }
 }
