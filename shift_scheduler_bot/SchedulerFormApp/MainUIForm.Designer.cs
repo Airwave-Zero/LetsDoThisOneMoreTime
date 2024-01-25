@@ -295,7 +295,7 @@ namespace scheduler_test1
             this.exportScheduleToolStripMenuItem,
             this.saveScheduleToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            this.fileToolStripMenuItem.Size = new System.Drawing.Size(46, 24);
+            this.fileToolStripMenuItem.Size = new System.Drawing.Size(46, 26);
             this.fileToolStripMenuItem.Text = "File";
             // 
             // loadScheduleToolStripMenuItem
@@ -332,31 +332,31 @@ namespace scheduler_test1
             this.importWorkersToolStripMenuItem1,
             this.exportWorkersToolStripMenuItem1});
             this.workersToolStripMenuItem.Name = "workersToolStripMenuItem";
-            this.workersToolStripMenuItem.Size = new System.Drawing.Size(76, 24);
+            this.workersToolStripMenuItem.Size = new System.Drawing.Size(76, 26);
             this.workersToolStripMenuItem.Text = "Workers";
             // 
             // addEditRulesToolStripMenuItem
             // 
             this.addEditRulesToolStripMenuItem.Name = "addEditRulesToolStripMenuItem";
-            this.addEditRulesToolStripMenuItem.Size = new System.Drawing.Size(219, 26);
+            this.addEditRulesToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
             this.addEditRulesToolStripMenuItem.Text = "Add/Edit Rules";
             // 
             // addViewDaysOffToolStripMenuItem
             // 
             this.addViewDaysOffToolStripMenuItem.Name = "addViewDaysOffToolStripMenuItem";
-            this.addViewDaysOffToolStripMenuItem.Size = new System.Drawing.Size(219, 26);
+            this.addViewDaysOffToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
             this.addViewDaysOffToolStripMenuItem.Text = "Add/View Days Off";
             // 
             // importWorkersToolStripMenuItem1
             // 
             this.importWorkersToolStripMenuItem1.Name = "importWorkersToolStripMenuItem1";
-            this.importWorkersToolStripMenuItem1.Size = new System.Drawing.Size(219, 26);
+            this.importWorkersToolStripMenuItem1.Size = new System.Drawing.Size(224, 26);
             this.importWorkersToolStripMenuItem1.Text = "Import Workers";
             // 
             // exportWorkersToolStripMenuItem1
             // 
             this.exportWorkersToolStripMenuItem1.Name = "exportWorkersToolStripMenuItem1";
-            this.exportWorkersToolStripMenuItem1.Size = new System.Drawing.Size(219, 26);
+            this.exportWorkersToolStripMenuItem1.Size = new System.Drawing.Size(224, 26);
             this.exportWorkersToolStripMenuItem1.Text = "Export Workers";
             // 
             // menuStrip1
@@ -367,7 +367,7 @@ namespace scheduler_test1
             this.workersToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(1231, 28);
+            this.menuStrip1.Size = new System.Drawing.Size(1231, 30);
             this.menuStrip1.TabIndex = 8;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -376,7 +376,7 @@ namespace scheduler_test1
             this.textBox1.BackColor = this.BackColor;
             this.textBox1.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.textBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBox1.Location = new System.Drawing.Point(18, 83);
+            this.textBox1.Location = new System.Drawing.Point(1058, 83);
             this.textBox1.Name = "textBox1";
             this.textBox1.ReadOnly = true;
             this.textBox1.Size = new System.Drawing.Size(152, 23);
@@ -389,7 +389,7 @@ namespace scheduler_test1
             this.textBox2.BackColor = this.BackColor;
             this.textBox2.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.textBox2.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBox2.Location = new System.Drawing.Point(191, 84);
+            this.textBox2.Location = new System.Drawing.Point(20, 83);
             this.textBox2.Name = "textBox2";
             this.textBox2.ReadOnly = true;
             this.textBox2.Size = new System.Drawing.Size(152, 23);
@@ -402,7 +402,7 @@ namespace scheduler_test1
             this.textBox3.BackColor = this.BackColor;
             this.textBox3.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.textBox3.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBox3.Location = new System.Drawing.Point(364, 84);
+            this.textBox3.Location = new System.Drawing.Point(193, 83);
             this.textBox3.Name = "textBox3";
             this.textBox3.ReadOnly = true;
             this.textBox3.Size = new System.Drawing.Size(152, 23);
@@ -415,7 +415,7 @@ namespace scheduler_test1
             this.textBox4.BackColor = this.BackColor;
             this.textBox4.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.textBox4.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBox4.Location = new System.Drawing.Point(537, 85);
+            this.textBox4.Location = new System.Drawing.Point(366, 83);
             this.textBox4.Name = "textBox4";
             this.textBox4.ReadOnly = true;
             this.textBox4.Size = new System.Drawing.Size(152, 23);
@@ -428,7 +428,7 @@ namespace scheduler_test1
             this.textBox5.BackColor = this.BackColor;
             this.textBox5.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.textBox5.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBox5.Location = new System.Drawing.Point(710, 84);
+            this.textBox5.Location = new System.Drawing.Point(539, 83);
             this.textBox5.Name = "textBox5";
             this.textBox5.ReadOnly = true;
             this.textBox5.Size = new System.Drawing.Size(152, 23);
@@ -441,7 +441,7 @@ namespace scheduler_test1
             this.textBox6.BackColor = this.BackColor;
             this.textBox6.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.textBox6.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBox6.Location = new System.Drawing.Point(883, 84);
+            this.textBox6.Location = new System.Drawing.Point(712, 83);
             this.textBox6.Name = "textBox6";
             this.textBox6.ReadOnly = true;
             this.textBox6.Size = new System.Drawing.Size(152, 23);
@@ -454,7 +454,7 @@ namespace scheduler_test1
             this.textBox7.BackColor = this.BackColor;
             this.textBox7.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.textBox7.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBox7.Location = new System.Drawing.Point(1056, 83);
+            this.textBox7.Location = new System.Drawing.Point(885, 83);
             this.textBox7.Name = "textBox7";
             this.textBox7.ReadOnly = true;
             this.textBox7.Size = new System.Drawing.Size(152, 23);

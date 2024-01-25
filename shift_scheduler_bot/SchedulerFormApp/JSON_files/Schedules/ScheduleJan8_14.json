@@ -1,0 +1,95 @@
+{
+  "Schedule": {
+    "Month": "January",
+    "Start": 8,
+    "End": 14,
+    "Days": {
+      "Monday": {
+        "Date": 8,
+        "Workers": {
+          [ "Nikki", 11, 15 ],
+          [ "Gabriel", 11, 15 ],
+          [ "Nathan", 12, 15 ],
+          [ "Sydnie", 16, 21.5 ],
+          [ "Dyllin", 16, 21.5 ],
+          [ "Vivian", 17, "CL" ],
+          [ "Ashley", 17, "CL" ]
+        }
+      },
+      "Tuesday": {
+        "Date": 9,
+        "Workers": {
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        }
+      },
+      "Wednesday": {
+        "Date": 10,
+        "Workers": {
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        }
+      },
+      "Thursday": {
+        "Date": 11,
+        "Workers": {
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        }
+      },
+      "Friday": {
+        "Date": 12,
+        "Workers": {
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        }
+      },
+      "Saturday": {
+        "Date": 13,
+        "Workers": {
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        }
+      },
+      "Sunday": {
+        "Date": 14,
+        "Workers": {
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        }
+      }
+    }
+  }
+}
