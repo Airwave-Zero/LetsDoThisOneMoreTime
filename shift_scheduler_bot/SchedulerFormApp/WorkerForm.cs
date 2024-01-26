@@ -30,6 +30,8 @@ namespace scheduler_test1
         {
             string jsonString = File.ReadAllText("C:/Users/bboyf/OneDrive/Desktop/CODE/LetsDoThisOneMoreTime/shift_scheduler_bot/SchedulerFormApp/JSON_files/Workers.json");
             dataGridView1.DataSource = JsonConvert.DeserializeObject<DataTable>(jsonString);
+            dataGridView1.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
+            dataGridView1.DefaultCellStyle.WrapMode = DataGridViewTriState.True;
         }
     }
 }
