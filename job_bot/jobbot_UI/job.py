@@ -15,8 +15,7 @@ import xml.etree.ElementTree as ET
 from oauth2client.service_account import ServiceAccountCredentials
 
 scope =  ["https://spreadsheets.google.com/feeds", 'https://www.googleapis.com/auth/spreadsheets', "https://www.googleapis.com/auth/drive.file", "https://www.googleapis.com/auth/drive"]
-creds = ServiceAccountCredentials.from_json_keyfile_name('C:/Users/bboyf/OneDrive/Desktop/CODE/LetsDoThisOneMoreTime/job_bot/jobbot_UI/dec2023project-da899e9caf46.json', scope)
-#creds = ServiceAccountCredentials.from_json_keyfile_name('personal_API_key.json', scope) # replace with personal API key 
+creds = ServiceAccountCredentials.from_json_keyfile_name('personal_API_key.json', scope) # replace with personal API key 
 client = gspread.authorize(creds)
 
 def initialize():
@@ -92,8 +91,6 @@ def signUserIn(driver, signInCheck, jobSite):
     if not userLoggedIn:
         if signInCheck == 1:
             print("doing the manual route with webdriver wait")       
-            #https://stackoverflow.com/questions/16927354/how-can-i-make-selenium-python-wait-for-the-user-to-login-before-continuing-to-r
-            #https://selenium-python.readthedocs.io/waits.html
             try:
                 if isIndeed:
                     element = WebDriverWait(driver, 20).until(
@@ -143,13 +140,14 @@ def applyToJobs(jobsList, driver, signInCheck):
     print('got to here')
     time.sleep(5)
     # check if already applied to
-    driver.switch_to.window(driver.window_handles[len(driver.window_handles)-1])
+    '''driver.switch_to.window(driver.window_handles[len(driver.window_handles)-1])
     save = driver.find_element(By.ID, 'saveJobButtonContainer')
     if save == 'Applied':
         driver.close()
         driver.switch_to.window(driver.window_handles[0])
         #driver.get(jobsList[eachJobLink]) # gets the next page
-
+    '''
+    
 def runJobScript():
     print("Now opening Chrome instance...")
     driver = initialize() # creates the chrome window to use
