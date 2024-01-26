@@ -90,7 +90,7 @@ def signUserIn(driver, signInCheck, jobSite):
     
     if not userLoggedIn:
         if signInCheck == 1:
-            print("doing the manual route with webdriver wait")       
+            print("doing the manual route with webdriver wait")
             try:
                 if isIndeed:
                     element = WebDriverWait(driver, 20).until(
