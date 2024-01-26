@@ -1,16 +1,22 @@
-{
-    "Constraints": {
-            "Constraint 1": {
-                "Terms": "Everyone 1-5 shifts per week"
-            },
-            "Constraint 2": {
-                "Terms": "Vivian + Dylan together"
-            },
-            "Constraint 3": {
-                "Terms": "Shu double shifts"
-            },
-            "Constraint 4": {
-                "Terms": "1+ experienced on holidays"
-            }
-    }
-}
+[
+  {
+    "Number": 1,
+    "Terms": ">1"
+  },
+  {
+    "Number": 2,
+    "Terms": "<4"
+  }
+  {
+    "Number": 3,
+    "Terms": "Vivian+Dylan"
+  },
+  {
+    "Number": 4,
+    "Terms": "ShuDouble"
+  },
+  {
+    "Number": 5,
+    "Terms": "1+Experienced"
+  }
+]

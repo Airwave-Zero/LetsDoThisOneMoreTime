@@ -20,3 +20,6 @@ C:\Users\bboyf\OneDrive\Desktop\CODE\LetsDoThisOneMoreTime\shift_scheduler_bot\S
 C:\Users\bboyf\OneDrive\Desktop\CODE\LetsDoThisOneMoreTime\shift_scheduler_bot\SchedulerFormApp\obj\Debug\scheduler_test1.MainUIForm.resources
 C:\Users\bboyf\OneDrive\Desktop\CODE\LetsDoThisOneMoreTime\shift_scheduler_bot\SchedulerFormApp\obj\Debug\scheduler_test1.ShiftForm.resources
 C:\Users\bboyf\OneDrive\Desktop\CODE\LetsDoThisOneMoreTime\shift_scheduler_bot\SchedulerFormApp\obj\Debug\scheduler_test1.WorkerForm.resources
+C:\Users\bboyf\OneDrive\Desktop\CODE\LetsDoThisOneMoreTime\shift_scheduler_bot\SchedulerFormApp\bin\Debug\Newtonsoft.Json.dll
+C:\Users\bboyf\OneDrive\Desktop\CODE\LetsDoThisOneMoreTime\shift_scheduler_bot\SchedulerFormApp\bin\Debug\Newtonsoft.Json.xml
+C:\Users\bboyf\OneDrive\Desktop\CODE\LetsDoThisOneMoreTime\shift_scheduler_bot\SchedulerFormApp\obj\Debug\scheduler_test1.csproj.CopyComplete
