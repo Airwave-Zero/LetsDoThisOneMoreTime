@@ -36,13 +36,13 @@ namespace scheduler_test1
 
         private void button6_Click(object sender, EventArgs e)
         {
-            WorkerForm wForm = new WorkerForm();
+            WorkerForm wForm = new WorkerForm(appWorkersFileName);
             wForm.Show();
         }
 
         private void button5_Click(object sender, EventArgs e)
         {
-            ShiftForm sForm = new ShiftForm();
+            ShiftForm sForm = new ShiftForm(appWorkersFileName);
             sForm.Show();
         }
 

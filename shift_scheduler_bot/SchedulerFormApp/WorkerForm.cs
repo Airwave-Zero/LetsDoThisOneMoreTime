@@ -22,10 +22,13 @@ namespace scheduler_test1
         public WorkerForm(string fileName = "")
         {
             workerFileName = fileName;
-            if (fileName != "")
-            { 
-                workerFileRaw = File.ReadAllText(workerFileName); 
+            MessageBox.Show("Attempted to load in: " + fileName);
+            if (fileName == "")
+            {
+                MessageBox.Show("No file detected, loading in default");
+                workerFileName = "C:/Users/bboyf/OneDrive/Desktop/CODE/LetsDoThisOneMoreTime/shift_scheduler_bot/SchedulerFormApp/JSON_files/Workers.json";
             }
+            workerFileRaw = File.ReadAllText(workerFileName);
             InitializeComponent();
         }
 
@@ -36,10 +39,13 @@ namespace scheduler_test1
 
         private void WorkerForm_Load(object sender, EventArgs e)
         {
-            string jsonString = File.ReadAllText("C:/Users/bboyf/OneDrive/Desktop/CODE/LetsDoThisOneMoreTime/shift_scheduler_bot/SchedulerFormApp/JSON_files/Workers.json");
-            dataGridView1.DataSource = JsonConvert.DeserializeObject<DataTable>(jsonString);
-            dataGridView1.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
-            dataGridView1.DefaultCellStyle.WrapMode = DataGridViewTriState.True;
+            if(workerFileName != "")
+            {
+                string jsonString = File.ReadAllText(workerFileName);
+                dataGridView1.DataSource = JsonConvert.DeserializeObject<DataTable>(jsonString);
+                dataGridView1.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
+                dataGridView1.DefaultCellStyle.WrapMode = DataGridViewTriState.True;
+            }
         }
         
         private void SaveButton_Click(object sender, EventArgs e)
