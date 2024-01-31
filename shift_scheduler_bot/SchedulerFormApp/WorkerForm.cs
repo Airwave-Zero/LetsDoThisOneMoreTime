@@ -63,6 +63,7 @@ namespace scheduler_test1
                 if (saveFileDialog1.FileName != "")
                 {
                     File.WriteAllText(saveFileDialog1.FileName, output);
+                    this.Close();
                 }
             }
             else
@@ -78,6 +79,14 @@ namespace scheduler_test1
             this.Close();
         }
 
+        private void WorkerForm_EscapeKeyDown(object sender, KeyEventArgs e)
+        {
+            // Shortcut for closing the changes window
+            if (e.KeyCode == Keys.Escape)
+            {
+                this.Close();
+            }
+        }
         
     }
 }

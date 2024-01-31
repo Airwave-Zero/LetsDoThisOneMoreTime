@@ -55,7 +55,7 @@ namespace scheduler_test1
             this.panel16 = new System.Windows.Forms.Panel();
             this.panel3 = new System.Windows.Forms.Panel();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.loadScheduleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.importScheduleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportScheduleAsJSONToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportScheduleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveScheduleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -299,7 +299,7 @@ namespace scheduler_test1
             // fileToolStripMenuItem
             // 
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.loadScheduleToolStripMenuItem,
+            this.importScheduleToolStripMenuItem,
             this.exportScheduleAsJSONToolStripMenuItem,
             this.exportScheduleToolStripMenuItem,
             this.saveScheduleToolStripMenuItem});
@@ -307,11 +307,12 @@ namespace scheduler_test1
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(46, 24);
             this.fileToolStripMenuItem.Text = "File";
             // 
-            // loadScheduleToolStripMenuItem
+            // importScheduleToolStripMenuItem
             // 
-            this.loadScheduleToolStripMenuItem.Name = "loadScheduleToolStripMenuItem";
-            this.loadScheduleToolStripMenuItem.Size = new System.Drawing.Size(256, 26);
-            this.loadScheduleToolStripMenuItem.Text = "Import Schedule";
+            this.importScheduleToolStripMenuItem.Name = "importScheduleToolStripMenuItem";
+            this.importScheduleToolStripMenuItem.Size = new System.Drawing.Size(256, 26);
+            this.importScheduleToolStripMenuItem.Text = "Import Schedule";
+            this.importScheduleToolStripMenuItem.Click += new System.EventHandler(this.importScheduleToolStripMenuItem_Click);
             // 
             // exportScheduleAsJSONToolStripMenuItem
             // 
@@ -347,26 +348,26 @@ namespace scheduler_test1
             // addEditRulesToolStripMenuItem
             // 
             this.addEditRulesToolStripMenuItem.Name = "addEditRulesToolStripMenuItem";
-            this.addEditRulesToolStripMenuItem.Size = new System.Drawing.Size(219, 26);
+            this.addEditRulesToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
             this.addEditRulesToolStripMenuItem.Text = "Add/Edit Rules";
             // 
             // addViewDaysOffToolStripMenuItem
             // 
             this.addViewDaysOffToolStripMenuItem.Name = "addViewDaysOffToolStripMenuItem";
-            this.addViewDaysOffToolStripMenuItem.Size = new System.Drawing.Size(219, 26);
+            this.addViewDaysOffToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
             this.addViewDaysOffToolStripMenuItem.Text = "Add/View Days Off";
             // 
             // importWorkersToolStripMenuItem1
             // 
             this.importWorkersToolStripMenuItem1.Name = "importWorkersToolStripMenuItem1";
-            this.importWorkersToolStripMenuItem1.Size = new System.Drawing.Size(219, 26);
+            this.importWorkersToolStripMenuItem1.Size = new System.Drawing.Size(224, 26);
             this.importWorkersToolStripMenuItem1.Text = "Import Workers";
             this.importWorkersToolStripMenuItem1.Click += new System.EventHandler(this.importWorkersToolStripMenuItem1_Click);
             // 
             // exportWorkersToolStripMenuItem1
             // 
             this.exportWorkersToolStripMenuItem1.Name = "exportWorkersToolStripMenuItem1";
-            this.exportWorkersToolStripMenuItem1.Size = new System.Drawing.Size(219, 26);
+            this.exportWorkersToolStripMenuItem1.Size = new System.Drawing.Size(224, 26);
             this.exportWorkersToolStripMenuItem1.Text = "Export Workers";
             this.exportWorkersToolStripMenuItem1.Click += new System.EventHandler(this.exportWorkersToolStripMenuItem1_Click);
             // 
@@ -507,7 +508,7 @@ namespace scheduler_test1
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem loadScheduleToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem importScheduleToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exportScheduleAsJSONToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exportScheduleToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveScheduleToolStripMenuItem;
