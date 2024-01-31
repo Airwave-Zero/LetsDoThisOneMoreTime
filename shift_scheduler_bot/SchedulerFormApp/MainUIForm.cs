@@ -29,18 +29,22 @@ namespace scheduler_test1
         public string appDaysOffFileName = "";
         public string appDaysOffRawString = "";
 
-        private void button4_Click(object sender, EventArgs e)
+        private void GenerateSchedule_Click(object sender, EventArgs e)
         {
 
         }
 
-        private void button6_Click(object sender, EventArgs e)
+        private void WorkerForm_Click(object sender, EventArgs e)
         {
             WorkerForm wForm = new WorkerForm(appWorkersFileName);
             wForm.Show();
         }
-
-        private void button5_Click(object sender, EventArgs e)
+        private void Add_Shift_Click(object sender, EventArgs e)
+        {
+            ShiftForm sForm = new ShiftForm(appWorkersFileName);
+            sForm.Show();
+        }
+        private void EditShift_Click(object sender, EventArgs e)
         {
             ShiftForm sForm = new ShiftForm(appWorkersFileName);
             sForm.Show();
@@ -89,6 +93,8 @@ namespace scheduler_test1
             string exportedFileName = Utils.exportJSONFile(appWorkersRawString);
             MessageBox.Show("Wrote to file located at: " + exportedFileName);
         }
+
+        
     }
 
 }

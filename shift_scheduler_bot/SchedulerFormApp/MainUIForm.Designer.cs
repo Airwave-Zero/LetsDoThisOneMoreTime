@@ -31,14 +31,14 @@ namespace scheduler_test1
         /// </summary>
         private void InitializeComponent()
         {
-            this.button6 = new System.Windows.Forms.Button();
+            this.Workers_Button = new System.Windows.Forms.Button();
             this.button4 = new System.Windows.Forms.Button();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.button1 = new System.Windows.Forms.Button();
+            this.Add_Shift = new System.Windows.Forms.Button();
             this.Next = new System.Windows.Forms.Button();
             this.Previous = new System.Windows.Forms.Button();
             this.richTextBox1 = new System.Windows.Forms.RichTextBox();
-            this.button5 = new System.Windows.Forms.Button();
+            this.Edit_Shift = new System.Windows.Forms.Button();
             this.panel2 = new System.Windows.Forms.Panel();
             this.panel10 = new System.Windows.Forms.Panel();
             this.panel9 = new System.Windows.Forms.Panel();
@@ -77,15 +77,15 @@ namespace scheduler_test1
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
-            // button6
+            // Workers_Button
             // 
-            this.button6.Location = new System.Drawing.Point(847, 13);
-            this.button6.Name = "button6";
-            this.button6.Size = new System.Drawing.Size(107, 24);
-            this.button6.TabIndex = 7;
-            this.button6.Text = "WORKERS";
-            this.button6.UseVisualStyleBackColor = true;
-            this.button6.Click += new System.EventHandler(this.button6_Click);
+            this.Workers_Button.Location = new System.Drawing.Point(847, 13);
+            this.Workers_Button.Name = "Workers_Button";
+            this.Workers_Button.Size = new System.Drawing.Size(107, 24);
+            this.Workers_Button.TabIndex = 7;
+            this.Workers_Button.Text = "WORKERS";
+            this.Workers_Button.UseVisualStyleBackColor = true;
+            this.Workers_Button.Click += new System.EventHandler(this.WorkerForm_Click);
             // 
             // button4
             // 
@@ -95,30 +95,31 @@ namespace scheduler_test1
             this.button4.TabIndex = 5;
             this.button4.Text = "GENERATE SCHEDULE";
             this.button4.UseVisualStyleBackColor = true;
-            this.button4.Click += new System.EventHandler(this.button4_Click);
+            this.button4.Click += new System.EventHandler(this.GenerateSchedule_Click);
             // 
             // panel1
             // 
-            this.panel1.Controls.Add(this.button1);
+            this.panel1.Controls.Add(this.Add_Shift);
             this.panel1.Controls.Add(this.Next);
             this.panel1.Controls.Add(this.Previous);
             this.panel1.Controls.Add(this.richTextBox1);
-            this.panel1.Controls.Add(this.button5);
+            this.panel1.Controls.Add(this.Edit_Shift);
             this.panel1.Controls.Add(this.button4);
-            this.panel1.Controls.Add(this.button6);
+            this.panel1.Controls.Add(this.Workers_Button);
             this.panel1.Location = new System.Drawing.Point(12, 31);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(1207, 46);
             this.panel1.TabIndex = 9;
             // 
-            // button1
+            // Add_Shift
             // 
-            this.button1.Location = new System.Drawing.Point(33, 13);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(125, 24);
-            this.button1.TabIndex = 10;
-            this.button1.Text = "ADD SHIFT";
-            this.button1.UseVisualStyleBackColor = true;
+            this.Add_Shift.Location = new System.Drawing.Point(33, 13);
+            this.Add_Shift.Name = "Add_Shift";
+            this.Add_Shift.Size = new System.Drawing.Size(125, 24);
+            this.Add_Shift.TabIndex = 10;
+            this.Add_Shift.Text = "ADD SHIFT";
+            this.Add_Shift.UseVisualStyleBackColor = true;
+            this.Add_Shift.Click += new System.EventHandler(this.Add_Shift_Click);
             // 
             // Next
             // 
@@ -152,15 +153,15 @@ namespace scheduler_test1
             this.richTextBox1.TabIndex = 8;
             this.richTextBox1.Text = "Month D1-D7 Year";
             // 
-            // button5
+            // Edit_Shift
             // 
-            this.button5.Location = new System.Drawing.Point(233, 13);
-            this.button5.Name = "button5";
-            this.button5.Size = new System.Drawing.Size(125, 24);
-            this.button5.TabIndex = 6;
-            this.button5.Text = "EDIT SHIFT";
-            this.button5.UseVisualStyleBackColor = true;
-            this.button5.Click += new System.EventHandler(this.button5_Click);
+            this.Edit_Shift.Location = new System.Drawing.Point(233, 13);
+            this.Edit_Shift.Name = "Edit_Shift";
+            this.Edit_Shift.Size = new System.Drawing.Size(125, 24);
+            this.Edit_Shift.TabIndex = 6;
+            this.Edit_Shift.Text = "EDIT SHIFT";
+            this.Edit_Shift.UseVisualStyleBackColor = true;
+            this.Edit_Shift.Click += new System.EventHandler(this.EditShift_Click);
             // 
             // panel2
             // 
@@ -322,7 +323,7 @@ namespace scheduler_test1
             // 
             this.exportScheduleToolStripMenuItem.Name = "exportScheduleToolStripMenuItem";
             this.exportScheduleToolStripMenuItem.Size = new System.Drawing.Size(256, 26);
-            this.exportScheduleToolStripMenuItem.Text = "Export Schedule as PNG ";
+            this.exportScheduleToolStripMenuItem.Text = "Export Schedule as PNG";
             this.exportScheduleToolStripMenuItem.Click += new System.EventHandler(this.exportScheduleToolStripMenuItem_Click);
             // 
             // saveScheduleToolStripMenuItem
@@ -358,14 +359,14 @@ namespace scheduler_test1
             // importWorkersToolStripMenuItem1
             // 
             this.importWorkersToolStripMenuItem1.Name = "importWorkersToolStripMenuItem1";
-            this.importWorkersToolStripMenuItem1.Size = new System.Drawing.Size(224, 26);
+            this.importWorkersToolStripMenuItem1.Size = new System.Drawing.Size(219, 26);
             this.importWorkersToolStripMenuItem1.Text = "Import Workers";
             this.importWorkersToolStripMenuItem1.Click += new System.EventHandler(this.importWorkersToolStripMenuItem1_Click);
             // 
             // exportWorkersToolStripMenuItem1
             // 
             this.exportWorkersToolStripMenuItem1.Name = "exportWorkersToolStripMenuItem1";
-            this.exportWorkersToolStripMenuItem1.Size = new System.Drawing.Size(224, 26);
+            this.exportWorkersToolStripMenuItem1.Size = new System.Drawing.Size(219, 26);
             this.exportWorkersToolStripMenuItem1.Text = "Export Workers";
             this.exportWorkersToolStripMenuItem1.Click += new System.EventHandler(this.exportWorkersToolStripMenuItem1_Click);
             // 
@@ -501,7 +502,7 @@ namespace scheduler_test1
         }
 
         #endregion
-        private System.Windows.Forms.Button button6;
+        private System.Windows.Forms.Button Workers_Button;
         private System.Windows.Forms.Button button4;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Panel panel2;
@@ -540,8 +541,8 @@ namespace scheduler_test1
         private Panel panel14;
         private Panel panel15;
         private Panel panel16;
-        private Button button5;
-        private Button button1;
+        private Button Edit_Shift;
+        private Button Add_Shift;
     }
 }
 
