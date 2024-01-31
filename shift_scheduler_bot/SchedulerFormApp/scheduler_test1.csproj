@@ -63,6 +63,7 @@
     <Compile Include="ShiftForm.Designer.cs">
       <DependentUpon>ShiftForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="utils.cs" />
     <Compile Include="WorkerForm.cs">
       <SubType>Form</SubType>
     </Compile>

@@ -34,6 +34,7 @@ namespace scheduler_test1
             this.button6 = new System.Windows.Forms.Button();
             this.button4 = new System.Windows.Forms.Button();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.button1 = new System.Windows.Forms.Button();
             this.Next = new System.Windows.Forms.Button();
             this.Previous = new System.Windows.Forms.Button();
             this.richTextBox1 = new System.Windows.Forms.RichTextBox();
@@ -71,7 +72,6 @@ namespace scheduler_test1
             this.textBox5 = new System.Windows.Forms.TextBox();
             this.textBox6 = new System.Windows.Forms.TextBox();
             this.textBox7 = new System.Windows.Forms.TextBox();
-            this.button1 = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.menuStrip1.SuspendLayout();
@@ -110,6 +110,15 @@ namespace scheduler_test1
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(1207, 46);
             this.panel1.TabIndex = 9;
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(33, 13);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(125, 24);
+            this.button1.TabIndex = 10;
+            this.button1.Text = "ADD SHIFT";
+            this.button1.UseVisualStyleBackColor = true;
             // 
             // Next
             // 
@@ -173,7 +182,6 @@ namespace scheduler_test1
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(1207, 645);
             this.panel2.TabIndex = 10;
-            this.panel2.Paint += new System.Windows.Forms.PaintEventHandler(this.panel2_Paint);
             // 
             // panel10
             // 
@@ -295,7 +303,7 @@ namespace scheduler_test1
             this.exportScheduleToolStripMenuItem,
             this.saveScheduleToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            this.fileToolStripMenuItem.Size = new System.Drawing.Size(46, 26);
+            this.fileToolStripMenuItem.Size = new System.Drawing.Size(46, 24);
             this.fileToolStripMenuItem.Text = "File";
             // 
             // loadScheduleToolStripMenuItem
@@ -332,19 +340,19 @@ namespace scheduler_test1
             this.importWorkersToolStripMenuItem1,
             this.exportWorkersToolStripMenuItem1});
             this.workersToolStripMenuItem.Name = "workersToolStripMenuItem";
-            this.workersToolStripMenuItem.Size = new System.Drawing.Size(76, 26);
+            this.workersToolStripMenuItem.Size = new System.Drawing.Size(76, 24);
             this.workersToolStripMenuItem.Text = "Workers";
             // 
             // addEditRulesToolStripMenuItem
             // 
             this.addEditRulesToolStripMenuItem.Name = "addEditRulesToolStripMenuItem";
-            this.addEditRulesToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.addEditRulesToolStripMenuItem.Size = new System.Drawing.Size(219, 26);
             this.addEditRulesToolStripMenuItem.Text = "Add/Edit Rules";
             // 
             // addViewDaysOffToolStripMenuItem
             // 
             this.addViewDaysOffToolStripMenuItem.Name = "addViewDaysOffToolStripMenuItem";
-            this.addViewDaysOffToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.addViewDaysOffToolStripMenuItem.Size = new System.Drawing.Size(219, 26);
             this.addViewDaysOffToolStripMenuItem.Text = "Add/View Days Off";
             // 
             // importWorkersToolStripMenuItem1
@@ -352,12 +360,14 @@ namespace scheduler_test1
             this.importWorkersToolStripMenuItem1.Name = "importWorkersToolStripMenuItem1";
             this.importWorkersToolStripMenuItem1.Size = new System.Drawing.Size(224, 26);
             this.importWorkersToolStripMenuItem1.Text = "Import Workers";
+            this.importWorkersToolStripMenuItem1.Click += new System.EventHandler(this.importWorkersToolStripMenuItem1_Click);
             // 
             // exportWorkersToolStripMenuItem1
             // 
             this.exportWorkersToolStripMenuItem1.Name = "exportWorkersToolStripMenuItem1";
             this.exportWorkersToolStripMenuItem1.Size = new System.Drawing.Size(224, 26);
             this.exportWorkersToolStripMenuItem1.Text = "Export Workers";
+            this.exportWorkersToolStripMenuItem1.Click += new System.EventHandler(this.exportWorkersToolStripMenuItem1_Click);
             // 
             // menuStrip1
             // 
@@ -367,7 +377,7 @@ namespace scheduler_test1
             this.workersToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(1231, 30);
+            this.menuStrip1.Size = new System.Drawing.Size(1231, 28);
             this.menuStrip1.TabIndex = 8;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -462,15 +472,6 @@ namespace scheduler_test1
             this.textBox7.Text = "Saturday";
             this.textBox7.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(33, 13);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(125, 24);
-            this.button1.TabIndex = 10;
-            this.button1.Text = "ADD SHIFT";
-            this.button1.UseVisualStyleBackColor = true;
-            // 
             // MainUIForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -489,6 +490,7 @@ namespace scheduler_test1
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "MainUIForm";
             this.Text = "Dpot Scheduler v1.0";
+            this.Load += new System.EventHandler(this.MainUIForm_Load);
             this.panel1.ResumeLayout(false);
             this.panel2.ResumeLayout(false);
             this.menuStrip1.ResumeLayout(false);

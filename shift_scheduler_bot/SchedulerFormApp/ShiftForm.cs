@@ -7,13 +7,21 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.IO;
 
 namespace scheduler_test1
 {
     public partial class ShiftForm : Form
     {
-        public ShiftForm()
+        public string shiftFileName;
+        public string shiftFileRaw;
+        public ShiftForm(string fileName = "")
         {
+            shiftFileName = fileName;
+            if (shiftFileName != "") 
+            { 
+                shiftFileRaw = shiftFileName; 
+            }
             InitializeComponent();
         }
 
