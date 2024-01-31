@@ -49,10 +49,23 @@ namespace scheduler_test1
             ShiftForm sForm = new ShiftForm(appWorkersFileName);
             sForm.Show();
         }
-
+        private void importScheduleToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            appScheduleFileName = Utils.importJSONFile();
+            bool successImport = sharedImport(appScheduleFileName);
+            if (successImport)
+            {
+                appScheduleRawString = File.ReadAllText(appScheduleFileName);
+            }
+        }
         private void exportScheduleToolStripMenuItem_Click(object sender, EventArgs e)
         {
-
+            bool successExport = sharedExport(appScheduleFileName);
+            if (successExport)
+            {
+                string exportedFileName = Utils.exportJSONFile(appScheduleRawString);
+                MessageBox.Show("Wrote to file located at: " + exportedFileName);
+            }
         }
 
 
@@ -71,30 +84,50 @@ namespace scheduler_test1
         {
             // TODO: add checking/guardrail if user imports wrong file
             appWorkersFileName = Utils.importJSONFile();
-            if(appWorkersFileName == "")
+            bool successImport = sharedImport(appWorkersFileName);
+            if(successImport)
             {
-                MessageBox.Show("User did not select file to import, cancelling import.",
-                    "Import Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
+                appWorkersRawString = File.ReadAllText(appWorkersFileName);
             }
-            appWorkersRawString = File.ReadAllText(appWorkersFileName);
-            MessageBox.Show("Filename that was imported: " + appWorkersFileName);
         }
 
         private void exportWorkersToolStripMenuItem1_Click(object sender, EventArgs e)
         {
             // TODO: add checking/guardrail if user imports wrong file
-            if(appWorkersFileName == "")
+            bool successExport = sharedExport(appWorkersFileName);
+            if(successExport)
             {
-                MessageBox.Show("Cannot export workers due to no file being loaded in.", 
-                    "Export Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }    
-            string exportedFileName = Utils.exportJSONFile(appWorkersRawString);
-            MessageBox.Show("Wrote to file located at: " + exportedFileName);
+                string exportedFileName = Utils.exportJSONFile(appWorkersRawString);
+                MessageBox.Show("Wrote to file located at: " + exportedFileName);
+            }
         }
 
-        
+        private bool sharedImport(string fileName)
+        {
+            if(fileName == "") 
+            {
+                MessageBox.Show("Cannot import " + fileName + " due to no file being loaded in.",
+                    "Import Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+            else {
+                MessageBox.Show("File that was imported: " + fileName);
+            }
+            return fileName == "";
+        }
+
+        private bool sharedExport(string fileName)
+        {
+            if (fileName == "")
+            {
+                MessageBox.Show("Cannot export " + fileName + " due to no file being loaded in.",
+                    "Export Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+            else
+            {
+                MessageBox.Show("File that was exported: " + fileName);
+            }
+            return fileName == "";
+        }
     }
 
 }

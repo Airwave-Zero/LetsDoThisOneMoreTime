@@ -37,5 +37,24 @@ namespace scheduler_test1
         {
 
         }
+
+        private void SaveShift_Button_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void CancelShift_Button_Click(object sender, EventArgs e)
+        {
+            // Simply closes the shift UI window without making any changes
+            this.Close();
+        }
+        private void ShiftForm_EscapeKeyDown(object sender, KeyEventArgs e)
+        {
+            // Shortcut for closing the changes window
+            if (e.KeyCode == Keys.Escape)
+            {
+                this.Close();
+            }
+        }
     }
 }

@@ -30,7 +30,7 @@
         {
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.SaveButton = new System.Windows.Forms.Button();
-            this.CancelButton = new System.Windows.Forms.Button();
+            this.CancelChangesButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -55,28 +55,30 @@
             this.SaveButton.UseVisualStyleBackColor = true;
             this.SaveButton.Click += new System.EventHandler(this.SaveButton_Click);
             // 
-            // CancelButton
+            // CancelChangesButton
             // 
-            this.CancelButton.Location = new System.Drawing.Point(654, 21);
-            this.CancelButton.Name = "CancelButton";
-            this.CancelButton.Size = new System.Drawing.Size(159, 39);
-            this.CancelButton.TabIndex = 2;
-            this.CancelButton.Text = "Cancel Changes";
-            this.CancelButton.UseVisualStyleBackColor = true;
-            this.CancelButton.Click += new System.EventHandler(this.CancelButton_Click);
+            this.CancelChangesButton.Location = new System.Drawing.Point(654, 21);
+            this.CancelChangesButton.Name = "CancelChangesButton";
+            this.CancelChangesButton.Size = new System.Drawing.Size(159, 39);
+            this.CancelChangesButton.TabIndex = 2;
+            this.CancelChangesButton.Text = "Cancel Changes";
+            this.CancelChangesButton.UseVisualStyleBackColor = true;
+            this.CancelChangesButton.Click += new System.EventHandler(this.CancelButton_Click);
             // 
             // WorkerForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1144, 524);
-            this.Controls.Add(this.CancelButton);
+            this.Controls.Add(this.CancelChangesButton);
             this.Controls.Add(this.SaveButton);
             this.Controls.Add(this.dataGridView1);
+            this.KeyPreview = true;
             this.Name = "WorkerForm";
             this.Text = "WorkerForm";
             this.Load += new System.EventHandler(this.WorkerForm_Load);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.WorkerForm_EscapeKeyDown);
             this.ResumeLayout(false);
 
         }
@@ -85,6 +87,6 @@
 
         private System.Windows.Forms.DataGridView dataGridView1;
         private System.Windows.Forms.Button SaveButton;
-        private System.Windows.Forms.Button CancelButton;
+        private System.Windows.Forms.Button CancelChangesButton;
     }
 }
