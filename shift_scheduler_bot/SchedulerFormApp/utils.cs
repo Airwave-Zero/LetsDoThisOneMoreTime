@@ -21,23 +21,19 @@ namespace scheduler_test1
          */
         // TODO: add checking/guardrail if user imports wrong file
         {
-            Stream myStream;
             SaveFileDialog saveFileDialog1 = new SaveFileDialog();
             string fileName = "";
-
             saveFileDialog1.Filter = "JSON files (*.JSON)|*.JSON|All files (*.*)|*.*";
-            saveFileDialog1.FilterIndex = 2;
+            saveFileDialog1.FilterIndex = 1;
             saveFileDialog1.RestoreDirectory = true;
 
             if (saveFileDialog1.ShowDialog() == DialogResult.OK)
             {
-                if ((myStream = saveFileDialog1.OpenFile()) != null)
+                if (saveFileDialog1.FileName != "")
                 {
                     //filename is saveFileDialog1.FileName
                     System.IO.File.WriteAllText(saveFileDialog1.FileName, data);
                     fileName = saveFileDialog1.FileName;
-                    myStream.Close();
-                    myStream.Dispose();
                 }
             }
             return fileName;
@@ -49,23 +45,19 @@ namespace scheduler_test1
          */
         // TODO: add checking/guardrail if user imports wrong file
         {
-            Stream myStream;
             OpenFileDialog openFileDialog1 = new OpenFileDialog();
             string fileName = "";
-
             openFileDialog1.Filter = "JSON files (*.JSON)|*.JSON|All files (*.*)|*.*";
-            openFileDialog1.FilterIndex = 2;
+            openFileDialog1.FilterIndex = 1;
             openFileDialog1.RestoreDirectory = true;
 
             if (openFileDialog1.ShowDialog() == DialogResult.OK)
             {
-                if ((myStream = openFileDialog1.OpenFile()) != null)
+                if (openFileDialog1.FileName != "")
                 {
 
                     //filename is saveFileDialog1.FileName
                     fileName = openFileDialog1.FileName;
-                    myStream.Close();
-                    myStream.Dispose();
                 }
             }
             return fileName;
