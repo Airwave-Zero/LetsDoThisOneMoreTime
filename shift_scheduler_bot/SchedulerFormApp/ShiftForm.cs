@@ -18,10 +18,13 @@ namespace scheduler_test1
         public ShiftForm(string fileName = "")
         {
             shiftFileName = fileName;
-            if (shiftFileName != "") 
-            { 
-                shiftFileRaw = shiftFileName; 
+            MessageBox.Show("Attempted to load in: " + fileName);
+            if (fileName == "")
+            {
+                MessageBox.Show("No file detected, loading in default");
+                //shiftFileName = "C:/Users/bboyf/OneDrive/Desktop/CODE/LetsDoThisOneMoreTime/shift_scheduler_bot/SchedulerFormApp/JSON_files/Workers.json";
             }
+            shiftFileRaw = File.ReadAllText(shiftFileName);
             InitializeComponent();
         }
 
