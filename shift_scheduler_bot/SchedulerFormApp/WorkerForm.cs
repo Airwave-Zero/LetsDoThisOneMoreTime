@@ -6,6 +6,7 @@ using System.Data;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.ComTypes;
 using System.Runtime.Remoting.Contexts;
 using System.Text;
@@ -22,13 +23,6 @@ namespace scheduler_test1
         public WorkerForm(string fileName = "")
         {
             workerFileName = fileName;
-            MessageBox.Show("Attempted to load in: " + fileName);
-            if (fileName == "")
-            {
-                //MessageBox.Show("No file detected, loading in default");
-                workerFileName = "C:/Users/bboyf/OneDrive/Desktop/CODE/LetsDoThisOneMoreTime/shift_scheduler_bot/SchedulerFormApp/JSON_files/Workers.json";
-            }
-            workerFileRaw = File.ReadAllText(workerFileName);
             InitializeComponent();
         }
 
@@ -39,13 +33,19 @@ namespace scheduler_test1
 
         private void WorkerForm_Load(object sender, EventArgs e)
         {
-            if(workerFileName != "")
+            MessageBox.Show("Attempted to load in: " + workerFileName);
+            if (workerFileName == "")
             {
-                string jsonString = File.ReadAllText(workerFileName);
-                dataGridView1.DataSource = JsonConvert.DeserializeObject<DataTable>(jsonString);
-                dataGridView1.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
-                dataGridView1.DefaultCellStyle.WrapMode = DataGridViewTriState.True;
+                //MessageBox.Show("No file detected, loading in default");
+                workerFileName = "C:/Users/bboyf/OneDrive/Desktop/CODE/LetsDoThisOneMoreTime/shift_scheduler_bot/SchedulerFormApp/JSON_files/Workers.json";
             }
+            workerFileRaw = File.ReadAllText(workerFileName);
+            string jsonString = File.ReadAllText(workerFileName);
+            dataGridView1.DataSource = JsonConvert.DeserializeObject<DataTable>(jsonString);
+            dataGridView1.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
+            dataGridView1.DefaultCellStyle.WrapMode = DataGridViewTriState.True;
+            string shortenedFN = Path.GetFileName(workerFileName);
+            WorkerFFN_Label.Text += " " + shortenedFN;
         }
         
         private void SaveButton_Click(object sender, EventArgs e)
@@ -87,6 +87,5 @@ namespace scheduler_test1
                 this.Close();
             }
         }
-        
     }
 }
