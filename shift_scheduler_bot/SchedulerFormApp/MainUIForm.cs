@@ -23,11 +23,15 @@ namespace scheduler_test1
         public string appScheduleFileName = "";
         public string appScheduleRawString = "";
         public string appRulesFileName = "";
-        public string appRulesRawString;
+        public string appRulesRawString = "";
         public string appHolidaysFileName = "";
-        public string appHolidaysRawString;
+        public string appHolidaysRawString = "";
         public string appDaysOffFileName = "";
         public string appDaysOffRawString = "";
+        private void MainUIForm_Load(object sender, EventArgs e)
+        {
+            //TODO: look for last loaded file(s) and load those in
+        }
 
         private void GenerateSchedule_Click(object sender, EventArgs e)
         {
@@ -57,6 +61,7 @@ namespace scheduler_test1
             {
                 appScheduleRawString = File.ReadAllText(appScheduleFileName);
             }
+            //TODO : update the UI with all the shifts
         }
         private void exportScheduleToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -75,10 +80,7 @@ namespace scheduler_test1
         }
 
 
-        private void MainUIForm_Load(object sender, EventArgs e)
-        {
-
-        }
+        
 
         private void importWorkersToolStripMenuItem1_Click(object sender, EventArgs e)
         {
