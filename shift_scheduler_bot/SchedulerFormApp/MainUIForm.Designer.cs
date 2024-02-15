@@ -38,7 +38,6 @@ namespace scheduler_test1
             this.Next = new System.Windows.Forms.Button();
             this.Previous = new System.Windows.Forms.Button();
             this.richTextBox1 = new System.Windows.Forms.RichTextBox();
-            this.Edit_Shift = new System.Windows.Forms.Button();
             this.panel2 = new System.Windows.Forms.Panel();
             this.panel10 = new System.Windows.Forms.Panel();
             this.panel9 = new System.Windows.Forms.Panel();
@@ -103,7 +102,6 @@ namespace scheduler_test1
             this.panel1.Controls.Add(this.Next);
             this.panel1.Controls.Add(this.Previous);
             this.panel1.Controls.Add(this.richTextBox1);
-            this.panel1.Controls.Add(this.Edit_Shift);
             this.panel1.Controls.Add(this.button4);
             this.panel1.Controls.Add(this.Workers_Button);
             this.panel1.Location = new System.Drawing.Point(12, 31);
@@ -113,7 +111,7 @@ namespace scheduler_test1
             // 
             // Add_Shift
             // 
-            this.Add_Shift.Location = new System.Drawing.Point(33, 13);
+            this.Add_Shift.Location = new System.Drawing.Point(130, 10);
             this.Add_Shift.Name = "Add_Shift";
             this.Add_Shift.Size = new System.Drawing.Size(125, 24);
             this.Add_Shift.TabIndex = 10;
@@ -152,16 +150,6 @@ namespace scheduler_test1
             this.richTextBox1.Size = new System.Drawing.Size(273, 27);
             this.richTextBox1.TabIndex = 8;
             this.richTextBox1.Text = "Month D1-D7 Year";
-            // 
-            // Edit_Shift
-            // 
-            this.Edit_Shift.Location = new System.Drawing.Point(233, 13);
-            this.Edit_Shift.Name = "Edit_Shift";
-            this.Edit_Shift.Size = new System.Drawing.Size(125, 24);
-            this.Edit_Shift.TabIndex = 6;
-            this.Edit_Shift.Text = "EDIT SHIFT";
-            this.Edit_Shift.UseVisualStyleBackColor = true;
-            this.Edit_Shift.Click += new System.EventHandler(this.EditShift_Click);
             // 
             // panel2
             // 
@@ -542,7 +530,6 @@ namespace scheduler_test1
         private Panel panel14;
         private Panel panel15;
         private Panel panel16;
-        private Button Edit_Shift;
         private Button Add_Shift;
     }
 }

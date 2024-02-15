@@ -45,14 +45,10 @@ namespace scheduler_test1
         }
         private void Add_Shift_Click(object sender, EventArgs e)
         {
-            ShiftForm sForm = new ShiftForm(appWorkersFileName);
+            ShiftForm sForm = new ShiftForm("");
             sForm.Show();
         }
-        private void EditShift_Click(object sender, EventArgs e)
-        {
-            ShiftForm sForm = new ShiftForm(appWorkersFileName);
-            sForm.Show();
-        }
+
         private void importScheduleToolStripMenuItem_Click(object sender, EventArgs e)
         {
             appScheduleFileName = Utils.importJSONFile();
@@ -72,15 +68,10 @@ namespace scheduler_test1
                 MessageBox.Show("Wrote to file located at: " + exportedFileName);
             }
         }
-
-
         private void Previous_Click(object sender, EventArgs e)
         {
 
         }
-
-
-        
 
         private void importWorkersToolStripMenuItem1_Click(object sender, EventArgs e)
         {
