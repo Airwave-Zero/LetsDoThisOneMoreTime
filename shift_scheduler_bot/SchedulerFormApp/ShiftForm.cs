@@ -8,6 +8,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace scheduler_test1
 {
@@ -59,7 +61,44 @@ namespace scheduler_test1
         { 
             currentShift = makeShiftObject();
             //WRITE TO THE RAW TEXT FILE SOMEHOW
+            string output = JsonConvert.SerializeObject(currentShift);
+            // find the correct json object to override or write over
+            File.WriteAllText(shiftFileName, output);
             this.Close();
+
+
+            shiftFileRaw = File.ReadAllText(shiftFileName);
+            string jsonShiftString = File.ReadAllText(shiftFileName);
+            var test = JsonConvert.DeserializeObject<ShiftClass>(jsonShiftString);
+
+            var json1 = "{ \"name\" : \"sai\", \"age\" : 22, \"salary\" : 25000}";
+            var json2 = "{ \"name\" : \"sai\", \"age\" : 23, \"Gender\" : \"male\"}";
+
+            var object1 = JObject.Parse(json1);
+            var object2 = JObject.Parse(json2);
+
+            foreach (var prop in object2.Properties())
+            {
+                var targetProperty = object1.Property(prop.Name);
+
+                if (targetProperty == null)
+                {
+                    object1.Add(prop.Name, prop.Value);
+                }
+                else
+                {
+                    targetProperty.Value = prop.Value;
+                }
+            }
+
+            var result = object1.ToString(Formatting.None);
+            /*
+            dataGridView1.DataSource = JsonConvert.DeserializeObject<DataTable>(jsonString);
+            dataGridView1.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
+            dataGridView1.DefaultCellStyle.WrapMode = DataGridViewTriState.True;
+            */
+            //https://stackoverflow.com/questions/29093055/update-json-object-in-c-sharp
+
         }
 
         private void CancelShift_Button_Click(object sender, EventArgs e)
