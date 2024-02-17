@@ -63,7 +63,7 @@
             this.endPanel.SuspendLayout();
             this.SuspendLayout();
             // 
-            // panel1
+            // startPanel
             // 
             this.startPanel.Controls.Add(this.label1);
             this.startPanel.Controls.Add(this.radio_start5PM);
@@ -76,10 +76,9 @@
             this.startPanel.Controls.Add(this.radio_start1130AM);
             this.startPanel.Controls.Add(this.radio_start11AM);
             this.startPanel.Location = new System.Drawing.Point(33, 174);
-            this.startPanel.Name = "panel1";
+            this.startPanel.Name = "startPanel";
             this.startPanel.Size = new System.Drawing.Size(224, 426);
             this.startPanel.TabIndex = 0;
-            this.startPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.panel1_Paint);
             // 
             // label1
             // 
@@ -136,11 +135,11 @@
             this.radio_startCustom.Text = "Custom";
             this.radio_startCustom.UseVisualStyleBackColor = true;
             // 
-            // textBox1
+            // startCustomTextBox
             // 
             this.startCustomTextBox.Enabled = false;
             this.startCustomTextBox.Location = new System.Drawing.Point(12, 375);
-            this.startCustomTextBox.Name = "textBox1";
+            this.startCustomTextBox.Name = "startCustomTextBox";
             this.startCustomTextBox.Size = new System.Drawing.Size(103, 22);
             this.startCustomTextBox.TabIndex = 4;
             // 
@@ -189,7 +188,7 @@
             this.radio_start11AM.Text = "11 AM";
             this.radio_start11AM.UseVisualStyleBackColor = true;
             // 
-            // panel2
+            // endPanel
             // 
             this.endPanel.Controls.Add(this.label2);
             this.endPanel.Controls.Add(this.radio_EndClosing);
@@ -206,7 +205,7 @@
             this.endPanel.Controls.Add(this.radio_End330PM);
             this.endPanel.Controls.Add(this.radio_End3PM);
             this.endPanel.Location = new System.Drawing.Point(305, 174);
-            this.endPanel.Name = "panel2";
+            this.endPanel.Name = "endPanel";
             this.endPanel.Size = new System.Drawing.Size(224, 426);
             this.endPanel.TabIndex = 9;
             // 
@@ -220,142 +219,142 @@
             this.label2.TabIndex = 13;
             this.label2.Text = "End at:";
             // 
-            // radioButton20
+            // radio_EndClosing
             // 
             this.radio_EndClosing.AutoSize = true;
             this.radio_EndClosing.Location = new System.Drawing.Point(22, 316);
-            this.radio_EndClosing.Name = "radioButton20";
+            this.radio_EndClosing.Name = "radio_EndClosing";
             this.radio_EndClosing.Size = new System.Drawing.Size(73, 20);
             this.radio_EndClosing.TabIndex = 12;
             this.radio_EndClosing.TabStop = true;
             this.radio_EndClosing.Text = "Closing";
             this.radio_EndClosing.UseVisualStyleBackColor = true;
             // 
-            // radioButton19
+            // radio_End1030PM
             // 
             this.radio_End1030PM.AutoSize = true;
             this.radio_End1030PM.Location = new System.Drawing.Point(22, 288);
-            this.radio_End1030PM.Name = "radioButton19";
+            this.radio_End1030PM.Name = "radio_End1030PM";
             this.radio_End1030PM.Size = new System.Drawing.Size(82, 20);
             this.radio_End1030PM.TabIndex = 11;
             this.radio_End1030PM.TabStop = true;
             this.radio_End1030PM.Text = "10:30 PM";
             this.radio_End1030PM.UseVisualStyleBackColor = true;
             // 
-            // radioButton18
+            // radio_End10PM
             // 
             this.radio_End10PM.AutoSize = true;
             this.radio_End10PM.Location = new System.Drawing.Point(22, 263);
-            this.radio_End10PM.Name = "radioButton18";
+            this.radio_End10PM.Name = "radio_End10PM";
             this.radio_End10PM.Size = new System.Drawing.Size(65, 20);
             this.radio_End10PM.TabIndex = 10;
             this.radio_End10PM.TabStop = true;
             this.radio_End10PM.Text = "10 PM";
             this.radio_End10PM.UseVisualStyleBackColor = true;
             // 
-            // radioButton17
+            // radio_End930PM
             // 
             this.radio_End930PM.AutoSize = true;
             this.radio_End930PM.Location = new System.Drawing.Point(22, 238);
-            this.radio_End930PM.Name = "radioButton17";
+            this.radio_End930PM.Name = "radio_End930PM";
             this.radio_End930PM.Size = new System.Drawing.Size(75, 20);
             this.radio_End930PM.TabIndex = 9;
             this.radio_End930PM.TabStop = true;
             this.radio_End930PM.Text = "9:30 PM";
             this.radio_End930PM.UseVisualStyleBackColor = true;
             // 
-            // radioButton6
+            // radio_End9PM
             // 
             this.radio_End9PM.AutoSize = true;
             this.radio_End9PM.CheckAlign = System.Drawing.ContentAlignment.BottomLeft;
             this.radio_End9PM.Location = new System.Drawing.Point(22, 213);
-            this.radio_End9PM.Name = "radioButton6";
+            this.radio_End9PM.Name = "radio_End9PM";
             this.radio_End9PM.Size = new System.Drawing.Size(58, 20);
             this.radio_End9PM.TabIndex = 8;
             this.radio_End9PM.TabStop = true;
             this.radio_End9PM.Text = "9 PM";
             this.radio_End9PM.UseVisualStyleBackColor = true;
             // 
-            // radioButton10
+            // radio_End830PM
             // 
             this.radio_End830PM.AutoSize = true;
             this.radio_End830PM.Location = new System.Drawing.Point(22, 188);
-            this.radio_End830PM.Name = "radioButton10";
+            this.radio_End830PM.Name = "radio_End830PM";
             this.radio_End830PM.Size = new System.Drawing.Size(75, 20);
             this.radio_End830PM.TabIndex = 7;
             this.radio_End830PM.TabStop = true;
             this.radio_End830PM.Text = "8:30 PM";
             this.radio_End830PM.UseVisualStyleBackColor = true;
             // 
-            // radioButton11
+            // radio_End8PM
             // 
             this.radio_End8PM.AutoSize = true;
             this.radio_End8PM.Location = new System.Drawing.Point(22, 163);
-            this.radio_End8PM.Name = "radioButton11";
+            this.radio_End8PM.Name = "radio_End8PM";
             this.radio_End8PM.Size = new System.Drawing.Size(58, 20);
             this.radio_End8PM.TabIndex = 6;
             this.radio_End8PM.TabStop = true;
             this.radio_End8PM.Text = "8 PM";
             this.radio_End8PM.UseVisualStyleBackColor = true;
             // 
-            // radioButton12
+            // radio_EndCustom
             // 
             this.radio_EndCustom.AutoSize = true;
             this.radio_EndCustom.Location = new System.Drawing.Point(22, 343);
-            this.radio_EndCustom.Name = "radioButton12";
+            this.radio_EndCustom.Name = "radio_EndCustom";
             this.radio_EndCustom.Size = new System.Drawing.Size(73, 20);
             this.radio_EndCustom.TabIndex = 5;
             this.radio_EndCustom.TabStop = true;
             this.radio_EndCustom.Text = "Custom";
             this.radio_EndCustom.UseVisualStyleBackColor = true;
             // 
-            // textBox2
+            // endCustomTextBox
             // 
             this.endCustomTextBox.Enabled = false;
             this.endCustomTextBox.Location = new System.Drawing.Point(22, 375);
-            this.endCustomTextBox.Name = "textBox2";
+            this.endCustomTextBox.Name = "endCustomTextBox";
             this.endCustomTextBox.Size = new System.Drawing.Size(103, 22);
             this.endCustomTextBox.TabIndex = 4;
             // 
-            // radioButton13
+            // radio_End430PM
             // 
             this.radio_End430PM.AutoSize = true;
             this.radio_End430PM.Location = new System.Drawing.Point(22, 138);
-            this.radio_End430PM.Name = "radioButton13";
+            this.radio_End430PM.Name = "radio_End430PM";
             this.radio_End430PM.Size = new System.Drawing.Size(75, 20);
             this.radio_End430PM.TabIndex = 3;
             this.radio_End430PM.TabStop = true;
             this.radio_End430PM.Text = "4:30 PM";
             this.radio_End430PM.UseVisualStyleBackColor = true;
             // 
-            // radioButton14
+            // radio_End4PM
             // 
             this.radio_End4PM.AutoSize = true;
             this.radio_End4PM.CheckAlign = System.Drawing.ContentAlignment.BottomLeft;
             this.radio_End4PM.Location = new System.Drawing.Point(22, 113);
-            this.radio_End4PM.Name = "radioButton14";
+            this.radio_End4PM.Name = "radio_End4PM";
             this.radio_End4PM.Size = new System.Drawing.Size(58, 20);
             this.radio_End4PM.TabIndex = 2;
             this.radio_End4PM.TabStop = true;
             this.radio_End4PM.Text = "4 PM";
             this.radio_End4PM.UseVisualStyleBackColor = true;
             // 
-            // radioButton15
+            // radio_End330PM
             // 
             this.radio_End330PM.AutoSize = true;
             this.radio_End330PM.Location = new System.Drawing.Point(22, 88);
-            this.radio_End330PM.Name = "radioButton15";
+            this.radio_End330PM.Name = "radio_End330PM";
             this.radio_End330PM.Size = new System.Drawing.Size(75, 20);
             this.radio_End330PM.TabIndex = 1;
             this.radio_End330PM.TabStop = true;
             this.radio_End330PM.Text = "3:30 PM";
             this.radio_End330PM.UseVisualStyleBackColor = true;
             // 
-            // radioButton16
+            // radio_End3PM
             // 
             this.radio_End3PM.AutoSize = true;
             this.radio_End3PM.Location = new System.Drawing.Point(22, 63);
-            this.radio_End3PM.Name = "radioButton16";
+            this.radio_End3PM.Name = "radio_End3PM";
             this.radio_End3PM.Size = new System.Drawing.Size(58, 20);
             this.radio_End3PM.TabIndex = 0;
             this.radio_End3PM.TabStop = true;
@@ -382,11 +381,11 @@
             this.SaveShift_Button.UseVisualStyleBackColor = true;
             this.SaveShift_Button.Click += new System.EventHandler(this.SaveShift_Button_Click);
             // 
-            // comboBox1
+            // dropdown_WorkerName
             // 
             this.dropdown_WorkerName.FormattingEnabled = true;
             this.dropdown_WorkerName.Location = new System.Drawing.Point(214, 69);
-            this.dropdown_WorkerName.Name = "comboBox1";
+            this.dropdown_WorkerName.Name = "dropdown_WorkerName";
             this.dropdown_WorkerName.Size = new System.Drawing.Size(134, 24);
             this.dropdown_WorkerName.TabIndex = 13;
             // 
@@ -400,12 +399,12 @@
             this.label3.TabIndex = 14;
             this.label3.Text = "Worker:";
             // 
-            // checkBox1
+            // checkbox_DeleteShift
             // 
             this.checkbox_DeleteShift.AutoSize = true;
             this.checkbox_DeleteShift.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.checkbox_DeleteShift.Location = new System.Drawing.Point(192, 118);
-            this.checkbox_DeleteShift.Name = "checkBox1";
+            this.checkbox_DeleteShift.Name = "checkbox_DeleteShift";
             this.checkbox_DeleteShift.Size = new System.Drawing.Size(177, 35);
             this.checkbox_DeleteShift.TabIndex = 15;
             this.checkbox_DeleteShift.Text = "Delete Shift";
