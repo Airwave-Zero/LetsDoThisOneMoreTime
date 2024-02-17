@@ -13,17 +13,25 @@ namespace scheduler_test1
 {
     public partial class ShiftForm : Form
     {
-        public string shiftFileName;
-        public string shiftFileRaw;
+        private string shiftFileName;
+        private string shiftFileRaw;
+        private string workerName;
+        private string monthName;
+        private string dayName;
+        private int dayNum;
+        private double shiftStartTime;
+        private double shiftEndTime;
+        private ShiftClass currentShift;
         public ShiftForm(string fileName = "")
         {
             shiftFileName = fileName;
+            workerName = "";
+            monthName = "";
+            dayName = "";
+            dayNum = 1;
+            shiftStartTime = 0.0;
+            shiftEndTime = 0.0;
             InitializeComponent();
-        }
-
-        private void panel1_Paint(object sender, PaintEventArgs e)
-        {
-
         }
 
         private void ShiftForm_Load(object sender, EventArgs e)
@@ -41,13 +49,17 @@ namespace scheduler_test1
                 //shiftFileName = "C:/Users/bboyf/OneDrive/Desktop/CODE/LetsDoThisOneMoreTime/shift_scheduler_bot/SchedulerFormApp/JSON_files/Workers.json";
             }
             shiftFileRaw = File.ReadAllText(shiftFileName);
+            currentShift = makeShiftObject();
         }
 
         private void SaveShift_Button_Click(object sender, EventArgs e)
-        {
-            // make an object of the shift
-            // export the object into the text file
-
+        /* This method handles when the user wants to save the shift. This method will create
+         * a new shift object with all of the current user inputs, writes it to the shift file, and then
+         * closes the window. */
+        { 
+            currentShift = makeShiftObject();
+            //WRITE TO THE RAW TEXT FILE SOMEHOW
+            this.Close();
         }
 
         private void CancelShift_Button_Click(object sender, EventArgs e)
@@ -64,15 +76,64 @@ namespace scheduler_test1
             }
         }
 
-        private void makeShiftObject()
+        private ShiftClass makeShiftObject()
+        /* This method creates a shift object based on whatever is in the UI
+        */
         {
-            string workerName = "";
-            string monthName = "";
-            string dayName = "";
-            int dayNum =;
-            int startHour;
-            int endHour;
-            ShiftClass shiftObj = new ShiftClass()
+            var checkedStart = startPanel.Controls.OfType<RadioButton>().FirstOrDefault(r => r.Checked);
+            var checkedEnd = endPanel.Controls.OfType<RadioButton>().FirstOrDefault(r => r.Checked);
+            //string workerName = dropdown_WorkerName.SelectedValue.ToString();
+            string workerName = dropdown_WorkerName.Text; 
+            string startText = checkedStart.Text;
+            string endText = checkedEnd.Text;
+            shiftStartTime = getMilitaryConversion(startText);
+            shiftEndTime = getMilitaryConversion(endText);
+
+            ShiftClass shiftObj = new ShiftClass();
+            shiftObj.setStartHour(shiftStartTime);
+            shiftObj.setEndHour(shiftEndTime);
+            shiftObj.setWorkerName(workerName);
+            return shiftObj;
+        }
+
+        private double getMilitaryConversion(string baseTimeString)
+        /* This is a helper function that takes in the radio button string and converts it into
+        a military double and returns it. This also handles if the user put in a custom time for either panel.
+         */
+        {
+            double militaryTime = 0.0;
+            string convertedString = baseTimeString;
+            if (baseTimeString.Equals("Custom"))
+            {
+                militaryTime = startCustomTextBox.Text.Equals("") ? Convert.ToDouble(endCustomTextBox.Text) :
+                    Convert.ToDouble(startCustomTextBox.Text);
+                convertedString = startCustomTextBox.Text.Equals("") ? endCustomTextBox.Text :
+                    startCustomTextBox.Text;
+            }
+            else
+            {
+                militaryTime = Convert.ToDouble(baseTimeString.Substring(0, baseTimeString.IndexOf(":")));
+            }
+            
+  
+            if (convertedString.Contains(":30"))
+            {
+                militaryTime += .5;
+            }
+            else if (convertedString.Contains(":15"))
+            {
+                militaryTime += .25;
+            }
+            else if (convertedString.Contains(":45"))
+            {
+                militaryTime += .75;
+            }
+
+            if (convertedString.Contains("PM"))
+            {
+                militaryTime += 12; // basically this means we are using military time
+            }
+            return militaryTime;
         }
     }
 }
