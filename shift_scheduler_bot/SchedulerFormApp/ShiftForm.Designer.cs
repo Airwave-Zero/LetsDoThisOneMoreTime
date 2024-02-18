@@ -57,8 +57,10 @@
             this.CancelShift_Button = new System.Windows.Forms.Button();
             this.SaveShift_Button = new System.Windows.Forms.Button();
             this.dropdown_WorkerName = new System.Windows.Forms.ComboBox();
-            this.label3 = new System.Windows.Forms.Label();
+            this.WorkerName_Label = new System.Windows.Forms.Label();
             this.checkbox_DeleteShift = new System.Windows.Forms.CheckBox();
+            this.ShiftDay_Label = new System.Windows.Forms.Label();
+            this.dropdown_ShiftDayName = new System.Windows.Forms.ComboBox();
             this.startPanel.SuspendLayout();
             this.endPanel.SuspendLayout();
             this.SuspendLayout();
@@ -98,7 +100,6 @@
             this.radio_start5PM.Name = "radio_start5PM";
             this.radio_start5PM.Size = new System.Drawing.Size(58, 20);
             this.radio_start5PM.TabIndex = 8;
-            this.radio_start5PM.TabStop = true;
             this.radio_start5PM.Text = "5 PM";
             this.radio_start5PM.UseVisualStyleBackColor = true;
             // 
@@ -109,7 +110,6 @@
             this.radio_start430PM.Name = "radio_start430PM";
             this.radio_start430PM.Size = new System.Drawing.Size(75, 20);
             this.radio_start430PM.TabIndex = 7;
-            this.radio_start430PM.TabStop = true;
             this.radio_start430PM.Text = "4:30 PM";
             this.radio_start430PM.UseVisualStyleBackColor = true;
             // 
@@ -120,7 +120,6 @@
             this.radio_start4PM.Name = "radio_start4PM";
             this.radio_start4PM.Size = new System.Drawing.Size(58, 20);
             this.radio_start4PM.TabIndex = 6;
-            this.radio_start4PM.TabStop = true;
             this.radio_start4PM.Text = "4 PM";
             this.radio_start4PM.UseVisualStyleBackColor = true;
             // 
@@ -131,7 +130,6 @@
             this.radio_startCustom.Name = "radio_startCustom";
             this.radio_startCustom.Size = new System.Drawing.Size(73, 20);
             this.radio_startCustom.TabIndex = 5;
-            this.radio_startCustom.TabStop = true;
             this.radio_startCustom.Text = "Custom";
             this.radio_startCustom.UseVisualStyleBackColor = true;
             // 
@@ -150,7 +148,6 @@
             this.radio_start1230PM.Name = "radio_start1230PM";
             this.radio_start1230PM.Size = new System.Drawing.Size(82, 20);
             this.radio_start1230PM.TabIndex = 3;
-            this.radio_start1230PM.TabStop = true;
             this.radio_start1230PM.Text = "12:30 PM";
             this.radio_start1230PM.UseVisualStyleBackColor = true;
             // 
@@ -162,7 +159,6 @@
             this.radio_start12PM.Name = "radio_start12PM";
             this.radio_start12PM.Size = new System.Drawing.Size(82, 20);
             this.radio_start12PM.TabIndex = 2;
-            this.radio_start12PM.TabStop = true;
             this.radio_start12PM.Text = "12:00 PM";
             this.radio_start12PM.UseVisualStyleBackColor = true;
             // 
@@ -173,13 +169,13 @@
             this.radio_start1130AM.Name = "radio_start1130AM";
             this.radio_start1130AM.Size = new System.Drawing.Size(82, 20);
             this.radio_start1130AM.TabIndex = 1;
-            this.radio_start1130AM.TabStop = true;
             this.radio_start1130AM.Text = "11:30 AM";
             this.radio_start1130AM.UseVisualStyleBackColor = true;
             // 
             // radio_start11AM
             // 
             this.radio_start11AM.AutoSize = true;
+            this.radio_start11AM.Checked = true;
             this.radio_start11AM.Location = new System.Drawing.Point(12, 63);
             this.radio_start11AM.Name = "radio_start11AM";
             this.radio_start11AM.Size = new System.Drawing.Size(65, 20);
@@ -226,7 +222,6 @@
             this.radio_EndClosing.Name = "radio_EndClosing";
             this.radio_EndClosing.Size = new System.Drawing.Size(73, 20);
             this.radio_EndClosing.TabIndex = 12;
-            this.radio_EndClosing.TabStop = true;
             this.radio_EndClosing.Text = "Closing";
             this.radio_EndClosing.UseVisualStyleBackColor = true;
             // 
@@ -237,7 +232,6 @@
             this.radio_End1030PM.Name = "radio_End1030PM";
             this.radio_End1030PM.Size = new System.Drawing.Size(82, 20);
             this.radio_End1030PM.TabIndex = 11;
-            this.radio_End1030PM.TabStop = true;
             this.radio_End1030PM.Text = "10:30 PM";
             this.radio_End1030PM.UseVisualStyleBackColor = true;
             // 
@@ -248,7 +242,6 @@
             this.radio_End10PM.Name = "radio_End10PM";
             this.radio_End10PM.Size = new System.Drawing.Size(65, 20);
             this.radio_End10PM.TabIndex = 10;
-            this.radio_End10PM.TabStop = true;
             this.radio_End10PM.Text = "10 PM";
             this.radio_End10PM.UseVisualStyleBackColor = true;
             // 
@@ -259,7 +252,6 @@
             this.radio_End930PM.Name = "radio_End930PM";
             this.radio_End930PM.Size = new System.Drawing.Size(75, 20);
             this.radio_End930PM.TabIndex = 9;
-            this.radio_End930PM.TabStop = true;
             this.radio_End930PM.Text = "9:30 PM";
             this.radio_End930PM.UseVisualStyleBackColor = true;
             // 
@@ -271,7 +263,6 @@
             this.radio_End9PM.Name = "radio_End9PM";
             this.radio_End9PM.Size = new System.Drawing.Size(58, 20);
             this.radio_End9PM.TabIndex = 8;
-            this.radio_End9PM.TabStop = true;
             this.radio_End9PM.Text = "9 PM";
             this.radio_End9PM.UseVisualStyleBackColor = true;
             // 
@@ -282,7 +273,6 @@
             this.radio_End830PM.Name = "radio_End830PM";
             this.radio_End830PM.Size = new System.Drawing.Size(75, 20);
             this.radio_End830PM.TabIndex = 7;
-            this.radio_End830PM.TabStop = true;
             this.radio_End830PM.Text = "8:30 PM";
             this.radio_End830PM.UseVisualStyleBackColor = true;
             // 
@@ -293,7 +283,6 @@
             this.radio_End8PM.Name = "radio_End8PM";
             this.radio_End8PM.Size = new System.Drawing.Size(58, 20);
             this.radio_End8PM.TabIndex = 6;
-            this.radio_End8PM.TabStop = true;
             this.radio_End8PM.Text = "8 PM";
             this.radio_End8PM.UseVisualStyleBackColor = true;
             // 
@@ -304,7 +293,6 @@
             this.radio_EndCustom.Name = "radio_EndCustom";
             this.radio_EndCustom.Size = new System.Drawing.Size(73, 20);
             this.radio_EndCustom.TabIndex = 5;
-            this.radio_EndCustom.TabStop = true;
             this.radio_EndCustom.Text = "Custom";
             this.radio_EndCustom.UseVisualStyleBackColor = true;
             // 
@@ -323,7 +311,6 @@
             this.radio_End430PM.Name = "radio_End430PM";
             this.radio_End430PM.Size = new System.Drawing.Size(75, 20);
             this.radio_End430PM.TabIndex = 3;
-            this.radio_End430PM.TabStop = true;
             this.radio_End430PM.Text = "4:30 PM";
             this.radio_End430PM.UseVisualStyleBackColor = true;
             // 
@@ -335,7 +322,6 @@
             this.radio_End4PM.Name = "radio_End4PM";
             this.radio_End4PM.Size = new System.Drawing.Size(58, 20);
             this.radio_End4PM.TabIndex = 2;
-            this.radio_End4PM.TabStop = true;
             this.radio_End4PM.Text = "4 PM";
             this.radio_End4PM.UseVisualStyleBackColor = true;
             // 
@@ -346,13 +332,13 @@
             this.radio_End330PM.Name = "radio_End330PM";
             this.radio_End330PM.Size = new System.Drawing.Size(75, 20);
             this.radio_End330PM.TabIndex = 1;
-            this.radio_End330PM.TabStop = true;
             this.radio_End330PM.Text = "3:30 PM";
             this.radio_End330PM.UseVisualStyleBackColor = true;
             // 
             // radio_End3PM
             // 
             this.radio_End3PM.AutoSize = true;
+            this.radio_End3PM.Checked = true;
             this.radio_End3PM.Location = new System.Drawing.Point(22, 63);
             this.radio_End3PM.Name = "radio_End3PM";
             this.radio_End3PM.Size = new System.Drawing.Size(58, 20);
@@ -363,7 +349,7 @@
             // 
             // CancelShift_Button
             // 
-            this.CancelShift_Button.Location = new System.Drawing.Point(45, 56);
+            this.CancelShift_Button.Location = new System.Drawing.Point(401, 74);
             this.CancelShift_Button.Name = "CancelShift_Button";
             this.CancelShift_Button.Size = new System.Drawing.Size(134, 49);
             this.CancelShift_Button.TabIndex = 10;
@@ -373,7 +359,7 @@
             // 
             // SaveShift_Button
             // 
-            this.SaveShift_Button.Location = new System.Drawing.Point(380, 56);
+            this.SaveShift_Button.Location = new System.Drawing.Point(401, 15);
             this.SaveShift_Button.Name = "SaveShift_Button";
             this.SaveShift_Button.Size = new System.Drawing.Size(134, 49);
             this.SaveShift_Button.TabIndex = 11;
@@ -384,39 +370,61 @@
             // dropdown_WorkerName
             // 
             this.dropdown_WorkerName.FormattingEnabled = true;
-            this.dropdown_WorkerName.Location = new System.Drawing.Point(214, 69);
+            this.dropdown_WorkerName.Location = new System.Drawing.Point(223, 72);
             this.dropdown_WorkerName.Name = "dropdown_WorkerName";
             this.dropdown_WorkerName.Size = new System.Drawing.Size(134, 24);
             this.dropdown_WorkerName.TabIndex = 13;
+            this.dropdown_WorkerName.SelectedIndexChanged += new System.EventHandler(this.dropdown_WorkerName_SelectedIndexChanged);
             // 
-            // label3
+            // WorkerName_Label
             // 
-            this.label3.AutoSize = true;
-            this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label3.Location = new System.Drawing.Point(226, 21);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(109, 31);
-            this.label3.TabIndex = 14;
-            this.label3.Text = "Worker:";
+            this.WorkerName_Label.AutoSize = true;
+            this.WorkerName_Label.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.WorkerName_Label.Location = new System.Drawing.Point(236, 24);
+            this.WorkerName_Label.Name = "WorkerName_Label";
+            this.WorkerName_Label.Size = new System.Drawing.Size(109, 31);
+            this.WorkerName_Label.TabIndex = 14;
+            this.WorkerName_Label.Text = "Worker:";
             // 
             // checkbox_DeleteShift
             // 
             this.checkbox_DeleteShift.AutoSize = true;
-            this.checkbox_DeleteShift.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.checkbox_DeleteShift.Location = new System.Drawing.Point(192, 118);
+            this.checkbox_DeleteShift.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.checkbox_DeleteShift.Location = new System.Drawing.Point(401, 133);
             this.checkbox_DeleteShift.Name = "checkbox_DeleteShift";
-            this.checkbox_DeleteShift.Size = new System.Drawing.Size(177, 35);
+            this.checkbox_DeleteShift.Size = new System.Drawing.Size(134, 29);
             this.checkbox_DeleteShift.TabIndex = 15;
             this.checkbox_DeleteShift.Text = "Delete Shift";
             this.checkbox_DeleteShift.UseVisualStyleBackColor = true;
+            // 
+            // ShiftDay_Label
+            // 
+            this.ShiftDay_Label.AutoSize = true;
+            this.ShiftDay_Label.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ShiftDay_Label.Location = new System.Drawing.Point(47, 24);
+            this.ShiftDay_Label.Name = "ShiftDay_Label";
+            this.ShiftDay_Label.Size = new System.Drawing.Size(133, 31);
+            this.ShiftDay_Label.TabIndex = 17;
+            this.ShiftDay_Label.Text = "Shift Day:";
+            // 
+            // dropdown_ShiftDayName
+            // 
+            this.dropdown_ShiftDayName.FormattingEnabled = true;
+            this.dropdown_ShiftDayName.Location = new System.Drawing.Point(46, 72);
+            this.dropdown_ShiftDayName.Name = "dropdown_ShiftDayName";
+            this.dropdown_ShiftDayName.Size = new System.Drawing.Size(134, 24);
+            this.dropdown_ShiftDayName.TabIndex = 16;
+            this.dropdown_ShiftDayName.SelectedIndexChanged += new System.EventHandler(this.dropdown_ShiftDayName_SelectedIndexChanged);
             // 
             // ShiftForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(562, 621);
+            this.Controls.Add(this.ShiftDay_Label);
+            this.Controls.Add(this.dropdown_ShiftDayName);
             this.Controls.Add(this.checkbox_DeleteShift);
-            this.Controls.Add(this.label3);
+            this.Controls.Add(this.WorkerName_Label);
             this.Controls.Add(this.dropdown_WorkerName);
             this.Controls.Add(this.SaveShift_Button);
             this.Controls.Add(this.CancelShift_Button);
@@ -466,7 +474,9 @@
         private System.Windows.Forms.Button CancelShift_Button;
         private System.Windows.Forms.Button SaveShift_Button;
         private System.Windows.Forms.ComboBox dropdown_WorkerName;
-        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label WorkerName_Label;
         private System.Windows.Forms.CheckBox checkbox_DeleteShift;
+        private System.Windows.Forms.Label ShiftDay_Label;
+        private System.Windows.Forms.ComboBox dropdown_ShiftDayName;
     }
 }

@@ -31,9 +31,5 @@ namespace scheduler_test1
         public void setMonthName(string month) { this.monthName = month; }
         public void setDayName(string day) { this.dayName = day; }
         public void setDayNum(int num) { this.dayNum = num; }
-
-
-
-
     }
 }
