@@ -14,20 +14,31 @@ namespace scheduler_test1
 {
     public partial class MainUIForm : Form
     {
+        public string appWorkersFileName;
+        public string appWorkersRawString;
+        public string appScheduleFileName;
+        public string appScheduleRawString;
+        public string appRulesFileName;
+        public string appRulesRawString;
+        public string appHolidaysFileName;
+        public string appHolidaysRawString;
+        public string appDaysOffFileName;
+        public string appDaysOffRawString;
         public MainUIForm()
         {
+            appWorkersFileName = "";
+            appWorkersRawString = "";
+            appScheduleFileName = "";
+            appScheduleRawString = "";
+            appRulesFileName = "";
+            appRulesRawString = "";
+            appHolidaysFileName = "";
+            appHolidaysRawString = "";
+            appDaysOffFileName = "";
+            appDaysOffRawString = "";
             InitializeComponent();
         }
-        public string appWorkersFileName = "";
-        public string appWorkersRawString = "";
-        public string appScheduleFileName = "";
-        public string appScheduleRawString = "";
-        public string appRulesFileName = "";
-        public string appRulesRawString = "";
-        public string appHolidaysFileName = "";
-        public string appHolidaysRawString = "";
-        public string appDaysOffFileName = "";
-        public string appDaysOffRawString = "";
+        
         private void MainUIForm_Load(object sender, EventArgs e)
         {
             //TODO: look for last loaded file(s) and load those in
@@ -45,7 +56,7 @@ namespace scheduler_test1
         }
         private void Add_Shift_Click(object sender, EventArgs e)
         {
-            ShiftForm sForm = new ShiftForm("");
+            ShiftForm sForm = new ShiftForm(appScheduleFileName);
             sForm.Show();
         }
 
