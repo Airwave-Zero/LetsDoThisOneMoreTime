@@ -56,7 +56,7 @@ namespace scheduler_test1
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.importScheduleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportScheduleAsJSONToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.exportScheduleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.exportScheduleAsPNGStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveScheduleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.workersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.addEditRulesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -71,6 +71,7 @@ namespace scheduler_test1
             this.textBox5 = new System.Windows.Forms.TextBox();
             this.textBox6 = new System.Windows.Forms.TextBox();
             this.textBox7 = new System.Windows.Forms.TextBox();
+            this.DuplicateShiftButton = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.menuStrip1.SuspendLayout();
@@ -78,7 +79,7 @@ namespace scheduler_test1
             // 
             // Workers_Button
             // 
-            this.Workers_Button.Location = new System.Drawing.Point(847, 13);
+            this.Workers_Button.Location = new System.Drawing.Point(847, 5);
             this.Workers_Button.Name = "Workers_Button";
             this.Workers_Button.Size = new System.Drawing.Size(107, 24);
             this.Workers_Button.TabIndex = 7;
@@ -88,7 +89,7 @@ namespace scheduler_test1
             // 
             // button4
             // 
-            this.button4.Location = new System.Drawing.Point(1004, 13);
+            this.button4.Location = new System.Drawing.Point(1004, 5);
             this.button4.Name = "button4";
             this.button4.Size = new System.Drawing.Size(188, 24);
             this.button4.TabIndex = 5;
@@ -98,6 +99,7 @@ namespace scheduler_test1
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.DuplicateShiftButton);
             this.panel1.Controls.Add(this.Add_Shift);
             this.panel1.Controls.Add(this.Next);
             this.panel1.Controls.Add(this.Previous);
@@ -106,12 +108,12 @@ namespace scheduler_test1
             this.panel1.Controls.Add(this.Workers_Button);
             this.panel1.Location = new System.Drawing.Point(12, 31);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(1207, 46);
+            this.panel1.Size = new System.Drawing.Size(1207, 42);
             this.panel1.TabIndex = 9;
             // 
             // Add_Shift
             // 
-            this.Add_Shift.Location = new System.Drawing.Point(130, 10);
+            this.Add_Shift.Location = new System.Drawing.Point(77, 5);
             this.Add_Shift.Name = "Add_Shift";
             this.Add_Shift.Size = new System.Drawing.Size(125, 24);
             this.Add_Shift.TabIndex = 10;
@@ -122,7 +124,7 @@ namespace scheduler_test1
             // Next
             // 
             this.Next.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Next.Location = new System.Drawing.Point(770, 10);
+            this.Next.Location = new System.Drawing.Point(770, 4);
             this.Next.Name = "Next";
             this.Next.Size = new System.Drawing.Size(27, 27);
             this.Next.TabIndex = 0;
@@ -132,7 +134,7 @@ namespace scheduler_test1
             // Previous
             // 
             this.Previous.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Previous.Location = new System.Drawing.Point(433, 10);
+            this.Previous.Location = new System.Drawing.Point(433, 4);
             this.Previous.Name = "Previous";
             this.Previous.Size = new System.Drawing.Size(27, 27);
             this.Previous.TabIndex = 9;
@@ -143,7 +145,7 @@ namespace scheduler_test1
             // richTextBox1
             // 
             this.richTextBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.richTextBox1.Location = new System.Drawing.Point(479, 10);
+            this.richTextBox1.Location = new System.Drawing.Point(479, 4);
             this.richTextBox1.Name = "richTextBox1";
             this.richTextBox1.ReadOnly = true;
             this.richTextBox1.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.None;
@@ -167,7 +169,7 @@ namespace scheduler_test1
             this.panel2.Controls.Add(this.panel4);
             this.panel2.Controls.Add(this.panel16);
             this.panel2.Controls.Add(this.panel3);
-            this.panel2.Location = new System.Drawing.Point(12, 112);
+            this.panel2.Location = new System.Drawing.Point(12, 114);
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(1207, 645);
             this.panel2.TabIndex = 10;
@@ -289,7 +291,7 @@ namespace scheduler_test1
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.importScheduleToolStripMenuItem,
             this.exportScheduleAsJSONToolStripMenuItem,
-            this.exportScheduleToolStripMenuItem,
+            this.exportScheduleAsPNGStripMenuItem,
             this.saveScheduleToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(46, 24);
@@ -307,13 +309,14 @@ namespace scheduler_test1
             this.exportScheduleAsJSONToolStripMenuItem.Name = "exportScheduleAsJSONToolStripMenuItem";
             this.exportScheduleAsJSONToolStripMenuItem.Size = new System.Drawing.Size(256, 26);
             this.exportScheduleAsJSONToolStripMenuItem.Text = "Export Schedule as JSON";
+            this.exportScheduleAsJSONToolStripMenuItem.Click += new System.EventHandler(this.exportScheduleJSONToolStripMenuItem_Click);
             // 
-            // exportScheduleToolStripMenuItem
+            // exportScheduleAsPNGStripMenuItem
             // 
-            this.exportScheduleToolStripMenuItem.Name = "exportScheduleToolStripMenuItem";
-            this.exportScheduleToolStripMenuItem.Size = new System.Drawing.Size(256, 26);
-            this.exportScheduleToolStripMenuItem.Text = "Export Schedule as PNG";
-            this.exportScheduleToolStripMenuItem.Click += new System.EventHandler(this.exportScheduleToolStripMenuItem_Click);
+            this.exportScheduleAsPNGStripMenuItem.Name = "exportScheduleAsPNGStripMenuItem";
+            this.exportScheduleAsPNGStripMenuItem.Size = new System.Drawing.Size(256, 26);
+            this.exportScheduleAsPNGStripMenuItem.Text = "Export Schedule as PNG";
+            this.exportScheduleAsPNGStripMenuItem.Click += new System.EventHandler(this.exportSchedulePNGToolStripMenuItem_Click);
             // 
             // saveScheduleToolStripMenuItem
             // 
@@ -367,7 +370,7 @@ namespace scheduler_test1
             this.workersToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(1231, 28);
+            this.menuStrip1.Size = new System.Drawing.Size(1229, 28);
             this.menuStrip1.TabIndex = 8;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -462,11 +465,20 @@ namespace scheduler_test1
             this.textBox7.Text = "Saturday";
             this.textBox7.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
+            // DuplicateShiftButton
+            // 
+            this.DuplicateShiftButton.Location = new System.Drawing.Point(253, 5);
+            this.DuplicateShiftButton.Name = "DuplicateShiftButton";
+            this.DuplicateShiftButton.Size = new System.Drawing.Size(141, 24);
+            this.DuplicateShiftButton.TabIndex = 11;
+            this.DuplicateShiftButton.Text = "DUPLICATE SHIFT";
+            this.DuplicateShiftButton.UseVisualStyleBackColor = true;
+            // 
             // MainUIForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1231, 769);
+            this.ClientSize = new System.Drawing.Size(1229, 778);
             this.Controls.Add(this.textBox7);
             this.Controls.Add(this.textBox6);
             this.Controls.Add(this.textBox5);
@@ -498,7 +510,7 @@ namespace scheduler_test1
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem importScheduleToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exportScheduleAsJSONToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem exportScheduleToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem exportScheduleAsPNGStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveScheduleToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem workersToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem addEditRulesToolStripMenuItem;
@@ -531,6 +543,7 @@ namespace scheduler_test1
         private Panel panel15;
         private Panel panel16;
         private Button Add_Shift;
+        private Button DuplicateShiftButton;
     }
 }
 

@@ -70,7 +70,7 @@ namespace scheduler_test1
             }
             //TODO : update the UI with all the shifts
         }
-        private void exportScheduleToolStripMenuItem_Click(object sender, EventArgs e)
+        private void exportScheduleJSONToolStripMenuItem_Click(object sender, EventArgs e)
         {
             bool successExport = sharedExport(appScheduleFileName);
             if (successExport)
@@ -79,6 +79,18 @@ namespace scheduler_test1
                 MessageBox.Show("Wrote to file located at: " + exportedFileName);
             }
         }
+        
+        private void exportSchedulePNGToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            int windowWidth = 1247;
+            int windowHeight = 825;
+            using (var bmp = new Bitmap(windowWidth, windowHeight))
+            {
+                DrawToBitmap(bmp, new Rectangle(0, 0, bmp.Width, bmp.Height));
+                bmp.Save(@"C:\Users\bboyf\OneDrive\Desktop\CODE\LetsDoThisOneMoreTime\shift_scheduler_bot\SchedulerFormApp\JSON_files\screenshot.png");
+            }
+        }
+
         private void Previous_Click(object sender, EventArgs e)
         {
 
@@ -94,7 +106,7 @@ namespace scheduler_test1
                 appWorkersRawString = File.ReadAllText(appWorkersFileName);
             }
         }
-
+        
         private void exportWorkersToolStripMenuItem1_Click(object sender, EventArgs e)
         {
             // TODO: add checking/guardrail if user imports wrong file
@@ -132,6 +144,8 @@ namespace scheduler_test1
             }
             return fileName == "";
         }
+
+        
     }
 
 }
