@@ -141,9 +141,10 @@ namespace scheduler_test1
                     deleteCounter = 0;
                 }
             }
-            string t4 = JsonConvert.SerializeObject(shiftObj).ToString();
-            //string output = JsonConvert.SerializeObject(jsonData);
-            File.WriteAllText(shiftFileName, t4);
+            string shiftObjAsStr = JsonConvert.SerializeObject(shiftObj).ToString();
+            // write it back to the file
+            File.WriteAllText(shiftFileName, shiftObjAsStr);
+            this.Close();
         }
 
 
