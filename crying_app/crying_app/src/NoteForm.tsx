@@ -1,8 +1,8 @@
 import {Form, Stack, Row, Col, Button} from "React-bootstrap"
 import CreatableReactSelect from "react-select/creatable"
 import {Link} from "react-router-dom"
-import {useRef, FormEvent} from "react"
-import {NoteData} from "./App"
+import {useRef, FormEvent, useState} from "react"
+import {NoteData, Tag} from "./App"
 
 
 type NoteFormProps = {
@@ -14,6 +14,7 @@ export function NoteForm( {onSubmit}: NoteFormProps)
 {
     const titleRef = useRef<HTMLInputElement>(null)
     const markdownRef = useRef<HTMLTextAreaElement>(null)
+    const [selectedTags, setSelectedTags] = useState<Tag[]>([])
 
     function handleSubmit(e:FormEvent){
         e.preventDefault()
@@ -26,7 +27,9 @@ export function NoteForm( {onSubmit}: NoteFormProps)
             is unable to make that determination itself. The bang operator tells the 
             compiler to temporarily relax the "not null" constraint that it might 
             otherwise demand. It says to the compiler: "As the developer, 
-            I know better than you that this variable cannot be null right now". */
+            I know better than you that this variable cannot be null right now". 
+            This was also accomplished because we set 
+            titleRef and markdownRef as 'required as textarea'*/
             title: titleRef.current!.value,
             markdown: markdownRef.current!.value,
             tags:[]
@@ -46,7 +49,9 @@ export function NoteForm( {onSubmit}: NoteFormProps)
                 <Col>
                 <Form.Group controlId = "tags">
                     <Form.Label>Tags</Form.Label>
-                    <CreatableReactSelect isMulti></CreatableReactSelect>
+                    <CreatableReactSelect value={selectedTags.map(tag => { return {label:tag.label, value: tag.id}})}
+                    onChange = { tags => {setSelectedTags(tags.map(tag => { return {label: tag.label, id: tag.value}}))}}
+                    isMulti></CreatableReactSelect>
                 </Form.Group>
                 </Col>
                </Row>
