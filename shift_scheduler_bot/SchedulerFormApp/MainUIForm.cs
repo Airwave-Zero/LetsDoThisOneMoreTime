@@ -8,7 +8,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.IO; 
+using System.IO;
+using Newtonsoft.Json.Linq;
 
 namespace scheduler_test1
 {
@@ -24,6 +25,8 @@ namespace scheduler_test1
         public string appHolidaysRawString;
         public string appDaysOffFileName;
         public string appDaysOffRawString;
+        public enum Calendar { January = 1, February, March, April, May, June,
+                                July, August, September, October, November, December};
         public MainUIForm()
         {
             appWorkersFileName = "";
@@ -68,6 +71,13 @@ namespace scheduler_test1
             {
                 appScheduleRawString = File.ReadAllText(appScheduleFileName);
             }
+            JObject schedule = JObject.Parse(appScheduleRawString);
+            string schedMonth = schedule["Schedule"]["Month"].ToString();
+            // do this in a for loop
+            TextBox[] test = { MondayTextBox, TuesdayTextBox, WednesdayTextBox, ThursdayTextBox, 
+                FridayTextBox, SaturdayTextBox, SundayTextBox};
+
+            MondayTextBox.Text = "Monday " + Enum.Parse(typeof(int), schedMonth).ToString() + ;
             //TODO : update the UI with all the shifts
         }
         private void exportScheduleJSONToolStripMenuItem_Click(object sender, EventArgs e)
