@@ -64,13 +64,13 @@ namespace scheduler_test1
             this.importWorkersToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.exportWorkersToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
-            this.textBox1 = new System.Windows.Forms.TextBox();
-            this.textBox2 = new System.Windows.Forms.TextBox();
-            this.textBox3 = new System.Windows.Forms.TextBox();
-            this.textBox4 = new System.Windows.Forms.TextBox();
-            this.textBox5 = new System.Windows.Forms.TextBox();
-            this.textBox6 = new System.Windows.Forms.TextBox();
-            this.textBox7 = new System.Windows.Forms.TextBox();
+            this.SundayTextBox = new System.Windows.Forms.TextBox();
+            this.MondayTextBox = new System.Windows.Forms.TextBox();
+            this.TuesdayTextBox = new System.Windows.Forms.TextBox();
+            this.WednesdayTextBox = new System.Windows.Forms.TextBox();
+            this.ThursdayTextBox = new System.Windows.Forms.TextBox();
+            this.FridayTextBox = new System.Windows.Forms.TextBox();
+            this.SaturdayTextBox = new System.Windows.Forms.TextBox();
             this.DuplicateShiftButton = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
@@ -374,99 +374,100 @@ namespace scheduler_test1
             this.menuStrip1.TabIndex = 8;
             this.menuStrip1.Text = "menuStrip1";
             // 
-            // textBox1
+            // SundayTextBox
             // 
-            this.textBox1.BackColor = this.BackColor;
-            this.textBox1.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.textBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBox1.Location = new System.Drawing.Point(1058, 83);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.ReadOnly = true;
-            this.textBox1.Size = new System.Drawing.Size(152, 23);
-            this.textBox1.TabIndex = 11;
-            this.textBox1.Text = "Sunday";
-            this.textBox1.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.SundayTextBox.BackColor = this.BackColor;
+            this.SundayTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.SundayTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.SundayTextBox.Location = new System.Drawing.Point(1058, 83);
+            this.SundayTextBox.Name = "SundayTextBox";
+            this.SundayTextBox.ReadOnly = true;
+            this.SundayTextBox.Size = new System.Drawing.Size(152, 23);
+            this.SundayTextBox.TabIndex = 11;
+            this.SundayTextBox.Text = "Sunday";
+            this.SundayTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
-            // textBox2
+            // MondayTextBox
             // 
-            this.textBox2.BackColor = this.BackColor;
-            this.textBox2.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.textBox2.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBox2.Location = new System.Drawing.Point(20, 83);
-            this.textBox2.Name = "textBox2";
-            this.textBox2.ReadOnly = true;
-            this.textBox2.Size = new System.Drawing.Size(152, 23);
-            this.textBox2.TabIndex = 12;
-            this.textBox2.Text = "Monday";
-            this.textBox2.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.MondayTextBox.BackColor = this.BackColor;
+            this.MondayTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.MondayTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.MondayTextBox.Location = new System.Drawing.Point(20, 83);
+            this.MondayTextBox.Name = "MondayTextBox";
+            this.MondayTextBox.ReadOnly = true;
+            this.MondayTextBox.Size = new System.Drawing.Size(152, 23);
+            this.MondayTextBox.TabIndex = 12;
+            this.MondayTextBox.Text = "Monday";
+            this.MondayTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
-            // textBox3
+            // TuesdayTextBox
             // 
-            this.textBox3.BackColor = this.BackColor;
-            this.textBox3.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.textBox3.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBox3.Location = new System.Drawing.Point(193, 83);
-            this.textBox3.Name = "textBox3";
-            this.textBox3.ReadOnly = true;
-            this.textBox3.Size = new System.Drawing.Size(152, 23);
-            this.textBox3.TabIndex = 13;
-            this.textBox3.Text = "Tuesday";
-            this.textBox3.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.TuesdayTextBox.BackColor = this.BackColor;
+            this.TuesdayTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.TuesdayTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.TuesdayTextBox.Location = new System.Drawing.Point(193, 83);
+            this.TuesdayTextBox.Name = "TuesdayTextBox";
+            this.TuesdayTextBox.ReadOnly = true;
+            this.TuesdayTextBox.Size = new System.Drawing.Size(152, 23);
+            this.TuesdayTextBox.TabIndex = 13;
+            this.TuesdayTextBox.Text = "Tuesday";
+            this.TuesdayTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
-            // textBox4
+            // WednesdayTextBox
             // 
-            this.textBox4.BackColor = this.BackColor;
-            this.textBox4.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.textBox4.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBox4.Location = new System.Drawing.Point(366, 83);
-            this.textBox4.Name = "textBox4";
-            this.textBox4.ReadOnly = true;
-            this.textBox4.Size = new System.Drawing.Size(152, 23);
-            this.textBox4.TabIndex = 14;
-            this.textBox4.Text = "Wednesday";
-            this.textBox4.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.WednesdayTextBox.BackColor = this.BackColor;
+            this.WednesdayTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.WednesdayTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.WednesdayTextBox.Location = new System.Drawing.Point(366, 83);
+            this.WednesdayTextBox.Name = "WednesdayTextBox";
+            this.WednesdayTextBox.ReadOnly = true;
+            this.WednesdayTextBox.Size = new System.Drawing.Size(152, 23);
+            this.WednesdayTextBox.TabIndex = 14;
+            this.WednesdayTextBox.Text = "Wednesday";
+            this.WednesdayTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
-            // textBox5
+            // ThursdayTextBox
             // 
-            this.textBox5.BackColor = this.BackColor;
-            this.textBox5.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.textBox5.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBox5.Location = new System.Drawing.Point(539, 83);
-            this.textBox5.Name = "textBox5";
-            this.textBox5.ReadOnly = true;
-            this.textBox5.Size = new System.Drawing.Size(152, 23);
-            this.textBox5.TabIndex = 15;
-            this.textBox5.Text = "Thursday";
-            this.textBox5.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.ThursdayTextBox.BackColor = this.BackColor;
+            this.ThursdayTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.ThursdayTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ThursdayTextBox.Location = new System.Drawing.Point(539, 83);
+            this.ThursdayTextBox.Name = "ThursdayTextBox";
+            this.ThursdayTextBox.ReadOnly = true;
+            this.ThursdayTextBox.Size = new System.Drawing.Size(152, 23);
+            this.ThursdayTextBox.TabIndex = 15;
+            this.ThursdayTextBox.Text = "Thursday";
+            this.ThursdayTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
-            // textBox6
+            // FridayTextBox
             // 
-            this.textBox6.BackColor = this.BackColor;
-            this.textBox6.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.textBox6.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBox6.Location = new System.Drawing.Point(712, 83);
-            this.textBox6.Name = "textBox6";
-            this.textBox6.ReadOnly = true;
-            this.textBox6.Size = new System.Drawing.Size(152, 23);
-            this.textBox6.TabIndex = 16;
-            this.textBox6.Text = "Friday";
-            this.textBox6.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.FridayTextBox.BackColor = this.BackColor;
+            this.FridayTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.FridayTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.FridayTextBox.Location = new System.Drawing.Point(712, 83);
+            this.FridayTextBox.Name = "FridayTextBox";
+            this.FridayTextBox.ReadOnly = true;
+            this.FridayTextBox.Size = new System.Drawing.Size(152, 23);
+            this.FridayTextBox.TabIndex = 16;
+            this.FridayTextBox.Text = "Friday";
+            this.FridayTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
-            // textBox7
+            // SaturdayTextBox
             // 
-            this.textBox7.BackColor = this.BackColor;
-            this.textBox7.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.textBox7.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBox7.Location = new System.Drawing.Point(885, 83);
-            this.textBox7.Name = "textBox7";
-            this.textBox7.ReadOnly = true;
-            this.textBox7.Size = new System.Drawing.Size(152, 23);
-            this.textBox7.TabIndex = 17;
-            this.textBox7.Text = "Saturday";
-            this.textBox7.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.SaturdayTextBox.BackColor = this.BackColor;
+            this.SaturdayTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.SaturdayTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.SaturdayTextBox.Location = new System.Drawing.Point(885, 83);
+            this.SaturdayTextBox.Name = "SaturdayTextBox";
+            this.SaturdayTextBox.ReadOnly = true;
+            this.SaturdayTextBox.Size = new System.Drawing.Size(152, 23);
+            this.SaturdayTextBox.TabIndex = 17;
+            this.SaturdayTextBox.Text = "Saturday";
+            this.SaturdayTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // DuplicateShiftButton
             // 
+            this.DuplicateShiftButton.Enabled = false;
             this.DuplicateShiftButton.Location = new System.Drawing.Point(253, 5);
             this.DuplicateShiftButton.Name = "DuplicateShiftButton";
             this.DuplicateShiftButton.Size = new System.Drawing.Size(141, 24);
@@ -479,13 +480,13 @@ namespace scheduler_test1
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1229, 778);
-            this.Controls.Add(this.textBox7);
-            this.Controls.Add(this.textBox6);
-            this.Controls.Add(this.textBox5);
-            this.Controls.Add(this.textBox4);
-            this.Controls.Add(this.textBox3);
-            this.Controls.Add(this.textBox2);
-            this.Controls.Add(this.textBox1);
+            this.Controls.Add(this.SaturdayTextBox);
+            this.Controls.Add(this.FridayTextBox);
+            this.Controls.Add(this.ThursdayTextBox);
+            this.Controls.Add(this.WednesdayTextBox);
+            this.Controls.Add(this.TuesdayTextBox);
+            this.Controls.Add(this.MondayTextBox);
+            this.Controls.Add(this.SundayTextBox);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.menuStrip1);
@@ -521,13 +522,13 @@ namespace scheduler_test1
         private System.Windows.Forms.RichTextBox richTextBox1;
         private System.Windows.Forms.Button Previous;
         private System.Windows.Forms.Button Next;
-        private System.Windows.Forms.TextBox textBox1;
-        private System.Windows.Forms.TextBox textBox2;
-        private System.Windows.Forms.TextBox textBox3;
-        private System.Windows.Forms.TextBox textBox4;
-        private System.Windows.Forms.TextBox textBox5;
-        private System.Windows.Forms.TextBox textBox6;
-        private System.Windows.Forms.TextBox textBox7;
+        private System.Windows.Forms.TextBox SundayTextBox;
+        private System.Windows.Forms.TextBox MondayTextBox;
+        private System.Windows.Forms.TextBox TuesdayTextBox;
+        private System.Windows.Forms.TextBox WednesdayTextBox;
+        private System.Windows.Forms.TextBox ThursdayTextBox;
+        private System.Windows.Forms.TextBox FridayTextBox;
+        private System.Windows.Forms.TextBox SaturdayTextBox;
         private Panel panel3;
         private Panel panel9;
         private Panel panel8;
