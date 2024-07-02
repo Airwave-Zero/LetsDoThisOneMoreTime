@@ -8,7 +8,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.IO; 
+using System.IO;
+using Newtonsoft.Json.Linq;
 
 namespace scheduler_test1
 {
@@ -24,6 +25,8 @@ namespace scheduler_test1
         public string appHolidaysRawString;
         public string appDaysOffFileName;
         public string appDaysOffRawString;
+        public enum Calendar { January = 1, February, March, April, May, June,
+                                July, August, September, October, November, December};
         public MainUIForm()
         {
             appWorkersFileName = "";
@@ -68,9 +71,16 @@ namespace scheduler_test1
             {
                 appScheduleRawString = File.ReadAllText(appScheduleFileName);
             }
+            JObject schedule = JObject.Parse(appScheduleRawString);
+            string schedMonth = schedule["Schedule"]["Month"].ToString();
+            // do this in a for loop
+            TextBox[] test = { MondayTextBox, TuesdayTextBox, WednesdayTextBox, ThursdayTextBox, 
+                FridayTextBox, SaturdayTextBox, SundayTextBox};
+
+            MondayTextBox.Text = "Monday " + Enum.Parse(typeof(int), schedMonth).ToString() + ;
             //TODO : update the UI with all the shifts
         }
-        private void exportScheduleToolStripMenuItem_Click(object sender, EventArgs e)
+        private void exportScheduleJSONToolStripMenuItem_Click(object sender, EventArgs e)
         {
             bool successExport = sharedExport(appScheduleFileName);
             if (successExport)
@@ -79,6 +89,18 @@ namespace scheduler_test1
                 MessageBox.Show("Wrote to file located at: " + exportedFileName);
             }
         }
+        
+        private void exportSchedulePNGToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            int windowWidth = 1247;
+            int windowHeight = 825;
+            using (var bmp = new Bitmap(windowWidth, windowHeight))
+            {
+                DrawToBitmap(bmp, new Rectangle(0, 0, bmp.Width, bmp.Height));
+                bmp.Save(@"C:\Users\bboyf\OneDrive\Desktop\CODE\LetsDoThisOneMoreTime\shift_scheduler_bot\SchedulerFormApp\JSON_files\screenshot.png");
+            }
+        }
+
         private void Previous_Click(object sender, EventArgs e)
         {
 
@@ -94,7 +116,7 @@ namespace scheduler_test1
                 appWorkersRawString = File.ReadAllText(appWorkersFileName);
             }
         }
-
+        
         private void exportWorkersToolStripMenuItem1_Click(object sender, EventArgs e)
         {
             // TODO: add checking/guardrail if user imports wrong file
@@ -132,6 +154,8 @@ namespace scheduler_test1
             }
             return fileName == "";
         }
+
+        
     }
 
 }
