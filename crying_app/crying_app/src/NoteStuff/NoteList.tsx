@@ -11,7 +11,7 @@ import {
 } from "react-bootstrap"
 import { Link } from "react-router-dom"
 import ReactSelect from "react-select"
-import { Tag } from "./App"
+import { Tag } from "../App"
 import styles from "./NoteList.module.css"
 
 type SimplifiedNote = {
@@ -60,9 +60,10 @@ export function NoteList({
 
   return (
     <>
+      
       <Row className="align-items-center mb-4">
         <Col>
-          <h1>Notes</h1>
+          <h1>Crying Tracker</h1>
         </Col>
         <Col xs="auto">
           <Stack gap={2} direction="horizontal">
@@ -71,13 +72,12 @@ export function NoteList({
             </Link>
             <Button
               onClick={() => setEditTagsModalIsOpen(true)}
-              variant="outline-secondary"
-            >
+              variant="outline-secondary">
               Edit Tags
             </Button>
           </Stack>
         </Col>
-      </Row>
+    </Row>
       <Form>
         <Row className="mb-4">
           <Col>
@@ -113,11 +113,11 @@ export function NoteList({
           </Col>
         </Row>
       </Form>
-      <Row xs={1} sm={2} lg={3} xl={4} className="g-3">
+      <Row>
         {filteredNotes.map(note => (
-          <Col key={note.id}>
+          <Row class="xs-auto" key={note.id}>
             <NoteCard id={note.id} title={note.title} tags={note.tags} />
-          </Col>
+          </Row>
         ))}
       </Row>
       <EditTagsModal
