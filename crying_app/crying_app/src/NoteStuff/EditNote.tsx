@@ -1,4 +1,4 @@
-import { NoteData, Tag } from "./App"
+import { NoteData, Tag } from "../App.tsx"
 import { NoteForm } from "./NoteForm"
 import { useNote } from "./NoteLayout.tsx"
 
