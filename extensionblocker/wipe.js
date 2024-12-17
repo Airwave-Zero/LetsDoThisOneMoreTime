@@ -4,8 +4,18 @@
 
 TODO 1: any url changes should automatically redirect user to a LC link
 TODO 2: decide on a LC of the day (?)
+2.1) extract a giant set of LC problems (blind 75, neetcode 150), webscraper to extract URL and problem name
+2.2) save as json file
 TODO 3: instead of immediately taking user to LC, open a custom webpage/HTML that
 shows users what they need to do to unlock browser
+
+
+TODO 4: add conditions for different locks like browser timer or duolingo API
+--web-ui_progress-bar-color: rgb(var(--color-owl)); 
+--web-ui_progress-bar-shine-height: 3px; --__internal__progress-bar-height: 16px; 
+--__internal__progress-bar-inner-value: 0%; --__internal__progress-bar-value: 73.47%; // duolingo progress bar
+<div data-test="session-complete-slide">
+<div class="_3z6AH">Lesson Complete!</div>
 
 */
 
@@ -24,7 +34,7 @@ chrome.action.onClicked.addListener(async (tab) => {
     if (nextState === 'ON') {
       // Open a new tab
       // TODO 2
-      const newTab = await chrome.tabs.create({ url: 'https://www.youtube.com' });
+      const newTab = await chrome.tabs.create({ url: 'https://leetcode.com/problems/two-sum/description/' });
 
       // Get all tabs in the current window
       const allTabs = await chrome.tabs.query({ currentWindow: true });
