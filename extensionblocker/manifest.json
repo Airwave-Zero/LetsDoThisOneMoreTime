@@ -4,9 +4,9 @@
   "version": "1.0",
   "manifest_version": 3,
   "icons": {
-  "16" : "extensionicon.png",
-  "32" : "extensionicon.png",
-  "48" : "extensionicon.png",
+  "16" :  "extensionicon.png",
+  "32" :  "extensionicon.png",
+  "48" :  "extensionicon.png",
   "128" : "extensionicon.png"
   },
   "background": {
@@ -23,5 +23,13 @@
         "default": "Ctrl+M"
       }
     }
-  }
+  },
+  "content_scripts":[
+    {
+      "matches":["*://*/*"],
+      "js":["content.js"],
+      "run_at":"document_idle"
+    }
+
+  ]
 }
