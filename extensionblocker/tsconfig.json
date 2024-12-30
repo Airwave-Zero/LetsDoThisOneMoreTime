@@ -109,8 +109,10 @@
     "skipLibCheck": true                                 /* Skip type checking all .d.ts files. */
   },
   "include":[
-    "C:\\Users\\Gabriel\\Desktop\\testt\\extensionblocker\\link_extract\\script_extract.ts",
-    "C:\\Users\\Gabriel\\Desktop\\testt\\extensionblocker\\extract.ts",
-    "C:\\Users\\Gabriel\\Desktop\\testt\\extensionblocker\\index.ts"
+    "./**/*.ts", 
+    "./**/*.tsx",
+  ],
+  "exclude":[
+    "node_modules"
   ]
 }
