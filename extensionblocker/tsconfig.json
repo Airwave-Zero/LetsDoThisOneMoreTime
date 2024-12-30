@@ -109,10 +109,11 @@
     "skipLibCheck": true                                 /* Skip type checking all .d.ts files. */
   },
   "include":[
-    "./**/*.ts", 
-    "./**/*.tsx",
+    "**/*.ts", 
+    "**/*.tsx",
   ],
   "exclude":[
-    "node_modules"
+    "C:\\Users\\Gabriel\\Desktop\\testt\\extensionblocker\\node_modules\\",
+    "**/*.js"
   ]
 }
