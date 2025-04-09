@@ -1,0 +1,29 @@
+[
+  {
+    "Name": "Bill Nye",
+    "Age": 30,
+    "Status": "Active",
+    "Experience": "New/Training",
+    "Phone": "0000000000",
+    "Notes": [ "Likes seafood" ],
+    "Busy": [ "Sunday", "Monday Night", "Saturday" ]
+  },
+  {
+    "Name": "Sam Smith",
+    "Age": 41,
+    "Status": "Inactive",
+    "Experience": "Very Experienced",
+    "Phone": "9999999999",
+    "Notes": [ "Fluent in Tagalog" ],
+    "Busy": [ "Monday Night", "Wednesday" ]
+  },
+  {
+    "Name": "Derek Kim",
+    "Age": 20,
+    "Status": "Active",
+    "Experience": "New/Training",
+    "Phone": "1234567890",
+    "Notes": [ "Too short to reach top shelf of fridge" ],
+    "Busy": [ "Wednesday Morning", "Thursday Morning" ]
+  }
+]

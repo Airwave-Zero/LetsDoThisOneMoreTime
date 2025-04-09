@@ -1,0 +1,17 @@
+{
+  "devDependencies": {
+    "@types/chrome": "^0.0.287",
+    "@types/puppeteer": "^7.0.4",
+    "ts-loader": "^9.5.1",
+    "typescript": "^5.7.2",
+    "webpack": "^5.97.1",
+    "webpack-cli": "^5.1.4"
+  },
+  "dependencies": {
+    "copy-webpack-plugin": "^12.0.2",
+    "puppeteer": "^23.11.1"
+  },
+  "scripts": {
+    "build": "webpack --config webpack/webpack.config.js"
+  }
+}

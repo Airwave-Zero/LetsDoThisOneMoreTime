@@ -1,0 +1,26 @@
+[
+  {
+    "Name": "January",
+    "Employees": [
+      {
+        "Name": "Robin",
+        "Days": [ 4, 20 ]
+      },
+      {
+        "Name": "Jason",
+        "Days": [ 17 ]
+      }
+    ]
+  },
+  { "February": {} },
+  { "March": {} },
+  { "April": {} },
+  { "May": {} },
+  { "June": {} },
+  { "July": {} },
+  { "August": {} },
+  { "September": {} },
+  { "October": {} },
+  { "November": {} },
+  { "December": {} }
+]
