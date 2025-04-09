@@ -1,0 +1,96 @@
+body {
+  font-family: sans-serif;
+}
+
+.week-days {
+  display: flex;
+}
+
+.background-container {
+  background-image: linear-gradient(#FDB298, #B176FE);
+  width: 100%;
+  height: 500px;
+}
+
+.calendar-container {
+  width: 55%;
+  margin: auto;
+  position: relative;
+  top: -500px;
+  padding-top: 200px;
+}
+
+.datepicker-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  background: white;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+}
+
+.datepicker-container span {
+  font-size: 20px;
+}
+
+.datepicker-container svg{
+  border-radius: 100px;
+  background: #E8E8E8;
+  padding : 10px 10px;
+  margin: 10px;
+}
+
+.calendar {
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+
+.weekdays-container {
+  display: flex;
+  margin: auto;
+  justify-content: space-around;
+  background: white;
+}
+
+.weekdays-container .week-day {
+  color: #808080;
+}
+
+.calendar .week {
+  display: inline-flex;
+  align-items: flex-start;
+  justify-content: space-around;
+  width: 100%;
+  height: 100%;
+  background: white;
+}
+
+.calendar .week .date {
+  width: 30px;
+  height: 100%;
+  padding: 10px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+
+.today {
+  background-color: #FD6CBB;
+  color: white;
+  border-radius: 5px;
+  filter: drop-shadow(2px 2px 2px #FD6CBB);
+}
+
+.selected {
+  border: solid 1px grey;
+  border-radius: 5px;
+}
+
+button {
+  background: white;
+  border: none;
+}
