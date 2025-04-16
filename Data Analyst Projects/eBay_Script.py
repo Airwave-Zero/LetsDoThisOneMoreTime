@@ -9,8 +9,8 @@ import requests
 
 
 def create_eBay_Soup(card_name):
-    # This function handles the entire eBay creation and requests and returns
-    # and interaction process and returns a parsed BeautifulSoup object
+    ''' This function handles the entire eBay creation and requests and returns
+        and interaction process and returns a parsed BeautifulSoup object '''
     base_url = "https://www.ebay.com/sch/i.html"
 
     # can be modified for further subquerying
@@ -36,10 +36,10 @@ def create_eBay_Soup(card_name):
     return listings
 
 def extractCardInfo(pageParsed, card_name, max_results):
-    # This function takes in the BeautifulSoup object (HTML parsed), card name, and
-    # max results and searches through the data to extract a
-    # dataframe object containing: card name, price sold at, and date of sale
-    # for later PowerBI usage
+    ''' This function takes in the BeautifulSoup object (HTML parsed), card name, and
+        max results and searches through the data to extract a
+        dataframe object for later PowerBI usage containing:
+        normalized card name, listing name, price sold at, and date of sale '''
     
     results = []
     for item in pageParsed[:max_results]:
@@ -72,6 +72,7 @@ def extractCardInfo(pageParsed, card_name, max_results):
                 sold_date = datetime.strptime(date_match.group(), "%b %d, %Y")
             if sold_date:
                 results.append({
+                    "Normalized Card Name": card_name,
                     "Card Name": name_text,
                     "Sold Price": price,
                     "Sold Date": sold_date
@@ -81,64 +82,108 @@ def extractCardInfo(pageParsed, card_name, max_results):
             
     return pd.DataFrame(results)
 
-def drop_duplicates(new_data, existing_data):
-    # Normalize 'Sold Date' to date only (no time component)
-    existing_data["Sold Date"] = pd.to_datetime(existing_data["Sold Date"]).dt.date
+def drop_duplicates(new_data, card_name, history_path):
+    ''' This function checks for duplicates in the csv for the current card'''
 
-    # Create unique keys for existing entries
-    existing_keys = set(
-        existing_data.apply(lambda row: f"{row['Card Name']}|{row['Sold Price']}|{row['Sold Date']}", axis=1)
-    )
+    # Generates the file path to check for the specific card name csv
+    card_file_path = os.path.join(history_path, f"{card_name.replace(' ', '_').replace('/', '_')}.csv")
 
-    # Filter new data
+    if os.path.exists(card_file_path):
+        existing_data = pd.read_csv(card_file_path)
+        if not existing_data.empty:
+            # Generate a set of keys for cards already inputted, we are using Listing Name, Price, and Date as a unique kkey
+            existing_keys = set(
+                existing_data.apply(lambda row: f"{row['Card Name']}|{row['Sold Price']}|{row['Sold Date']}", axis=1)
+            )
+        else:
+            existing_keys = set()
+    else:
+        # Otherwise no keys to verify against
+        existing_keys = set()
+
+    # Normalize new data "Sold Date" for comparison, avoid duplicates
     new_data["Sold Date"] = pd.to_datetime(new_data["Sold Date"]).dt.date
+    
     new_data["Unique Key"] = new_data.apply(
         lambda row: f"{row['Card Name']}|{row['Sold Price']}|{row['Sold Date']}", axis=1
     )
+    
+    # Filter out records that already exist
     filtered_data = new_data[~new_data["Unique Key"].isin(existing_keys)].drop(columns=["Unique Key"])
     
     return filtered_data
 
-def track_price_history(card_names, history_path, max_results=25):
-    # High level function that handles overall control flow of script
-    # 1) Make connection and look up the card on eBay
-    # 2) Extract the posting name, date, and price sold
-    # 3) Transform the data a bit and remove duplicates
-    # 4) Output the non-duplicates into the csv data
+def get_existing_data(card, file_path, folder_path, filtered_df):
+    '''This function retrieves the existing data in the card CSV'''
     
+    # Load existing data and combine with filtered new data
+    if os.path.exists(file_path):
+        existing_data = pd.read_csv(file_path)
+    else:
+        existing_data = pd.DataFrame(columns=filtered_df.columns)
+
+    # Clean and remove empty columns for avoiding future warnings
+    existing_data = existing_data.dropna(axis=1, how='all')
+        
+    return existing_data
+
+def track_price_history(card_names, folder_path, max_results=25):
+    ''' High-level function that handles overall control flow of script
+    0) Make a folder for the csv's to be saved into
+    1) Make connection and look up the card on eBay
+    2) Extract the posting name, date, and price sold
+    3) Transform the data a bit, adding normalized names and dates, remove empties
+    4) Remove duplicates
+    5) Combine (now clean) new data and old data
+    6) Output card data to specific csv
+    '''
+
+    # Create output folder
+    if not os.path.exists(folder_path):
+        os.makedirs(folder_path)
+
     all_data = []
-    
+
     for card in card_names:
+        print(f"[🔎] Scraping data for: {card}")
+        
+        # Scrape eBay data
         pageSoup = create_eBay_Soup(card)
         df = extractCardInfo(pageSoup, card, max_results)
         df["Scrape Timestamp"] = datetime.now().strftime("%#m/%#d/%Y %#I:%M:%S %p")
-        all_data.append(df)
-        time.sleep(1) # help with avoiding timeouts/bad HTTP requests
+        df = df.dropna(axis=1, how='all') # Clean and remove empty columns for avoiding future warnings
         
-    new_data = pd.concat(all_data, ignore_index=True)
+        filtered_df = drop_duplicates(df, card, folder_path)
+        
+        safe_card_name = card.replace(" ", "_").replace("/", "_")
+        file_path = os.path.join(folder_path, f"{safe_card_name}.csv")
 
-    if os.path.exists(history_path):
-        existing_data = pd.read_csv(history_path)
-    else:
-        existing_data = pd.DataFrame(columns=["Card Name", "Sold Price", "Sold Date", "Scrape Timestamp"])
+        # Read into existing csv or create new ones       
+        existing_data = get_existing_data(card, file_path, folder_path, filtered_df)
+        
+        combined_data = pd.concat([existing_data, filtered_df], ignore_index=True)
+        # Clean and remove empty columns for avoiding future warnings
+        combined_data = combined_data.dropna(axis=1, how='all')
 
-    # Drop duplicates using the existing data
-    filtered_data = drop_duplicates(new_data, existing_data)
+        # Save the combined data back to the file
+        combined_data.to_csv(file_path, index=False)
 
-    # drop empty columns to prevent future errors
-    existing_data = existing_data.dropna(axis=1, how='all') 
-    filtered_data = filtered_data.dropna(axis=1, how='all')
+        print(f"[✔] Saved {len(filtered_df)} new entries to {file_path}")
 
-    # Check if filtered_data is empty or all NA values before concatenating
-    if not filtered_data.empty:
-        updated_data = pd.concat([existing_data, filtered_data], ignore_index=True)
-        updated_data = updated_data.dropna(how='all')
-        updated_data.to_csv(history_path, index=False)
-        print(f"[✔] Logged {len(filtered_data)} new entries to {history_path}")
-        return updated_data
-    else:
-        print("[⚠️] No new valid entries to log.")
-        return existing_data
+        # Append filtered data (new entries) to the list for later combining
+        all_data.append(filtered_df)
 
-cards = ["Umbreon"]
-track_price_history(cards, "ebay_prices_history.csv", 55)
+        time.sleep(1)  # Be polite to eBay
+
+    # Combine all new items into one dataframe to export
+    final_df = pd.concat(all_data, ignore_index=True) if all_data else pd.DataFrame()
+
+    # Optionally, we could return one giant dataframe of all cards across all csv's but that sounds excessive
+
+    print(f"\n[✅] Finished tracking prices for {len(card_names)} cards.")
+    return final_df
+
+
+cards = ["Umbreon", "Espeon"]
+newCardsDF = track_price_history(cards, "eBay Card Prices", 65)
+print(newCardsDF)
