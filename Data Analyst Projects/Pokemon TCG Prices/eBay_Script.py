@@ -35,6 +35,25 @@ def create_eBay_Soup(card_name):
     listings = soup.select(".s-item")
     return listings
 
+def normalize_card_name(title):
+    ''' Function to clean up the posting names a bit'''
+    title = title.lower()
+
+    # Remove grading terms
+    title = re.sub(r'\bpsa\s?\d+|\bcgc\s?\d+|\bbgs\s?\d+|\bsgc\s?\d+', '', title)
+
+    # Remove condition tags
+    title = re.sub(r'\b(nm|lp|mp|hp|damaged|graded|mint|lightly played|moderately played|heavily played)\b', '', title)
+
+    # Remove common fluff
+    title = re.sub(r'\b(pokemon|card|tcg|holo|foil|reverse|full art|rare|ultra|english|japanese|promo|202\d|19\d{2})\b', '', title)
+
+    # Remove special characters and trim
+    title = re.sub(r'[^a-z0-9\s]', '', title)
+    title = re.sub(r'\s+', ' ', title).strip()
+
+    return title
+
 def extractCardInfo(pageParsed, card_name, max_results):
     ''' This function takes in the BeautifulSoup object (HTML parsed), card name, and
         max results and searches through the data to extract a
@@ -55,7 +74,9 @@ def extractCardInfo(pageParsed, card_name, max_results):
 
         # ensure card name is in the sale
         if card_name not in name_text:
-            continue 
+            continue
+        
+        name_text = normalize_card_name(name_text) # clean up the posting name a bit
         
         price_text = price_tag.get_text()
         price_match = re.search(r"[\d,.]+", price_text)
@@ -127,6 +148,7 @@ def get_existing_data(card, file_path, folder_path, filtered_df):
         
     return existing_data
 
+
 def track_price_history(card_names, folder_path, max_results=25):
     ''' High-level function that handles overall control flow of script
     0) Make a folder for the csv's to be saved into
@@ -185,5 +207,5 @@ def track_price_history(card_names, folder_path, max_results=25):
 
 
 cards = ["Umbreon", "Espeon"]
-newCardsDF = track_price_history(cards, "eBay Card Prices", 65)
+newCardsDF = track_price_history(cards, "eBay Card Prices", 30)
 print(newCardsDF)
