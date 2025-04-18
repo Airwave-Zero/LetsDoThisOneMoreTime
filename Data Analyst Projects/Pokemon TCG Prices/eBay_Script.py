@@ -195,7 +195,7 @@ def track_price_history(card_names, folder_path, max_results=25):
         # Append filtered data (new entries) to the list for later combining
         all_data.append(filtered_df)
 
-        time.sleep(1)  # Be polite to eBay
+        time.sleep(2)  # Be polite to eBay
 
     # Combine all new items into one dataframe to export
     final_df = pd.concat(all_data, ignore_index=True) if all_data else pd.DataFrame()
@@ -206,6 +206,6 @@ def track_price_history(card_names, folder_path, max_results=25):
     return final_df
 
 
-cards = ["Umbreon", "Espeon"]
-newCardsDF = track_price_history(cards, "eBay Card Prices", 30)
+cards = ["Charizard", "Umbreon", "Pikachu", "Gengar", "Eevee", "Lucario", "Bulbasaur", "Mimikyu", "Flygon", "Gardevoir"]
+newCardsDF = track_price_history(cards, "eBay Card Prices", 200)
 print(newCardsDF)

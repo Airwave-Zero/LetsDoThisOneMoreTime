@@ -7,7 +7,7 @@ import pandas as pd
 # card_names = dataset['Name'].dropna().unique()
 
 # List of card names for specific pokemon querying
-card_names = ["Charizard"]
+card_names = ["Charizard", "Umbreon", "Pikachu", "Gengar", "Eevee", "Lucario", "Bulbasaur", "Mimikyu", "Flygon", "Gardevoir"]
 
 card_data_results = []
 #list of offered TCGPlayer pricing, declared upfront for dynamic iterations
@@ -27,9 +27,10 @@ for name in card_names:
                 for rarity in rarityTypes:
                     rarity_price = getattr(prices, rarity, None) if hasattr(prices, rarity) else None
                     rarityList.append(rarity_price.market if hasattr(rarity_price, 'market') else None)         
-                card_data.append({
+                card_data_results.append({
                     'ID': card.id,
-                    'Name': card.name,
+                    'Normalized Name': name,
+                    'Card Name': card.name,
                     'Set': card.set.name if card.set else None,
                     'Market Price (Normal)': rarityList[0],
                     'Market Price (Holofoil)': rarityList[1],
@@ -41,8 +42,8 @@ for name in card_names:
                 })
     except Exception as e:
         # Optional: append the failed name for debugging
-        card_data.append({'Name': name, 'Error': str(e)})
+        card_data_results.append({'Name': name, 'Error': str(e)})
 
-print(card_data)
 # Return as DataFrame to Power BI
-result_df = pd.DataFrame(card_data)
+result_df = pd.DataFrame(card_data_results)
+#print(result_df)
