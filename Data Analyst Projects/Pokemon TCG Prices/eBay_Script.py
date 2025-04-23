@@ -167,7 +167,7 @@ def track_price_history(card_names, folder_path, max_results=25):
     all_data = []
 
     for card in card_names:
-        print(f"[🔎] Scraping data for: {card}")
+        print(f"Currently scraping data for: {card}")
         
         # Scrape eBay data
         pageSoup = create_eBay_Soup(card)
@@ -190,7 +190,7 @@ def track_price_history(card_names, folder_path, max_results=25):
         # Save the combined data back to the file
         combined_data.to_csv(file_path, index=False)
 
-        print(f"[✔] Saved {len(filtered_df)} new entries to {file_path}")
+        print(f"Saved {len(filtered_df)} new entries to {file_path}")
 
         # Append filtered data (new entries) to the list for later combining
         all_data.append(filtered_df)
@@ -202,10 +202,31 @@ def track_price_history(card_names, folder_path, max_results=25):
 
     # Optionally, we could return one giant dataframe of all cards across all csv's but that sounds excessive
 
-    print(f"\n[✅] Finished tracking prices for {len(card_names)} cards.")
+    print(f"\nFinished tracking prices for {len(card_names)} cards.")
     return final_df
 
+'''
+This chunk of code can be uncommented to pull the names of the cards in the master
+dataset already in PowerBI. However, I do not want to explode my computer nor PowerBI
+by running this script on 17000 cards...
+try:
+    card_names = dataset['Name'].dropna().unique()
+except Exception as e:
+    print("Tried PowerBI dataset import, failed")
+    card_names = [
+    "Charizard", "Bulbasaur", "Gengar", "Umbreon", "Eevee",
+    "Flygon", "Gardevoir", "Metagross", "Swampert", "Snorlax",
+    "Arcanine", "Lucario", "Absol", "Blaziken", "Dragonite",
+    "Greninja", "Mimikyu", "Garchomp", "Mudkip", "Sceptile",
+    "Tyranitar", "Raichu", "Mew", "Ampharos", "Torterra"]
+'''
+# Top 25 most favorite Pokemon voted on Reddit in 2024
+# https://www.reddit.com/r/pokemon/comments/1bozvz5/results_favourite_pokemon_survey_2024/?rdt=61986
+card_names = [
+    "Charizard", "Bulbasaur", "Gengar", "Umbreon", "Eevee",
+    "Flygon", "Gardevoir", "Metagross", "Swampert", "Snorlax",
+    "Arcanine", "Lucario", "Absol", "Blaziken", "Dragonite",
+    "Greninja", "Mimikyu", "Garchomp", "Mudkip", "Sceptile",
+    "Tyranitar", "Raichu", "Mew", "Ampharos", "Torterra"]
 
-cards = ["Charizard", "Umbreon", "Pikachu", "Gengar", "Eevee", "Lucario", "Bulbasaur", "Mimikyu", "Flygon", "Gardevoir"]
-newCardsDF = track_price_history(cards, "eBay Card Prices", 200)
-print(newCardsDF)
+newCardsDF = track_price_history(card_names, "eBay Card Prices", 200)
