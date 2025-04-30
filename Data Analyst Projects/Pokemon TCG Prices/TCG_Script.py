@@ -36,7 +36,9 @@ def lookup_tcg_price(card_names):
                         'Market Price (First Edition Holofoil)': rarityList[3],
                         'Market Price (First Edition Normal)': rarityList[4],
                         'Rarity': card.rarity,
-                        'Release Date': card.set.releaseDate if card.set else None
+                        'Release Date': card.set.releaseDate if card.set else None,
+                        'Image_URL': card.images.large if hasattr(card, 'images') else None
+                        
                     })
                 time.sleep(.5) #pause to avoid hitting api maxes
         except Exception as e:
