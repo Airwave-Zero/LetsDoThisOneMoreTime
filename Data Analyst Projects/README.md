@@ -7,7 +7,7 @@ Pokémon TCG Pricing Dashboard | PowerBI, Python, Full ETL Pipeline
 •	Enriched the dataset and integrated real-time market data via Python (Pandas, API integration) and created a fully complete ETL pipeline that extracts, cleans, transforms, and loads data from eBay and Pokémon TCG API.
 
 Top IMDB Movies Dashboard (In Progress)
-• Showcasing trends and contributors to iconic movies over the years
+• 	Showcasing trends and contributors to iconic movies over the years
 
 Twitch Streamer Analytics (In Progress)
-• Showcasing trends across game choices and streamer metrics over the years
+• 	Showcasing trends across game choices and streamer metrics over the years
