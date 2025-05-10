@@ -77,6 +77,7 @@ def enrich_movie(row):
         **engagement
     })
 
+
 # 5. Apply Enrichment
 enriched_data = df.apply(enrich_movie, axis=1)
 df = pd.concat([df, enriched_data], axis=1)
