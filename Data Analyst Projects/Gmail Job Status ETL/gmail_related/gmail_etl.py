@@ -1,4 +1,5 @@
 import os
+import sys
 import base64
 import re
 import pickle
@@ -9,7 +10,9 @@ from google.auth.transport.requests import Request
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 
-# ----------------------- CONFIGURATION -----------------------
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))) # needed for finding parent folders
+import ML_model.LogisticRegression_Model as ML
+
 DB_CONFIG = {
     "dbname": "your_db",
     "user": "your_user",
@@ -18,8 +21,8 @@ DB_CONFIG = {
 }
 CSV_OUTPUT_PATH = "emails_export.csv"
 
-# ----------------------- GMAIL API SETUP ---------------------
 scope = ['https://www.googleapis.com/auth/gmail.readonly']
+
 def get_gmail_service():
     '''This function serves to authenticate and return a Gmail API service client
     with OAuth2.0. This function looks for existing user credentials, and if not found,
@@ -40,26 +43,17 @@ def get_gmail_service():
             pickle.dump(creds, token)
     return build('gmail', 'v1', credentials=creds) # Gmail API service
 
-# -------------------- CLASSIFICATION LOGIC -------------------
-def classify_email(subject, body):
-    # TODO: use a model to classify email for me and return the info
-    return
-
-def extract_company(subject, sender):
-    # TODO: get company name
-
-
-# ------------------ GMAIL MESSAGE HANDLING -------------------
 def get_email_data(service, num_emails):
     '''This function interacts with the Gmail API and pulls out the desired
     number of emails from the users inbox, and extracts the metadata from it
     and returns a list of all the information'''
     emails = []
     next_page_token = None
+    ML_model = ML.load_model()
 
     while len(emails) < (num_emails):
         maxResultsPerBatch = min(100, num_emails - len(emails))
-        results = service.users().messages().list(userId='me', q='',
+        results = service.users().messages().list(userId='me', q='application',
                                               maxResults=maxResultsPerBatch,
                                                   pageToken = next_page_token).execute()
         messages = results.get('messages', [])
@@ -91,17 +85,15 @@ def get_email_data(service, num_emails):
                     data = payload['body'].get('data')
                     if data:
                         body = base64.urlsafe_b64decode(data).decode('utf-8', errors='ignore')
-
-            #company = extract_company(subject, sender)
-            #category = classify_email(subject, body)
+            text = f"{subject} {body}"
+            category = ML_model.predict([text])[0]
 
             emails.append({
                 'sender': sender,
                 'subject': subject,
                 'body': body,
-                'received_at': received_at
-                #'company': company,
-                #'category': category
+                'received_at': received_at,
+                'category': category
             })
         print("Extracted " + str(len(emails)) + '/' + str(num_emails) + " emails...")
         next_page_token = results.get('nextPageToken')
@@ -109,9 +101,24 @@ def get_email_data(service, num_emails):
             break
     return emails
 
-# --------------------- DATABASE EXPORT -----------------------
 def export_to_postgresql(emails):
     #  TODO: export information to postgresql for easier db usage
+    conn = psycopg2.connect(**DB_CONFIG)
+    cur = conn.cursor()
+    for email in emails:
+        cur.execute("""
+            INSERT INTO job_emails (sender, subject, body, received_at, category)
+            VALUES (%s, %s, %s, %s, %s, %s)
+        """, (
+            email['sender'],
+            email['subject'],
+            email['body'],
+            email['received_at'],
+            email['category']
+        ))
+    conn.commit()
+    cur.close()
+    conn.close()
 
 # ----------------------- CSV EXPORT --------------------------
 def export_to_csv(emails):
@@ -120,7 +127,7 @@ def export_to_csv(emails):
 
 # ------------------------- MAIN ------------------------------
 def main():
-    num_emails = 250
+    num_emails = 10000
     try:
         print("Attemtping to establish secure connection to Gmail...")
         service = get_gmail_service()
