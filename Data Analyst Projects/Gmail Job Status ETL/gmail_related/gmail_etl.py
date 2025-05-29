@@ -19,7 +19,7 @@ DB_CONFIG = {
     "password": "your_password",
     "host": "localhost"
 }
-CSV_OUTPUT_PATH = "emails_export.csv"
+CSV_OUTPUT_PATH = "../email_data/Categorized Emails.csv"
 
 scope = ['https://www.googleapis.com/auth/gmail.readonly']
 
@@ -85,6 +85,8 @@ def get_email_data(service, num_emails):
                     data = payload['body'].get('data')
                     if data:
                         body = base64.urlsafe_b64decode(data).decode('utf-8', errors='ignore')
+
+            # Use the trained model to categorize the email being read based on subject and body
             text = f"{subject} {body}"
             category = ML_model.predict([text])[0]
 
@@ -95,6 +97,7 @@ def get_email_data(service, num_emails):
                 'received_at': received_at,
                 'category': category
             })
+            
         print("Extracted " + str(len(emails)) + '/' + str(num_emails) + " emails...")
         next_page_token = results.get('nextPageToken')
         if not next_page_token:
@@ -134,7 +137,7 @@ def main():
     except Exception as e:
         print("Failed to establish connection to Gmail API...")
         print(f"Error: {e}")        
-    print(f"Securely connected to Gmail API! Beginning retrieval of {num_emails} emails now...")
+    print(f"Securely connected to Gmail API! Attempting to retrieve{num_emails} emails now...")
     emails = get_email_data(service, num_emails)
     print("Emails retrieved...now exporting to PostgreSQL and csv...")
     # export_to_postgresql(emails)
