@@ -3,7 +3,7 @@ import sys
 import base64
 import re
 import pickle
-# import psycopg2
+import psycopg2
 import pandas as pd
 from datetime import datetime, timezone
 from google.auth.transport.requests import Request
@@ -14,10 +14,11 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))) 
 import ML_model.LogisticRegression_Model as ML
 
 DB_CONFIG = {
-    "dbname": "your_db",
-    "user": "your_user",
-    "password": "your_password",
-    "host": "localhost"
+    "dbname": "Email Categorizer",
+    "user": "postgres",
+    "password": "",
+    "host": "localhost",
+    "port": "5432"
 }
 CSV_OUTPUT_PATH = "../email_data/Categorized Emails.csv"
 
@@ -106,41 +107,41 @@ def get_email_data(service, num_emails):
 
 def export_to_postgresql(emails):
     #  TODO: export information to postgresql for easier db usage
+    userPassword = input("Please input your password for postgres:\n")
+    DB_CONFIG['password'] = userPassword
     conn = psycopg2.connect(**DB_CONFIG)
     cur = conn.cursor()
     for email in emails:
-        cur.execute("""
-            INSERT INTO job_emails (sender, subject, body, received_at, category)
-            VALUES (%s, %s, %s, %s, %s, %s)
-        """, (
-            email['sender'],
-            email['subject'],
-            email['body'],
-            email['received_at'],
-            email['category']
-        ))
+        insert_query = """
+        INSERT INTO emails (sender, subject, body, received_at, category)
+        VALUES (%s, %s, %s, %s, %s)"""
+        cur.execute(insert_query, (
+                email['sender'],
+                email['subject'],
+                email['body'],
+                email['received_at'],
+                email['category']))
     conn.commit()
     cur.close()
     conn.close()
 
-# ----------------------- CSV EXPORT --------------------------
 def export_to_csv(emails):
     df = pd.DataFrame(emails)
     df.to_csv(CSV_OUTPUT_PATH, index=False)
 
-# ------------------------- MAIN ------------------------------
+
 def main():
-    num_emails = 10000
+    num_emails = 12000
     try:
         print("Attemtping to establish secure connection to Gmail...")
         service = get_gmail_service()
     except Exception as e:
         print("Failed to establish connection to Gmail API...")
         print(f"Error: {e}")        
-    print(f"Securely connected to Gmail API! Attempting to retrieve{num_emails} emails now...")
+    print(f"Securely connected to Gmail API! Attempting to retrieve {num_emails} emails now...")
     emails = get_email_data(service, num_emails)
     print("Emails retrieved...now exporting to PostgreSQL and csv...")
-    # export_to_postgresql(emails)
+    export_to_postgresql(emails)
     export_to_csv(emails)
     print(f"Exported {len(emails)} emails to PostgreSQL and CSV.")
 
