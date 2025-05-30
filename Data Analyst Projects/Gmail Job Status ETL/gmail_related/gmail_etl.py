@@ -9,6 +9,7 @@ from datetime import datetime, timezone
 from google.auth.transport.requests import Request
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
+from bs4 import BeautifulSoup
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))) # needed for finding parent folders
 import ML_model.LogisticRegression_Model as ML
@@ -44,6 +45,24 @@ def get_gmail_service():
             pickle.dump(creds, token)
     return build('gmail', 'v1', credentials=creds) # Gmail API service
 
+def clean_html(raw_html):
+    soup = BeautifulSoup(raw_html, 'html.parser')
+    return soup.get_text(separator=' ', strip=True)
+
+def get_text_from_parts(parts, preferred_type='text/plain'):
+    for part in parts:
+        mime_type = part.get('mimeType')
+        if mime_type == preferred_type:
+            data = part['body'].get('data')
+            if data:
+                return base64.urlsafe_b64decode(data).decode('utf-8', errors='ignore')
+        elif mime_type.startswith('multipart'):
+            sub_parts = part.get('parts', [])
+            result = get_text_from_parts(sub_parts, preferred_type)
+            if result:
+                return result
+    return None
+
 def get_email_data(service, num_emails):
     '''This function interacts with the Gmail API and pulls out the desired
     number of emails from the users inbox, and extracts the metadata from it
@@ -72,21 +91,26 @@ def get_email_data(service, num_emails):
                 received_at = datetime.now(timezone.utc)
 
             parts = payload.get('parts', [])
-            body = ''
+
+            # Handle various email formats and record them in the csv
             if parts:
-                for part in parts:
-                    if part.get('mimeType') == 'text/plain':
-                        data = part['body'].get('data')
-                        if data:
-                            body = base64.urlsafe_b64decode(data).decode('utf-8', errors='ignore')
-                            break  # Use first plain-text part only
+                body = get_text_from_parts(parts, 'text/plain')
+                if not body:
+                    html_data = get_text_from_parts(parts, 'text/html')
+                    if html_data:
+                        body = clean_html(html_data)
             else:
-                # fallback: check top-level body
+                # fallback
                 if payload.get('mimeType') == 'text/plain':
                     data = payload['body'].get('data')
                     if data:
                         body = base64.urlsafe_b64decode(data).decode('utf-8', errors='ignore')
-
+                elif payload.get('mimeType') == 'text/html':
+                    data = payload['body'].get('data')
+                    if data:
+                        html = base64.urlsafe_b64decode(data).decode('utf-8', errors='ignore')
+                        body = clean_html(html)
+                        
             # Use the trained model to categorize the email being read based on subject and body
             text = f"{subject} {body}"
             category = ML_model.predict([text])[0]
@@ -106,11 +130,26 @@ def get_email_data(service, num_emails):
     return emails
 
 def export_to_postgresql(emails):
-    #  TODO: export information to postgresql for easier db usage
+    '''Exports the email list into the database table'''
     userPassword = input("Please input your password for postgres:\n")
     DB_CONFIG['password'] = userPassword
     conn = psycopg2.connect(**DB_CONFIG)
     cur = conn.cursor()
+
+    # Create the table if it doesn't exist
+    create_table_query = """
+    CREATE TABLE IF NOT EXISTS emails (
+        id SERIAL PRIMARY KEY,
+        sender TEXT,
+        subject TEXT,
+        body TEXT,
+        received_at TIMESTAMPTZ,
+        category TEXT
+    );
+    """
+    cur.execute(create_table_query)
+
+    
     for email in emails:
         insert_query = """
         INSERT INTO emails (sender, subject, body, received_at, category)
@@ -126,6 +165,7 @@ def export_to_postgresql(emails):
     conn.close()
 
 def export_to_csv(emails):
+    ''' Outputs the email list into a csv, ideally for usage in PowerBI'''
     df = pd.DataFrame(emails)
     df.to_csv(CSV_OUTPUT_PATH, index=False)
 
