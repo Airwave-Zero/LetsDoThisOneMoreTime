@@ -10,6 +10,7 @@ from google.auth.transport.requests import Request
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from bs4 import BeautifulSoup
+from dateutil import parser
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))) # needed for finding parent folders
 import ML_model.LogisticRegression_Model as ML
@@ -21,9 +22,20 @@ DB_CONFIG = {
     "host": "localhost",
     "port": "5432"
 }
-CSV_OUTPUT_PATH = "../email_data/Categorized Emails.csv"
+CSV_OUTPUT_PATH = "../email_data/Categorized Emails__.csv"
 
 scope = ['https://www.googleapis.com/auth/gmail.readonly']
+
+tzinfos = {
+    'PDT': -7 * 3600,  # UTC-7
+    'PST': -8 * 3600,  # UTC-8
+    'EDT': -4 * 3600,  # UTC-4
+    'EST': -5 * 3600,  # UTC-5
+    'CDT': -5 * 3600,  # UTC-5
+    'CST': -6 * 3600,  # UTC-6
+    'MDT': -6 * 3600,  # UTC-6
+    'MST': -7 * 3600,  # UTC-7
+}
 
 def get_gmail_service():
     '''This function serves to authenticate and return a Gmail API service client
@@ -86,9 +98,11 @@ def get_email_data(service, num_emails):
             sender = next((h['value'] for h in headers if h['name'] == 'From'), '')
             date_str = next((h['value'] for h in headers if h['name'] == 'Date'), '')
             try:
-                received_at = datetime.strptime(date_str[:-6], '%a, %d %b %Y %H:%M:%S')
+                cleaned = date_str.split(' (')[0].strip()
+                received_at = parser.parse(cleaned, tzinfos=tzinfos)
             except:
-                received_at = datetime.now(timezone.utc)
+                print(f"Warning: Failed to parse date from: {date_str}")
+                received_at = None
 
             parts = payload.get('parts', [])
 
@@ -166,10 +180,14 @@ def export_to_postgresql(emails):
 
 def export_to_csv(emails):
     ''' Outputs the email list into a csv, ideally for usage in PowerBI'''
+    # Ensure all datetimes are tz-naive before creating the DataFrame
+    for email in emails:
+        if email['received_at'] and email['received_at'].tzinfo is not None:
+            email['received_at'] = email['received_at'].astimezone(timezone.utc).replace(tzinfo=None)
     df = pd.DataFrame(emails)
+    df['received_at'] = pd.to_datetime(df['received_at']).dt.strftime('%#m/%#d/%Y %#H:%M')
     df.to_csv(CSV_OUTPUT_PATH, index=False)
-
-
+    
 def main():
     num_emails = 12000
     try:
