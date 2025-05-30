@@ -19,27 +19,18 @@ To help categorize thousands of emails, a Logistic Regression model was trained;
 Project Structure
 ==========================
 
-# Manually labeled training set
-email_data/ email_training_data_public.csv
-# Raw email content (removed for safety)
-email_data/ Categorized Emails_public.csv
 
-# machine model for categorization
-gmail_related/email_judge_model.pkl
-# script that does literally everything (OAuth, Gmail API Interaction, extracting, cleaning, exporting)
-gmail_related/gmail_etl.py                          
+email_data/ email_training_data_public.csv          - Manually labeled training set
+email_data/ Categorized Emails_public.csv           - Raw email content (removed for safety)
 
+gmail_related/email_judge_model.pkl                 - machine model for categorization
+gmail_related/gmail_etl.py                          - script that does literally everything (OAuth, Gmail API Interaction, extracting, cleaning, exporting)
 
-# Logistic Regression training using train-test split
-ml_model/LogisticRegression_Model.py             
+ml_model/LogisticRegression_Model.py                - Logistic Regression training using train-test split
 
-
-# Power BI file with visualizations
-visualizations/Application Journey.pbix
-# Visualization of late 2023 - current journey
-visualizations/Current Application Journey.pdf
-# Visualiazation spanning since 2015
-visualizations/Full Application Journey.pdf         
+visualizations/Application Journey.pbix             - Power BI file with visualizations
+visualizations/Current Application Journey.pdf      - Visualization of late 2023 - current journey
+visualizations/Full Application Journey.pdf         - Visualiazation spanning since 2015
 
 Technologies Used
 ==========================
