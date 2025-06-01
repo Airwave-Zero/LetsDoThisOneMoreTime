@@ -18,9 +18,10 @@ Data Analyst Projects/Twitch Streamer Analytics/Twitch_API_Pipeline_private.py
 Data Analyst Projects/Twitch Streamer Analytics/twitch_secret.txt
 Data Analyst Projects/Top IMDB Movies/Movie_API_Pipeline_private.py
 Data Analyst Projects/Top IMDB Movies/movie_secret.txt
-Data Analyst Projects/Gmail Job Status ETL/gmail_related/gmail_json_secret.json
-Data Analyst Projects/Gmail Job Status ETL/gmail_related/gmail_secret.txt
-Data Analyst Projects/Gmail Job Status ETL/gmail_related/token.pickle
-Data Analyst Projects/Gmail Job Status ETL/gmail_related/emails_export.csv
-Data Analyst Projects/Gmail Job Status ETL/email_data/Categorized Emails.csv
-Data Analyst Projects/Gmail Job Status ETL/email_data/email_training_data.csv
+Data Analyst Projects/Gmail ETL/gmail_related/gmail_json_secret.json
+Data Analyst Projects/Gmail ETL/gmail_related/gmail_secret.txt
+Data Analyst Projects/Gmail ETL/gmail_related/token.pickle
+Data Analyst Projects/Gmail ETL/gmail_related/emails_export.csv
+Data Analyst Projects/Gmail ETL/csv_data/Categorized Emails.csv
+Data Analyst Projects/Gmail ETL/csv_data/email_training_data.csv
+Data Analyst Projects/Gmail ETL/csv_data/financial_report.csv

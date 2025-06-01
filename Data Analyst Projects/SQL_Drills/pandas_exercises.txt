@@ -1,0 +1,98 @@
+https://github.com/guipsamora/pandas_exercises/tree/master/01_Getting_%26_Knowing_Your_Data/
+Chipotle
+
+
+import numpy
+import pandas as pd # 1 necessary imports
+
+chipo =read_csv(https://raw.githubusercontent.com/justmarkham/DAT8/master/data/chipotle.tsv, sep='\t') # 3 load csv and save as chipo
+
+print(chipo.head(10)) #4 see the first 10 entries
+
+print(df.info()) #5 for observations in the set
+print(chipo.shape[0]) #5 observations in the set
+
+print(length(df.columns)) #6 number of columns
+print(chipo.shape[1]) #6 number of columns
+
+print(df.columns) #7 print name of columns
+
+print(chipo.index) #8 how is the set indexed
+
+#9/10 most ordered item, and how many items
+c = chipo.groupby('item_name')
+c = c.sum()
+c = c.sort_values(['quantity'], ascending = False)
+c.head(1)
+
+#11 show the most ordered item in the choice description column
+c = chipo.groupby('choice_description').sum()
+c = c.sort_values(['quantity'], ascending = False)
+c.head(1)
+
+#12 how many items were ordered in total
+total_items_orders = chipo['quantity'].sum()
+
+
+chipo['item_price'].dtype #13a check itempricetype
+changeDollar = lambda x: float(x[1:]) # drop the $
+changeDollar = lambda x: float(x.replace('$', '')) # replace it entirely
+chipo.item_price = chipo.item_price.apply(changeDollar)
+
+Step 14. How much was the revenue for the period in the dataset?
+(chipo['quantity'] * chipo['item_price']).sum()
+
+Step 15. How many orders were made in the period?
+chipo.order_id.value_counts().count()
+
+Step 16. What is the average revenue amount per order?
+# Solution 1
+chipo['revenue'] = chipo['quantity']*chipo['item_price']
+grouped = chipo['revenue].groupby('order_id').sum()
+grouped.mean()['revenue']
+
+chipo.groupby(by=['order_id']).sum().mean()['revenue']
+# Solution 2
+
+
+Step 17. How many different items are sold?
+chipo.item_name.value_counts().count()
+
+################################################################
+Occupation 
+
+Step 1. Import the necessary libraries
+ 
+Step 2. Import the dataset from this address.
+Step 3. Assign it to a variable called users and use the 'user_id' as index
+ 
+Step 4. See the first 25 entries
+ 
+Step 5. See the last 10 entries
+ 
+Step 6. What is the number of observations in the dataset?
+ 
+Step 7. What is the number of columns in the dataset?
+ 
+Step 8. Print the name of all the columns.
+ 
+Step 9. How is the dataset indexed?
+ 
+Step 10. What is the data type of each column?
+ 
+Step 11. Print only the occupation column
+ 
+Step 12. How many different occupations are in this dataset?
+ 
+Step 13. What is the most frequent occupation?
+ 
+Step 14. Summarize the DataFrame.
+ 
+Step 15. Summarize all the columns
+ 
+Step 16. Summarize only the occupation column
+ 
+Step 17. What is the mean age of users?
+ 
+Step 18. What is the age with least occurrence?
+ 
