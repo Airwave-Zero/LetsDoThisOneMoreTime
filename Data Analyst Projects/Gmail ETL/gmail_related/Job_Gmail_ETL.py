@@ -22,7 +22,7 @@ DB_CONFIG = {
     "host": "localhost",
     "port": "5432"
 }
-CSV_OUTPUT_PATH = "../email_data/Categorized Emails__.csv"
+CSV_OUTPUT_PATH = "../csv_data/Categorized Emails.csv"
 
 scope = ['https://www.googleapis.com/auth/gmail.readonly']
 

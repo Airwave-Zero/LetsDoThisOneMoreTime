@@ -6,7 +6,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import classification_report
 import joblib
 
-def create_email_categorizer(csv_path = '../email_data/email_training_data.csv',
+def create_email_categorizer(csv_path = '../csv_data/email_training_data.csv',
                              model_path = 'email_judge_model.pkl'):
     ''' Use LogisticRegression for easy implementation and high speed
     Could be improved to RandomForest or BERT but requires more resources
