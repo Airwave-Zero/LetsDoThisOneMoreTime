@@ -16,7 +16,7 @@ def lookup_tcg_price(card_names):
             print("Looking for the card: " + name)
             results = Card.where(q=f'name:"{name}"')
             for card in results:
-                # use hasattr ternaries as guardrails to ensure actual queried data exists
+                # use boolean shortcircuitting for clarity and only to proceed if it makes sense
                 if card.tcgplayer and hasattr(card, 'tcgplayer') and hasattr(card.tcgplayer, 'prices'):
                     # TCGPlayer prices object
                     prices = card.tcgplayer.prices                
@@ -38,7 +38,6 @@ def lookup_tcg_price(card_names):
                         'Rarity': card.rarity,
                         'Release Date': card.set.releaseDate if card.set else None,
                         'Image_URL': card.images.large if hasattr(card, 'images') else None
-                        
                     })
                 time.sleep(.5) #pause to avoid hitting api maxes
         except Exception as e:

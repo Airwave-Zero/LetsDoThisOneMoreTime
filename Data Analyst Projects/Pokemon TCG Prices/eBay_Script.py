@@ -66,41 +66,34 @@ def extractCardInfo(pageParsed, card_name, max_results):
         price_tag = item.select_one(".s-item__price") # price sold at
         date_tag = item.select_one(".s-item__caption") # date sold (no timestamp)
 
-        # pass over incomplete sales data for clarity
-        if not name_tag and not price_tag and not date_tag:
-            continue 
+        # only proceed if data has necessary info
+        if name_tag and price_tag and date_tag:
+            name_text = name_tag.get_text()
 
-        name_text = name_tag.get_text()
+            # ensure card name is in the sale
+            if card_name in name_text:
+                name_text = normalize_card_name(name_text) # clean up the posting name a bit
+                
+                price_text = price_tag.get_text()
+                price_match = re.search(r"[\d,.]+", price_text)
+                price = float(price_match.group().replace(",", "")) if price_match else None
 
-        # ensure card name is in the sale
-        if card_name not in name_text:
-            continue
-        
-        name_text = normalize_card_name(name_text) # clean up the posting name a bit
-        
-        price_text = price_tag.get_text()
-        price_match = re.search(r"[\d,.]+", price_text)
-        price = float(price_match.group().replace(",", "")) if price_match else None
+                date_text = date_tag.get_text()
+                date_match = re.search(r"(\w+ \d{1,2}, \d{4}(?:, \d{1,2}:\d{2} [APMapm]{2})?)", date_text)
 
-        date_text = date_tag.get_text()
-        date_match = re.search(r"(\w+ \d{1,2}, \d{4}(?:, \d{1,2}:\d{2} [APMapm]{2})?)", date_text)
-
-        # A bit of an edge case, but some listings don't have a sold date for some reason, so filtering those out
-        if date_match:
-            try:
-                sold_date = datetime.strptime(date_match.group(), "%b %d, %Y, %I:%M %p")
-            except ValueError:
-                sold_date = datetime.strptime(date_match.group(), "%b %d, %Y")
-            if sold_date:
-                results.append({
-                    "Normalized Card Name": card_name,
-                    "Card Name": name_text,
-                    "Sold Price": price,
-                    "Sold Date": sold_date
-                })
-        else:
-            None
-            
+                # A bit of an edge case, but some listings don't have a sold date for some reason, so filtering those out
+                if date_match:
+                    try:
+                        sold_date = datetime.strptime(date_match.group(), "%b %d, %Y, %I:%M %p")
+                    except ValueError:
+                        sold_date = datetime.strptime(date_match.group(), "%b %d, %Y")
+                    if sold_date:
+                        results.append({
+                            "Normalized Card Name": card_name,
+                            "Card Name": name_text,
+                            "Sold Price": price,
+                            "Sold Date": sold_date
+                        })
     return pd.DataFrame(results)
 
 def drop_duplicates(new_data, card_name, history_path):
@@ -134,7 +127,7 @@ def drop_duplicates(new_data, card_name, history_path):
     
     return filtered_data
 
-def get_existing_data(card, file_path, folder_path, filtered_df):
+def get_existing_data(file_path, filtered_df):
     '''This function retrieves the existing data in the card CSV'''
     
     # Load existing data and combine with filtered new data
@@ -181,7 +174,7 @@ def track_price_history(card_names, folder_path, max_results=25):
         file_path = os.path.join(folder_path, f"{safe_card_name}.csv")
 
         # Read into existing csv or create new ones       
-        existing_data = get_existing_data(card, file_path, folder_path, filtered_df)
+        existing_data = get_existing_data(file_path, filtered_df)
         
         combined_data = pd.concat([existing_data, filtered_df], ignore_index=True)
         # Clean and remove empty columns for avoiding future warnings
@@ -195,8 +188,8 @@ def track_price_history(card_names, folder_path, max_results=25):
         # Append filtered data (new entries) to the list for later combining
         all_data.append(filtered_df)
 
-        time.sleep(2)  # Be polite to eBay
-
+        time.sleep(2)  # Avoid trying to hit API max or be declared as inhuman activity
+        
     # Combine all new items into one dataframe to export
     final_df = pd.concat(all_data, ignore_index=True) if all_data else pd.DataFrame()
 
