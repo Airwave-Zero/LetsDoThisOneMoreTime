@@ -1,7 +1,7 @@
-https://github.com/guipsamora/pandas_exercises/tree/master/01_Getting_%26_Knowing_Your_Data/
-Chipotle
+https://github.com/guipsamora/pandas_exercises/tree/master
 
 
+https://github.com/guipsamora/pandas_exercises/tree/master/01_Getting_%26_Knowing_Your_Data
 import numpy
 import pandas as pd # 1 necessary imports
 
