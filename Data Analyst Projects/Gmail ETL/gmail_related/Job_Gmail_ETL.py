@@ -43,7 +43,7 @@ def get_gmail_service():
     prompts the user to sign in and give the application access to their acount (which is
     then saved)'''
     creds = None
-    token_path = 'token.pickle'
+    token_path = 'job_token.pickle'
     if os.path.exists(token_path):
         with open(token_path, 'rb') as token:
             creds = pickle.load(token)
@@ -189,13 +189,15 @@ def export_to_csv(emails):
     df.to_csv(CSV_OUTPUT_PATH, index=False)
     
 def main():
-    num_emails = 12000
+    num_emails = 50
+    print("Running the super fancy job script...")
     try:
-        print("Attemtping to establish secure connection to Gmail...")
+        print("Attempting to establish secure connection to Gmail...")
         service = get_gmail_service()
     except Exception as e:
         print("Failed to establish connection to Gmail API...")
-        print(f"Error: {e}")        
+        print(f"Error: {e}")
+        return
     print(f"Securely connected to Gmail API! Attempting to retrieve {num_emails} emails now...")
     emails = get_email_data(service, num_emails)
     print("Emails retrieved...now exporting to PostgreSQL and csv...")
