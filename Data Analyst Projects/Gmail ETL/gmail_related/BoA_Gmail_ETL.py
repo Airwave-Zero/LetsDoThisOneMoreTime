@@ -238,8 +238,6 @@ def main():
     for query in email_queries:
         queried_emails = get_email_data(service, num_emails, query) # look up all the emails
         all_emails.extend(queried_emails)
-    #df_emails.to_csv('lol.csv', index=False)
-    #print(df_emails)
     #starting_balance = get_starting_balance(BALANCE_CSV_OUTPUT_PATH)
     #new_balance = starting_balance + df_emails['balances'].sum()
     #date_now = datetime.now().strftime('%#m/%#d/%Y %#H:%M')
