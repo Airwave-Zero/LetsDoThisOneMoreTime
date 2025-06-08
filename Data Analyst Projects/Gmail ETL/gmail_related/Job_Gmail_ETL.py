@@ -75,17 +75,17 @@ def get_text_from_parts(parts, preferred_type='text/plain'):
                 return result
     return None
 
-def get_email_data(service, num_emails):
+def get_email_data(service, num_emails, queryStatement):
     '''This function interacts with the Gmail API and pulls out the desired
     number of emails from the users inbox, and extracts the metadata from it
     and returns a list of all the information'''
     emails = []
     next_page_token = None
     ML_model = ML.load_model()
-
+    print("Currently searching for: '" + queryStatement + "'...")
     while len(emails) < (num_emails):
         maxResultsPerBatch = min(100, num_emails - len(emails))
-        results = service.users().messages().list(userId='me', q='application',
+        results = service.users().messages().list(userId='me', q=queryStatement,
                                               maxResults=maxResultsPerBatch,
                                                   pageToken = next_page_token).execute()
         messages = results.get('messages', [])
@@ -158,16 +158,17 @@ def export_to_postgresql(emails):
         subject TEXT,
         body TEXT,
         received_at TIMESTAMPTZ,
-        category TEXT
+        category TEXT,
+        UNIQUE (sender, subject, received_at)
     );
     """
     cur.execute(create_table_query)
-
     
     for email in emails:
-        insert_query = """
+        insert_query ="""
         INSERT INTO emails (sender, subject, body, received_at, category)
-        VALUES (%s, %s, %s, %s, %s)"""
+        VALUES (%s, %s, %s, %s, %s)
+        ON CONFLICT (sender, subject, received_at) DO NOTHING """
         cur.execute(insert_query, (
                 email['sender'],
                 email['subject'],
@@ -186,10 +187,13 @@ def export_to_csv(emails):
             email['received_at'] = email['received_at'].astimezone(timezone.utc).replace(tzinfo=None)
     df = pd.DataFrame(emails)
     df['received_at'] = pd.to_datetime(df['received_at']).dt.strftime('%#m/%#d/%Y %#H:%M')
+    old_csv = pd.read_csv(CSV_OUTPUT_PATH)
+    df = pd.concat([df, old_csv]).drop_duplicates()
+    df.sort_values('received_at')
     df.to_csv(CSV_OUTPUT_PATH, index=False)
     
 def main():
-    num_emails = 50
+    num_emails = 12000
     print("Running the super fancy job script...")
     try:
         print("Attempting to establish secure connection to Gmail...")
@@ -199,7 +203,12 @@ def main():
         print(f"Error: {e}")
         return
     print(f"Securely connected to Gmail API! Attempting to retrieve {num_emails} emails now...")
-    emails = get_email_data(service, num_emails)
+    emails = []
+    email_queries = ['application', 'offer letter']
+    for query in email_queries:
+        queried_emails = get_email_data(service, num_emails, query)
+        emails.extend(queried_emails)
+    #emails = get_email_data(service, num_emails)
     print("Emails retrieved...now exporting to PostgreSQL and csv...")
     export_to_postgresql(emails)
     export_to_csv(emails)
