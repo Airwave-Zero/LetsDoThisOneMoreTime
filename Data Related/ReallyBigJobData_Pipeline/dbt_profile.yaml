@@ -1,0 +1,10 @@
+jobpulse:
+  target: dev
+  outputs:
+    dev:
+      type: bigquery
+      method: service-account
+      project: your-gcp-project-id
+      dataset: jobpulse_dataset
+      threads: 4
+      keyfile: /path/to/your/gcp-service-account.json

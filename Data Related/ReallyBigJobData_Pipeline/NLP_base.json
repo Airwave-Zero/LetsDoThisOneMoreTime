@@ -1,0 +1,15 @@
+{
+  "job_id": "string",
+  "title": "string",
+  "company": "string",
+  "location": "string",
+  "posted_date": "YYYY-MM-DD",
+  "description": "string",
+  "skills": ["string"],
+  "seniority_level": "junior | mid | senior | executive | unknown",
+  "salary_min": "float | null",
+  "salary_max": "float | null",
+  "remote_flag": true,
+  "industry_cluster": "string",
+  "extracted_keywords": ["string"]
+}
