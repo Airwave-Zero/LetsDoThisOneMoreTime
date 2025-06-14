@@ -23,6 +23,7 @@ DB_CONFIG = {
     "port": "5432"
 }
 CSV_OUTPUT_PATH = "../csv_data/Categorized Emails.csv"
+POSTGRE_SQL_PASSWORD_PATH = "postgre_secret.txt"
 
 scope = ['https://www.googleapis.com/auth/gmail.readonly']
 
@@ -145,46 +146,69 @@ def get_email_data(service, num_emails, queryStatement):
 
 def export_to_postgresql(emails):
     '''Exports the email list into the database table'''
-    userPassword = input("Please input your password for postgres:\n")
+    userPassword = open(POSTGRE_SQL_PASSWORD_PATH).read()
     DB_CONFIG['password'] = userPassword
-    conn = psycopg2.connect(**DB_CONFIG)
-    cur = conn.cursor()
+    try:
+        conn = psycopg2.connect(**DB_CONFIG)
+        cur = conn.cursor()
 
-    # Create the table if it doesn't exist
-    create_table_query = """
-    CREATE TABLE IF NOT EXISTS emails (
-        id SERIAL PRIMARY KEY,
-        sender TEXT,
-        subject TEXT,
-        body TEXT,
-        received_at TIMESTAMPTZ,
-        category TEXT,
-        UNIQUE (sender, subject, received_at)
-    );
-    """
-    cur.execute(create_table_query)
-    
-    for email in emails:
-        insert_query ="""
-        INSERT INTO emails (sender, subject, body, received_at, category)
-        VALUES (%s, %s, %s, %s, %s)
-        ON CONFLICT (sender, subject, received_at) DO NOTHING """
-        cur.execute(insert_query, (
-                email['sender'],
-                email['subject'],
-                email['body'],
-                email['received_at'],
-                email['category']))
-    conn.commit()
-    cur.close()
-    conn.close()
+        # Create the table if it doesn't exist
+        create_table_query = """
+        CREATE TABLE IF NOT EXISTS emails (
+            id SERIAL PRIMARY KEY,
+            sender TEXT,
+            subject TEXT,
+            body TEXT,
+            received_at TIMESTAMPTZ,
+            category TEXT,
+            UNIQUE (sender, subject, received_at)
+        );
+        """
+        try:
+            cur.execute(create_table_query)
+        except Exception as e:
+            print("Failed to create table")
+            print(f"Error: {e}")
+            conn.rollback()
+            cur.close()
+            conn.close()
+            return
+        try:
+            for email in emails:
+                insert_query ="""
+                INSERT INTO emails (sender, subject, body, received_at, category)
+                VALUES (%s, %s, %s, %s, %s)
+                ON CONFLICT (sender, subject, received_at) DO NOTHING """
+                cur.execute(insert_query, (
+                        email['sender'],
+                        email['subject'],
+                        email['body'],
+                        email['received_at'],
+                        email['category']))
+        except Exception as e:
+            print("Failed to export emails to PostgreSQL")
+            print(f"Error: {e}")
+            conn.rollback()
+            cur.close()
+            conn.close()
+            return
+        conn.commit()
+        print("Export to PostgreSQL completed successfully.")
+    except Exception as conn_error:
+        print("Database connection failed.")
+        print(f"Error: {conn_error}")
+    finally:
+        if 'cur' in locals():
+            cur.close()
+        if 'conn' in locals():
+            conn.close()
+        conn.commit()
+        cur.close()
+        conn.close()
 
 def export_to_csv(emails):
     ''' Outputs the email list into a csv, ideally for usage in PowerBI'''
     # Ensure all datetimes are tz-naive before creating the DataFrame
-    for email in emails:
-        if email['received_at'] and email['received_at'].tzinfo is not None:
-            email['received_at'] = email['received_at'].astimezone(timezone.utc).replace(tzinfo=None)
     df = pd.DataFrame(emails)
     df['received_at'] = pd.to_datetime(df['received_at']).dt.strftime('%#m/%#d/%Y %#H:%M')
     old_csv = pd.read_csv(CSV_OUTPUT_PATH)
@@ -203,15 +227,18 @@ def main():
         print(f"Error: {e}")
         return
     print(f"Securely connected to Gmail API! Attempting to retrieve {num_emails} emails now...")
-    emails = []
+    all_emails = []
     email_queries = ['application', 'offer letter']
     for query in email_queries:
         queried_emails = get_email_data(service, num_emails, query)
-        emails.extend(queried_emails)
+        for email in queried_emails:
+            if email.get('date') and email['date'].tzinfo is not None:
+                email['date'] = email['date'].astimezone(timezone.utc).replace(tzinfo=None)
+            all_emails.append(email)
     #emails = get_email_data(service, num_emails)
     print("Emails retrieved...now exporting to PostgreSQL and csv...")
-    export_to_postgresql(emails)
-    export_to_csv(emails)
+    export_to_postgresql(all_emails)
+    export_to_csv(all_emails)
     print(f"Exported {len(emails)} emails to PostgreSQL and CSV.")
 
 

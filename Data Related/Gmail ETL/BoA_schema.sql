@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS transaction_emails (
+CREATE TABLE IF NOT EXISTS BoA_Reporter (
     id SERIAL PRIMARY KEY,
     received_at TIMESTAMP,
     amount DECIMAL,
