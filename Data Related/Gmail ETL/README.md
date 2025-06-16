@@ -1,68 +1,78 @@
 Gmail ETL Pipeline — Job Application Tracker
-#LetsDoThisOneMoreTime
 
-This project is a backend-focused ETL (Extract, Transform, Load) pipeline built to track and visualize the journey of job applications using Gmail data. The end goal was to automate the classification of job-related emails, store the information in a structured format, and visualize insights using Power BI.
+This project is a backend-focused ETL pipeline designed to automate the classification and analysis of job application emails from Gmail. By extracting relevant emails, transforming them into a structured format, and visualizing insights, the system helps track the job search journey over time. 
+
+Also, it was extended to help get my finances on track and reduce spending/understanding my bad spending habits.
 
 Project Overview
-==========================
-The pipeline automates the entire process of:
+===============
+The pipeline handles the full lifecycle of data collection and analysis:
 
-- Extracting job application emails from Gmail using the Gmail API
-- Transforming the raw emails via text normalization and manual/automated classification
-- Loading the cleaned data into a PostgreSQL database and CSV file for downstream use
-- Finally, the data is visualized using Power BI (see attached PDFs for dashboard samples).
+Extract job-related and financial emails using the Gmail API with OAuth 2.0 authentication
+Transform raw email content through normalization and classification
+Load the cleaned results into a PostgreSQL database and CSV files
+Visualize key insights using an interactive Power BI dashboard
 
 Machine Learning
-==========================
-To help categorize thousands of emails, a Logistic Regression model was trained; approximately 450 emails were manually labeled for training. The model automatically classifies new emails into defined job-related categories.
+===============
+To streamline classification, a Logistic Regression model was trained using ~600 manually labeled emails. The model categorizes incoming emails into job-related stages such as applied, interview, offer, and more. This automates much of the labeling process for long-term tracking and analytics.
 
 Project Structure
-==========================
+===============
+email_data/
+├── email_training_data_public.csv         # Labeled dataset used for training
+├── Categorized Emails_public.csv          # Output of processed and tagged emails (sanitized)
 
+gmail_related/
+├── Job_Gmail_ETL.py                       # Main pipeline script for jobs (OAuth, Gmail API, cleaning, export)
+├── BoA_Gmail.py                           # Main pipeline script for financial progress
+├── email_judge_model.pkl                  # Pretrained Logistic Regression model
 
-email_data/ email_training_data_public.csv          - Manually labeled training set
-email_data/ Categorized Emails_public.csv           - Raw email content (removed for safety)
+ml_model/
+├── LogisticRegression_Model.py            # Training script with train-test evaluation
 
-gmail_related/email_judge_model.pkl                 - machine model for categorization
-gmail_related/gmail_etl.py                          - script that does literally everything (OAuth, Gmail API Interaction, extracting, cleaning, exporting)
+visualizations/
+├── Job Applications/    
+    ├── Application Journey.pbix               # Power BI dashboard file
+    ├── Application Journey2024.pdf            # Snapshot of job search (all of 2024)
+    ├── Application Journey2025Q1.pdf          # Snapshot of job search (2025 Q1)
+    ├── Full Application Journey.pdf           # Snapshot of job search (2015–present)
+├── Financial Dashboard/
 
-ml_model/LogisticRegression_Model.py                - Logistic Regression training using train-test split
-
-visualizations/Application Journey.pbix             - Power BI file with visualizations
-visualizations/Current Application Journey.pdf      - Visualization of late 2023 - current journey
-visualizations/Full Application Journey.pdf         - Visualiazation spanning since 2015
 
 Technologies Used
-==========================
-- Python
-- Gmail API (OAuth 2.0)
-- Scikit-learn (Logistic Regression)
-- Pandas / NumPy
-- PostgreSQL
-- Power BI
-- CSV for intermediate data storage
-
+===============
+Python for scripting and automation
+Gmail API (with OAuth 2.0) for secure email extraction
+Scikit-learn for machine learning classification
+Pandas / NumPy for data manipulation
+PostgreSQL for structured storage and querying
+CSV as an intermediate, portable format
+Power BI for interactive dashboard visualizations
 
 Output
-==========================
-- Automatically categorized job application emails
-- Structured and normalized data stored in:
-- PostgreSQL for relational querying
-- CSV for quick access and portability
-- Interactive Power BI dashboard for timeline and stage analysis
+===============
+Automatically categorized job-related emails
+Structured data available in both:
+PostgreSQL for advanced querying
+CSV for quick access or visualization
+Power BI dashboard with filters, timelines, and insights on the application journey
 
-
-Privacy & Security
-==========================
-Raw email content has been removed from the public repo for safety and privacy.
-OAuth tokens and sensitive credentials are never stored in plain text.
+Privacy and Security
+===============
+Raw email content is not included in the public repository
+OAuth credentials and sensitive tokens are never stored in plain text
+Only anonymized metadata and safe content are shared
 
 Sample Visuals
-==========================
-Power BI visualizations can be found in the /visualizations directory in PDF format.
+===============
+Power BI dashboards are available in the /visualizations folder:
+Various snapshots of application journey
+To explore the dashboard interactively, open the .pbix file in Power BI Desktop.
 
-Next Steps (Ideas for Future Work)
-==========================
-- Improve dataset with more applications as time progresses
-- Show extra statistics like most commonly used phrases
-- Show time delay between stages of interview process
+Future Improvements
+===============
+Expand the labeled dataset with more diverse job application formats
+Add NLP-based phrase frequency analysis (e.g., buzzwords or rejection patterns)
+Visualize delays between key hiring stages such as applied to interview
+Add Airflow for automated refreshed running
