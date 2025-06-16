@@ -179,6 +179,7 @@ def export_to_postgresql(emails):
         insert_query = """
         INSERT INTO BoA_Reporter (date, amount, queryStatement)
         VALUES (%s, %s, %s)
+        ON CONFLICT (date, amount, queryStatement) DO NOTHING
         """
         try:
             data = [(row.date, row.amount, row.queryStatement) for row in emails.itertuples(index=False)]
