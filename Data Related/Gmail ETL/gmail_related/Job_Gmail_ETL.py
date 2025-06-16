@@ -202,9 +202,6 @@ def export_to_postgresql(emails):
             cur.close()
         if 'conn' in locals():
             conn.close()
-        conn.commit()
-        cur.close()
-        conn.close()
 
 def export_to_csv(emails):
     ''' Outputs the email list into a csv, ideally for usage in PowerBI'''
@@ -232,14 +229,15 @@ def main():
     for query in email_queries:
         queried_emails = get_email_data(service, num_emails, query)
         for email in queried_emails:
-            if email.get('date') and email['date'].tzinfo is not None:
-                email['date'] = email['date'].astimezone(timezone.utc).replace(tzinfo=None)
+            if email.get('received_at') and email['received_at'].tzinfo is not None:
+                email['received_at'] = email['received_at'].astimezone(timezone.utc).replace(tzinfo=None)
+            all_emails.append(email)
             all_emails.append(email)
     #emails = get_email_data(service, num_emails)
     print("Emails retrieved...now exporting to PostgreSQL and csv...")
-    export_to_postgresql(all_emails)
     export_to_csv(all_emails)
-    print(f"Exported {len(emails)} emails to PostgreSQL and CSV.")
+    export_to_postgresql(all_emails)
+    print(f"Exported {len(all_emails)} emails to PostgreSQL and CSV.")
 
 
 
