@@ -254,14 +254,13 @@ def main():
     email_queries =
     [ 'from: onlinebanking@ealerts.bankofamerica.com subject: deposit', # positive
     'from: bank of america subject: "sent you"', # positive
-    'from: bank of america subject: account alert: debit card used online', # negative
+    'from: bank of america subject: account alert: Your debit card was used', # negative
     'from: bank of america subject: credit card not present during this transaction', # negative
     'from: bank of america subject: credit card transaction exceeds alert limit you set',# negative
     'from: bank of america subject: "Activity Alert: Online Transfer Over Your Requested Alert Limit"', # negative
     'from: bank of america subject: zelle "has been sent "', # negative
     'from: venmo subject: "paid you"', # positive
     'from: venmo subject: "transfer"', # positive
-    'from: venmo subject: "you paid"' ] # negative
     starting_balance = get_starting_info(BALANCE_CSV_OUTPUT_PATH, "balance")
     starting_date = datetime.strptime(get_starting_info(BALANCE_CSV_OUTPUT_PATH, "date"), "%m/%d/%Y")
     old_data = pd.read_csv(CHANGES_CSV_OUTPUT_PATH)
