@@ -354,6 +354,50 @@ services:
       <<: *airflow-common-depends-on
       airflow-init:
         condition: service_completed_successfully
+  spark-master:
+    image: bitnami/spark:latest
+    environment:
+      - SPARK_MODE=master
+    ports:
+      - "7077:7077"
+      - "8080:8080"
+
+  spark-worker:
+    image: bitnami/spark:latest
+    environment:
+      - SPARK_MODE=worker
+      - SPARK_MASTER_URL=spark://spark-master:7077
+    depends_on:
+      - spark-master
+  spark-worker-2:
+    image: bitnami/spark:latest
+    environment:
+      - SPARK_MODE=worker
+      - SPARK_MASTER_URL=spark://spark-master:7077
+    depends_on:
+      - spark-master
+
+  spark-job-2025:
+      build: .
+      command: ["python", "commoncrawl.py", "--year", "2025"]
+      depends_on:
+        - kafka
+  spark-job-2024:
+        build: .
+        command: ["python", "commoncrawl.py", "--year", "2024"]
+        depends_on:
+          - kafka
+  spark-job-2023:
+      build: .
+      command: ["python", "commoncrawl.py", "--year", "2023"]
+      depends_on:
+        - kafka
+  clean_stream:
+    build: .
+    command: ["spark-submit", "clean_jobs_Stream.py"]
+    depends_on:
+      - kafka
+      - spark-master
 
 volumes:
   postgres-db-volume:

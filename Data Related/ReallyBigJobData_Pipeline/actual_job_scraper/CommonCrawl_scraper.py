@@ -4,6 +4,11 @@ import gzip
 from bs4 import BeautifulSoup
 from kafka import KafkaProducer
 import json
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument("--year", required=True, help="Please enter the year to extract from (2009-2025)")
+args = parser.parse_args()
 
 
 producer = KafkaProducer(bootstrap_servers='localhost:9092',
@@ -76,7 +81,10 @@ def extractHTML(url_list):
 
 
 if __name__ == "__main__":
-    allURL = get_all_url(["2025"])
+    # modify this to accept docker compose parameter, we pass in the year and it'll do the rest to hopefully the rest
+    # worst case we "dumb it down" to only read crawl by crawl instead of multiple mass crawls and then just do more containers
+    allURL = get_all_url("2025")
+    #allURL = get_all_url(args)
     allJobData = extractHTML(allURL)
 
 '''bas
