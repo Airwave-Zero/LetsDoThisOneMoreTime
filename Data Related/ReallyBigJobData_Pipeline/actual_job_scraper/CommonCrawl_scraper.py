@@ -5,10 +5,52 @@ from bs4 import BeautifulSoup
 from kafka import KafkaProducer
 import json
 import argparse
+import logging
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--year", required=True, help="Please enter the year to extract from (2009-2025)")
 args = parser.parse_args()
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    filename=f'commoncrawl_scraper_{datetime.now().strftime("%Y%m%d_%H%M%S")}.log'
+)
+
+def retry_with_backoff(retries=3, backoff_in_seconds=1):
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            x = 0
+            while True:
+                try:
+                    return func(*args, **kwargs)
+                except Exception as e:
+                    if x == retries:
+                        logging.error(f"Failed after {retries} retries. Error: {str(e)}")
+                        raise
+                    wait = (backoff_in_seconds * 2 ** x + random.uniform(0, 1))
+                    logging.warning(f"Attempt {x + 1} failed. Retrying in {wait:.2f} seconds. Error: {str(e)}")
+                    time.sleep(wait)
+                    x += 1
+        return wrapper
+    return decorator
+
+class RateLimiter:
+    def __init__(self, requests_per_second=1):
+        self.delay = 1.0 / requests_per_second
+        self.last_request = 0
+
+    def wait(self):
+        now = time.time()
+        elapsed = now - self.last_request
+        if elapsed < self.delay:
+            time.sleep(self.delay - elapsed)
+        self.last_request = time.time()
+
+# Create rate limiter instance
+rate_limiter = RateLimiter(requests_per_second=0.5)  # 2 seconds between requests
 
 
 producer = KafkaProducer(bootstrap_servers='localhost:9092',
@@ -42,42 +84,65 @@ def get_all_url(years):
     # print(allURL)
     return allURL
 
+@retry_with_backoff(retries=3)
+def fetch_with_retry(url, headers=None, stream=False):
+    rate_limiter.wait()  # Rate limit all requests
+    response = requests.get(url, headers=headers, stream=stream)
+    response.raise_for_status()
+    return response
+
+
 def extractHTML(url_list):
-    allJobData = []
-    for url in url_list:
-        response = requests.get(url)
-        max = 5
-        curr = 0
-        for line in response.text.strip().split('\n'):
-            if curr < max:
-                record = json.loads(line)
-                if record["mime"] == "text/html":
-                    warc_url = f"https://data.commoncrawl.org/{record['filename']}"
-                    print("curr url: " + warc_url)
-                    headers = {'Range': f"bytes={record['offset']}-{int(record['offset']) + int(record['length']) - 1}"}
-                    resp = requests.get(warc_url, headers=headers, stream=True)
+    total_urls = len(url_list)
+    for idx, url in enumerate(url_list, 1):
+        logging.info(f"Processing URL {idx}/{total_urls}: {url}")
+        try:
+            response = fetch_with_retry(url)
+            count = 0
+            for line in response.text.strip().split('\n'):
+                if count < 10:
                     try:
-                        for warc_record in ArchiveIterator(gzip.GzipFile(fileobj=resp.raw)):
-                            print(warc_record)
-                            if warc_record.rec_type == 'response':
-                                html = warc_record.content_stream().read()
-                                soup = BeautifulSoup(html, 'html.parser')
-                                text = soup.get_text()
-                                # Check for job-related keywords
-                                if any(keyword in text.lower() for keyword in ['apply', 'job description', 'apply now']):
-                                    job_data = {
-                                        'url': record['url'],
-                                        'html': html.decode('utf-8', errors='ignore'),
-                                        'timestamp': record['timestamp']
-                                    }
-                                    allJobData.append(job_data)
-                                    producer.send('raw_jobs', job_data)
-                                    producer.flush()
-                                    print(job_data)
+                        record = json.loads(line)
+                        if record.get("mime") == "text/html":
+                            warc_url = f"https://data.commoncrawl.org/{record['filename']}"
+                            logging.info(f"Fetching WARC file: {warc_url}")
+
+                            headers = {
+                                'Range': f"bytes={record['offset']}-{int(record['offset']) + int(record['length']) - 1}"
+                            }
+                            
+                            warc_response = fetch_with_retry(warc_url, headers=headers, stream=True)
+                            
+                            try:
+                                with gzip.GzipFile(fileobj=warc_response.raw) as gzipped_file:
+                                    for warc_record in ArchiveIterator(gzipped_file):
+                                        if warc_record.rec_type == 'response':
+                                            html = warc_record.content_stream().read()
+                                            soup = BeautifulSoup(html, 'html.parser')
+                                            text = soup.get_text()
+
+                                            if any(keyword in text.lower() for keyword in ['apply', 'job description', 'apply now']):
+                                                job_data = {
+                                                    'url': record['url'],
+                                                    'html': html.decode('utf-8', errors='ignore'),
+                                                    'timestamp': record['timestamp']
+                                                }
+                                                allJobData.append(job_data)
+                                                logging.info(f"Successfully extracted job data from: {record['url']}")
+                                                print(f"Found job listing at: {record['url']}")
+                            except Exception as e:
+                                logging.error(f"Error processing WARC record: {str(e)}")
+                    except json.JSONDecodeError as je:
+                        logging.warning(f"Failed to parse JSON line: {str(je)}")
                     except Exception as e:
-                        print(e)
-                curr += 1
-    return allJobData
+                        logging.error(f"Error processing record: {str(e)}")
+                    count += 1
+        except requests.RequestException as req_err:
+            logging.error(f"Request error for URL {url}: {str(req_err)}")
+        except Exception as e:
+            logging.error(f"General error for URL {url}: {str(e)}")
+
+    logging.info(f"Extraction completed. Total job listings found: {len(allJobData)}")
 
 
 if __name__ == "__main__":
