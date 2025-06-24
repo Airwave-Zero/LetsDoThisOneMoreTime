@@ -55,8 +55,10 @@ def parse_html(html):
         location = location_match.group(1)[:100]
 
     return {
+        "company": company,
         "title": title,
-        "description": text[:2000],  # truncate
+        "location": location,
+        "description": text,  # give me the whole job page, will parse/grab most commons later
     }
 
 parse_html_udf = udf(parse_html, StructType().add("title", StringType()).add("description", StringType()))
