@@ -1,17 +1,19 @@
-job_bot/ignore_me/
-job_bot/.vscode/
-job_bot/resume_folder/GabrielQuach_Resume12092023.pdf
-shift_scheduler_bot/SchedulerFormApp/JSON_files/Workers.json
-shift_scheduler_bot/.vscode/
-shift_scheduler_bot/SchedulerFormApp/.vs/
-shift_scheduler_bot/SchedulerFormApp/JSON_files/Schedules/ScheduleJan8_14.json
-Data Analyst Projects/Pokemon TCG Prices/eBay Card Prices
-Data Analyst Projects/Pokemon TCG Prices/artist_summary.csv
-Data Analyst Projects/Pokemon TCG Prices/TCG_Script_private.py
-Data Analyst Projects/Pokemon TCG Prices/TCG_ScriptGetCardArt.py
-Mexico Restaurants/
-Spotify Top 100/
-Data Analyst Projects/Twitch Streamer Analytics/Twitch_API_Pipeline_private.py
-Data Analyst Projects/Twitch Streamer Analytics/twitch_secret.txt
-Data Analyst Projects/Top IMDB Movies/Movie_API_Pipeline_private.py
-Data Analyst Projects/Top IMDB Movies/movie_secret.txt
+ignore_folder/*
+airflow_docker/*
+*_private.*
+*_secret.*
+*.pickle
+*.env
+C:\Users\Gabriel\Desktop\testt\Data Related\ReallyBigJobData_Pipeline\airflow_docker
+Data Related/Pokemon TCG Prices/eBay Card Prices
+Data Related/Pokemon TCG Prices/artist_summary.csv
+Data Related/Pokemon TCG Prices/TCG_ScriptGetCardArt.py
+
+Data Related/Gmail ETL/csv_data/Categorized Emails.csv
+Data Related/Gmail ETL/csv_data/email_training_data.csv
+Data Related/Gmail ETL/csv_data/financial_report.csv
+Data Related/Gmail ETL/csv_data/account_balance_changes.csv
+Data Related/Gmail ETL/csv_data/account_balance_snapshots.csv
+Data Related/ReallyBigJobData_Pipeline/airflow_docker/*
+!Data Related/ReallyBigJobData_Pipeline/airflow_docker/dags
+!Data Related/ReallyBigJobData_Pipeline/airflow_docker/logs
