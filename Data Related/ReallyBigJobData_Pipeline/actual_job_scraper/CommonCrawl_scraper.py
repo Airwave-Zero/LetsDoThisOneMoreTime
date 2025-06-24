@@ -94,6 +94,12 @@ def fetch_with_retry(url, headers=None, stream=False):
 
 def extractHTML(url_list):
     total_urls = len(url_list)
+    '''
+    TODO
+    instead of getting every link and then extracting from there, parse all the jobs
+    that follow some format like https://job-boards.greenhouse.io/meritamerica/jobs/5566396004
+    and then pull the gz file using regex, should reduce number of calls
+    '''
     for idx, url in enumerate(url_list, 1):
         logging.info(f"Processing URL {idx}/{total_urls}: {url}")
         try:
