@@ -4,6 +4,7 @@ airflow_docker/*
 *_secret.*
 *.pickle
 *.env
+*.log
 C:\Users\Gabriel\Desktop\testt\Data Related\ReallyBigJobData_Pipeline\airflow_docker
 Data Related/Pokemon TCG Prices/eBay Card Prices
 Data Related/Pokemon TCG Prices/artist_summary.csv
