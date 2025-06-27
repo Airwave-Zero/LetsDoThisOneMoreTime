@@ -1,24 +1,23 @@
 from warcio.archiveiterator import ArchiveIterator
-
 from bs4 import BeautifulSoup
 from kafka import KafkaProducer
+from datetime import datetime
+from functools import wraps
 import json
 import argparse
 import logging
 import re
-from datetime import datetime
-from functools import wraps
 import time
 import random
 import requests
 import gzip
 import io
 
-'''
+
 parser = argparse.ArgumentParser()
-parser.add_argument("--year", required=True, help="Please enter the year to extract from (2009-2025)")
+parser.add_argument("--year", required=False, default="2025",  help="Please enter the year to extract from (2009-2025)")
 args = parser.parse_args()
-'''
+
 # Configure logging
 logging.basicConfig(
     level=logging.INFO,
@@ -65,12 +64,10 @@ class RateLimiter:
 rate_limiter = RateLimiter(requests_per_second=0.5)  # 2 seconds between requests
 
 job_sites_with_patterns = [
-    ("*.greenhouse.io/*", re.compile(r"^https://boards\.greenhouse\.io/[^/]+/jobs/[^/?#]+"))]
-'''
-("*.jobs.lever.co/*", re.compile(r"^https://(?:[^/]+\.)?jobs\.lever\.co/[^?#]*")),
-("*.workable.com/*", re.compile(r"^https://apply\.workable\.com/[^/]+/j/[^/?#]+")),
-("*.bamboohr.com/*", re.compile(r"^https://[^/]+\.bamboohr\.com/careers/[^/?#]*"))
-'''
+    ("*.greenhouse.io/*", re.compile(r"^https://boards\.greenhouse\.io/[^/]+/jobs/[^/?#]+")),
+    ("*.jobs.lever.co/*", re.compile(r"^https://(?:[^/]+\.)?jobs\.lever\.co/[^?#]*")),
+    ("*.workable.com/*", re.compile(r"^https://apply\.workable\.com/[^/]+/j/[^/?#]+")),
+    ("*.bamboohr.com/*", re.compile(r"^https://[^/]+\.bamboohr\.com/careers/[^/?#]*"))]
 
 def get_all_url(years):
     '''Takes in a list of years, or arguments provided by the script, and generates the appropriate
@@ -147,7 +144,7 @@ def extractHTML(url_list):
     that follow some format like https://job-boards.greenhouse.io/meritamerica/jobs/5566396004
     and then pull the gz file using regex, should reduce number of calls
     '''
-    allJobData = []
+    all_job_data = []
     for idx, url in enumerate(url_list, 1):
         logging.info(f"Processing URL {idx}/{total_urls}: {url}")
         try:
@@ -175,13 +172,17 @@ def extractHTML(url_list):
                                 html = warc_record.content_stream().read()
                                 soup = BeautifulSoup(html, 'html.parser')
                                 text = soup.get_text()
+                                ''' Despite the heavy payload size, we are okay with passing along >all< the HTML for it to
+                                be cleaned downstream later with Kafka/Spark. If we do everything inline here, it defeats
+                                the purpose of the pipeline aspect. Performance slows down a bit but it's ultimately more scalable'''
                                 if any(keyword in text.lower() for keyword in ['apply', 'description', 'experience']):
                                     job_data = {
                                         'url': json_obj.get("url"),
                                         'html': html.decode('utf-8', errors='ignore'),
                                         'timestamp': json_obj.get("timestamp")
                                     }
-                                    allJobData.append(job_data)
+                                    #all_job_data.append(job_data)
+                                    yield job_data
                                     logging.info(f"Successfully extracted job data from: {json_obj['url']}")
                                     print(f"Found job listing at: {json_obj['url']}")
                     except Exception as e:
@@ -190,30 +191,23 @@ def extractHTML(url_list):
             logging.error(f"Request error for URL {url}: {str(req_err)}")
         except Exception as e:
             logging.error(f"General error for URL {url}: {str(e)}")
-    logging.info(f"Extraction completed. Total job listings found: {len(allJobData)}")
+    #logging.info(f"Extraction completed. Total job listings found: {len(allJobData)}")
+    #return all_job_data
 
 
 if __name__ == "__main__":
     # modify this to accept docker compose parameter, we pass in the year and it'll do the rest to hopefully the rest
     # worst case we "dumb it down" to only read crawl by crawl instead of multiple mass crawls and then just do more containers
-    allURL = get_all_url(["2025"])
-    #allURL = get_all_url(args)
-    allJobData = extractHTML(allURL)
-    '''
-    producer = KafkaProducer(bootstrap_servers='localhost:9092',
-                             value_serializer=lambda v: json.dumps(v).encode('utf-8'))
-    '''
+    #all_url = get_all_url(["2025"])
+    producer = KafkaProducer(bootstrap_servers='localhost:9092', value_serializer=lambda v: json.dumps(v).encode('utf-8'))
 
-'''bas
-for record in ArchiveIterator(gzip.GzipFile(fileobj=resp.raw)):
-    if record.rec_type == 'response':
-        html = record.content_stream().read()
-        soup = BeautifulSoup(html, 'html.parser')
-        text = soup.get_text()
-        if any(x in text.lower() for x in ['hiring', 'job opening', 'apply now']):
-            producer.send('raw_jobs', {
-                'url': record.rec_headers.get_header('WARC-Target-URI'),
-                'text': text[:1000]
-            })
-'''
+    allURL = get_all_url(args)
+    for each_job in extractHTML(all_url):
+        if job_data:
+            try:
+                producer.send("raw_jobs", job)
+                print(f"Sent: {job['url']}")
+            except Exception as e:
+                logging.error(f"Failed to send job: {str(e)}")
+    producer.flush()        
 
