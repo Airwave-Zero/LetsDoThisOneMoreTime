@@ -214,7 +214,7 @@ def export_to_csv(emails):
     df.to_csv(CSV_OUTPUT_PATH, index=False)
     
 def main():
-    num_emails = 12000
+    num_emails = 15000
     print("Running the super fancy job script...")
     try:
         print("Attempting to establish secure connection to Gmail...")
@@ -225,7 +225,7 @@ def main():
         return
     print(f"Securely connected to Gmail API! Attempting to retrieve {num_emails} emails now...")
     all_emails = []
-    email_queries = ['application', 'offer letter']
+    email_queries = ['application', 'offer letter', 'interview']
     for query in email_queries:
         queried_emails = get_email_data(service, num_emails, query)
         for email in queried_emails:
