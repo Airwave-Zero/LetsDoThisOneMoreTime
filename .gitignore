@@ -1,5 +1,6 @@
 ignore_folder/*
 airflow_docker/*
+**/__pycache__/
 *_private.*
 *_secret.*
 *.pickle
