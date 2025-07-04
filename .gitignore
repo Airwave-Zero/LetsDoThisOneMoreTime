@@ -5,16 +5,16 @@ airflow_docker/*
 *.pickle
 *.env
 *.log
-C:\Users\Gabriel\Desktop\testt\Data Related\ReallyBigJobData_Pipeline\airflow_docker
-Data Related/Pokemon TCG Prices/eBay Card Prices
-Data Related/Pokemon TCG Prices/artist_summary.csv
-Data Related/Pokemon TCG Prices/TCG_ScriptGetCardArt.py
+C:\Users\Gabriel\Desktop\testt\Data_Related\ReallyBigJobData_Pipeline\airflow_docker
+Data_Related/Pokemon_TCG_Prices/eBay_Card_Prices
+Data_Related/Pokemon_TCG_Prices/artist_summary.csv
+Data_Related/Pokemon_TCG_Prices/TCG_ScriptGetCardArt.py
 
-Data Related/Gmail ETL/csv_data/Categorized Emails.csv
-Data Related/Gmail ETL/csv_data/email_training_data.csv
-Data Related/Gmail ETL/csv_data/financial_report.csv
-Data Related/Gmail ETL/csv_data/account_balance_changes.csv
-Data Related/Gmail ETL/csv_data/account_balance_snapshots.csv
-Data Related/ReallyBigJobData_Pipeline/airflow_docker/*
-!Data Related/ReallyBigJobData_Pipeline/airflow_docker/dags
-!Data Related/ReallyBigJobData_Pipeline/airflow_docker/logs
+Data_Related/Gmail_ETL/csv_data/Categorized Emails.csv
+Data_Related/Gmail_ETL/csv_data/email_training_data.csv
+Data_Related/Gmail_ETL/csv_data/financial_report.csv
+Data_Related/Gmail_ETL/csv_data/account_balance_changes.csv
+Data_Related/Gmail_ETL/csv_data/account_balance_snapshots.csv
+Data_Related/ReallyBigJobData_Pipeline/airflow_docker/*
+!Data_Related/ReallyBigJobData_Pipeline/airflow_docker/dags
+!Data_Related/ReallyBigJobData_Pipeline/airflow_docker/logs
