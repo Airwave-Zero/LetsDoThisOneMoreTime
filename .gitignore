@@ -6,7 +6,8 @@ airflow_docker/*
 *.pickle
 *.env
 *.log
-C:\Users\Gabriel\Desktop\testt\Data_Related\ReallyBigJobData_Pipeline\airflow_docker
+
+
 Data_Related/Pokemon_TCG_Prices/eBay_Card_Prices
 Data_Related/Pokemon_TCG_Prices/artist_summary.csv
 Data_Related/Pokemon_TCG_Prices/TCG_ScriptGetCardArt.py
