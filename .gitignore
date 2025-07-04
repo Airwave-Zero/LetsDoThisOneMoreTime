@@ -6,6 +6,7 @@ airflow_docker/*
 *.pickle
 *.env
 *.log
+logs/
 
 
 Data_Related/Pokemon_TCG_Prices/eBay_Card_Prices
