@@ -1,21 +1,15 @@
-FROM python:3.10-slim
+# Use the official Apache Airflow image as base
+FROM apache/airflow:3.0.2
 
-WORKDIR /app
-COPY kafka_producer.py .
-RUN pip install kafka-python
-CMD ["python", "kafka_producer.py"]
+# (Optional) Set working directory
+WORKDIR /opt/airflow
 
-FROM bitnami/spark:latest
+# Copy your local dags, plugins, or other custom files if needed
+# COPY dags/ /opt/airflow/dags/
+# COPY plugins/ /opt/airflow/plugins/
 
-# Install Python deps
-RUN apt-get update && apt-get install -y python3 python3-pip
-COPY requirements.txt .
-RUN pip3 install -r requirements.txt
+# (Optional) Install any additional Python packages here
+# RUN pip install --no-cache-dir some-package
 
-# Copy scripts into container
-COPY commoncrawl.py .
-COPY clean_jobs_Stream.py .
-COPY full_job_pipeline.py .
-
-# Default command
-CMD ["bash"]
+# Default command (inherited from base image)
+# CMD ["bash"]
