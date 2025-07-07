@@ -1,4 +1,4 @@
-from airflow import DAG
+from airflow.sdk import DAG
 from airflow.operators.python import PythonOperator
 from datetime import datetime, timedelta
 import os
@@ -17,18 +17,19 @@ card_names = [
 
 def dummy_test():
     import logging
-    logging.info("Start dummy_test")
+    import sys
+    logging.info(f"sys.path: {sys.path}")
 
     try:
-        logging.info("Attempting import of dummy_import_test...")
+        logging.info("Trying import...")
         import Pokemon_TCG_Prices.dummy_import_test as dummy
-        logging.info("Successfully imported dummy_import_test")
+        logging.info("Import worked!")
     except Exception as e:
         logging.error(f"Import failed: {e}")
         raise
 
-    logging.info("Task finished successfully")
     return "success"
+
 
 default_args = {
     "owner": "airflow",
