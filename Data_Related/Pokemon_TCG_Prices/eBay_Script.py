@@ -1,13 +1,3 @@
-from bs4 import BeautifulSoup
-import pandas as pd
-from datetime import datetime
-import re # regular expressions
-import os # for local file savings
-import time # for sleep to increase c hances of accepted API calls
-import csv
-import requests
-
-
 def create_eBay_Soup(card_name):
     ''' This function handles the entire eBay creation and requests and returns
         and interaction process and returns a parsed BeautifulSoup object '''
@@ -198,28 +188,39 @@ def track_price_history(card_names, folder_path, max_results=25):
     print(f"\nFinished tracking prices for {len(card_names)} cards.")
     return final_df
 
-'''
-This chunk of code can be uncommented to pull the names of the cards in the master
-dataset already in PowerBI. However, I do not want to explode my computer nor PowerBI
-by running this script on 17000 cards...
-try:
-    card_names = dataset['Name'].dropna().unique()
-except Exception as e:
-    print("Tried PowerBI dataset import, failed")
-    card_names = [
-    "Charizard", "Bulbasaur", "Gengar", "Umbreon", "Eevee",
-    "Flygon", "Gardevoir", "Metagross", "Swampert", "Snorlax",
-    "Arcanine", "Lucario", "Absol", "Blaziken", "Dragonite",
-    "Greninja", "Mimikyu", "Garchomp", "Mudkip", "Sceptile",
-    "Tyranitar", "Raichu", "Mew", "Ampharos", "Torterra"]
-'''
-# Top 25 most favorite Pokemon voted on Reddit in 2024
-# https://www.reddit.com/r/pokemon/comments/1bozvz5/results_favourite_pokemon_survey_2024/?rdt=61986
-card_names = [
-    "Charizard", "Bulbasaur", "Gengar", "Umbreon", "Eevee",
-    "Flygon", "Gardevoir", "Metagross", "Swampert", "Snorlax",
-    "Arcanine", "Lucario", "Absol", "Blaziken", "Dragonite",
-    "Greninja", "Mimikyu", "Garchomp", "Mudkip", "Sceptile",
-    "Tyranitar", "Raichu", "Mew", "Ampharos", "Torterra"]
 
-newCardsDF = track_price_history(card_names, "eBay Card Prices", 200)
+
+
+if __name__ == '__main__':
+    from bs4 import BeautifulSoup
+    import pandas as pd
+    from datetime import datetime
+    import re # regular expressions
+    import os # for local file savings
+    import time # for sleep to increase c hances of accepted API calls
+    import requests
+    '''
+    This chunk of code can be uncommented to pull the names of the cards in the master
+    dataset already in PowerBI. However, I do not want to explode my computer nor PowerBI
+    by running this script on 17000 cards...
+    try:
+        card_names = dataset['Name'].dropna().unique()
+    except Exception as e:
+        print("Tried PowerBI dataset import, failed")
+        card_names = [
+        "Charizard", "Bulbasaur", "Gengar", "Umbreon", "Eevee",
+        "Flygon", "Gardevoir", "Metagross", "Swampert", "Snorlax",
+        "Arcanine", "Lucario", "Absol", "Blaziken", "Dragonite",
+        "Greninja", "Mimikyu", "Garchomp", "Mudkip", "Sceptile",
+        "Tyranitar", "Raichu", "Mew", "Ampharos", "Torterra"]
+    '''
+    # Top 25 most favorite Pokemon voted on Reddit in 2024
+    # https://www.reddit.com/r/pokemon/comments/1bozvz5/results_favourite_pokemon_survey_2024/?rdt=61986
+    card_names = [
+        "Charizard", "Bulbasaur", "Gengar", "Umbreon", "Eevee",
+        "Flygon", "Gardevoir", "Metagross", "Swampert", "Snorlax",
+        "Arcanine", "Lucario", "Absol", "Blaziken", "Dragonite",
+        "Greninja", "Mimikyu", "Garchomp", "Mudkip", "Sceptile",
+        "Tyranitar", "Raichu", "Mew", "Ampharos", "Torterra"]
+
+    newCardsDF = track_price_history(card_names, "eBay_Card_Prices", 200)

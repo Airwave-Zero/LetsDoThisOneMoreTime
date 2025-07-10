@@ -1,43 +1,3 @@
-import os
-import sys
-import base64
-import re
-import pickle
-import psycopg2
-import pandas as pd
-from datetime import datetime, timezone
-from google.auth.transport.requests import Request
-from google_auth_oauthlib.flow import InstalledAppFlow
-from googleapiclient.discovery import build
-from bs4 import BeautifulSoup
-from dateutil import parser
-
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))) # needed for finding parent folders
-
-DB_CONFIG = {
-    "dbname": "BoA Reporter",
-    "user": "postgres",
-    "password": "",
-    "host": "localhost",
-    "port": "5432"
-}
-CHANGES_CSV_OUTPUT_PATH = "../csv_data/account_balance_changes.csv"
-BALANCE_CSV_OUTPUT_PATH = "../csv_data/account_balance_snapshots.csv"
-POSTGRE_SQL_PASSWORD_PATH = "postgre_secret.txt"
-
-scope = ['https://www.googleapis.com/auth/gmail.readonly']
-
-tzinfos = {
-    'PDT': -7 * 3600,  # UTC-7
-    'PST': -8 * 3600,  # UTC-8
-    'EDT': -4 * 3600,  # UTC-4
-    'EST': -5 * 3600,  # UTC-5
-    'CDT': -5 * 3600,  # UTC-5
-    'CST': -6 * 3600,  # UTC-6
-    'MDT': -6 * 3600,  # UTC-6
-    'MST': -7 * 3600,  # UTC-7
-}
-
 def get_gmail_service():
     '''This function serves to authenticate and return a Gmail API service client
     with OAuth2.0. This function looks for existing user credentials, and if not found,
@@ -282,4 +242,43 @@ def main():
     export_to_postgresql(df_emails)
 
 if __name__ == '__main__':
+    import os
+    import sys
+    import base64
+    import re
+    import pickle
+    import psycopg2
+    import pandas as pd
+    from datetime import datetime, timezone
+    from google.auth.transport.requests import Request
+    from google_auth_oauthlib.flow import InstalledAppFlow
+    from googleapiclient.discovery import build
+    from bs4 import BeautifulSoup
+    from dateutil import parser
+
+    sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))) # needed for finding parent folders
+
+    DB_CONFIG = {
+        "dbname": "BoA Reporter",
+        "user": "postgres",
+        "password": "",
+        "host": "localhost",
+        "port": "5432"
+    }
+    CHANGES_CSV_OUTPUT_PATH = "../csv_data/account_balance_changes.csv"
+    BALANCE_CSV_OUTPUT_PATH = "../csv_data/account_balance_snapshots.csv"
+    POSTGRE_SQL_PASSWORD_PATH = "postgre_secret.txt"
+
+    scope = ['https://www.googleapis.com/auth/gmail.readonly']
+
+    tzinfos = {
+        'PDT': -7 * 3600,  # UTC-7
+        'PST': -8 * 3600,  # UTC-8
+        'EDT': -4 * 3600,  # UTC-4
+        'EST': -5 * 3600,  # UTC-5
+        'CDT': -5 * 3600,  # UTC-5
+        'CST': -6 * 3600,  # UTC-6
+        'MDT': -6 * 3600,  # UTC-6
+        'MST': -7 * 3600,  # UTC-7
+    }
     main()
