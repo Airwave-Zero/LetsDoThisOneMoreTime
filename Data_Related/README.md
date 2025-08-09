@@ -1,6 +1,6 @@
 # LetsDoThisOneMoreTime
 
-These are where my projects reside as I accrue more skills for data engineering! My projects usually have the category of:
+These are where my projects reside as I accrue more skills working with data! My projects usually have the category of:
 
 * Either something I'm interested in (Pokemon)
 * Something I can actually use for my daily life (Gmail)
