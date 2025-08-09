@@ -45,7 +45,8 @@ def get_email_data(service, num_emails, queryStatement = ''):
     positive_query = ['from: onlinebanking@ealerts.bankofamerica.com subject: deposit',
                       'from: bank of america subject: "sent you"',
                       'from: venmo subject: "paid you"',
-                      'from: venmo subject: "transfer"',]
+                      'from: venmo subject: "transfer"',
+                      'subject: "your available balance"']
     posFlag = queryStatement in positive_query # fairly hard coded but works because we know exactly what the exact subjects are
     print("Currently searching for: '" + queryStatement + "'...")
     while len(emails) < (num_emails):
@@ -124,6 +125,7 @@ def export_to_postgresql(emails):
             date TIMESTAMP,
             amount DECIMAL,
             queryStatement TEXT
+            UNIQUE (date, amount, queryStatement)
         );
         """
         try:
@@ -162,44 +164,34 @@ def export_to_postgresql(emails):
         if 'conn' in locals():
             conn.close()
 
-def get_starting_info(filepath, lookFor):
-    ''' Function tha reads in the starting balance to work with, returns
-    either a date string or a balance string '''
-    df = pd.read_csv(filepath)
-    if lookFor == "balance":
-        balanceValue = str(df.iloc[-1]['balance']); # should be a string, but just in case
-        print("Last known balance: " + balanceValue)
-        return float(balanceValue.replace('$', '').replace(',', '').strip()) # clean it so it's purely a number
-    elif lookFor == "date":
-        dateValue = str(df.iloc[-1]['date'])
-        print("Accessing from last known date: " + dateValue)
-        return dateValue
-
-def export_emails_to_csv(df_emails, old_df):
-    ''' Outputs the email list into a csv, ideally for usage in PowerBI, and returns the dataframe for later use '''
-    df = pd.DataFrame(df_emails)
-    combined_df = pd.concat([df, old_df], ignore_index=True)
+def export_emails_to_csv(df, export_path):
+    ''' This generic function takes in a dataframe, cleans up the dates, drop duplicates, and exports to the proper path '''
     df['date'] = pd.to_datetime(df['date'])           
     df = df.sort_values('date', ascending=False)
     df['date'] = df['date'].dt.strftime('%#m/%#d/%Y %#H:%M') # clean up and set as strings after sorted by date
     df = df.drop_duplicates() # just in case
-    df.to_csv(CHANGES_CSV_OUTPUT_PATH, index=False)
+    df.to_csv(export_path, index=False)
     return df # return the "complete" full data with no duplicates
 
-def export_balance_to_csv(curr_date, new_balance):
-    df = pd.read_csv(BALANCE_CSV_OUTPUT_PATH)
-    new_data = pd.DataFrame([
-        {
-        'date': curr_date,
-        'balance': f"${new_balance:,.2f}"
-        }])
-    df = pd.concat([df, new_data], ignore_index=True)
+def export_balance_to_csv(service, num_emails):
+    '''This function specifically handles getting only the account balance snapshots from inbox, and then exports them to the csv'''
+    balance_emails = get_email_data(service, num_emails, 'subject: "your available balance"')
+    df = pd.DataFrame(balance_emails)
+    df.drop('queryStatement', axis=1, inplace=True)
+    df.rename(columns={'amount': 'balance'}, inplace=True)
     try:
-        df.to_csv(BALANCE_CSV_OUTPUT_PATH, index=False)
+        df = export_emails_to_csv(df, BALANCE_CSV_OUTPUT_PATH)
     except PermissionError:
         print("Cannot write to the file. Make sure it's not open.")
+    return df
 
 def main():
+    '''This main function handles:
+    1) establishing the gmail api connection securely
+    2) Iterating through the list of bank statements desired to track spending or deposits
+    3) Exporting them all to a dataframe, cleaning up the data, and then to a specific csv for balance changes
+    4) Also looks up emails for balance snapshots and also exports that to a different csv '''
+    
     print("Running the super fancy banking script...")
     num_emails = 1000
     try:
@@ -220,11 +212,7 @@ def main():
     'from: bank of america subject: zelle "has been sent "', # negative
     'from: venmo subject: "paid you"', # positive
     'from: venmo subject: "transfer"'] # positive
-    starting_balance = get_starting_info(BALANCE_CSV_OUTPUT_PATH, "balance")
-    starting_date = datetime.strptime(get_starting_info(BALANCE_CSV_OUTPUT_PATH, "date"), "%m/%d/%Y")
-    old_data = pd.read_csv(CHANGES_CSV_OUTPUT_PATH)
-    date_now = datetime.now().strftime('%#m/%#d/%Y')
-    
+
     all_emails = []
     # Doing a nested for loop b/c # of operations is the same, not O(n^2) vs two for loops
     for query in email_queries:
@@ -233,12 +221,11 @@ def main():
             if email.get('date') and email['date'].tzinfo is not None:
                 email['date'] = email['date'].astimezone(timezone.utc).replace(tzinfo=None)
             all_emails.append(email)
-    # we only care about updating the balances after the last known one
-    new_balance = starting_balance + sum(email['amount'] for email in all_emails if email['date'] > starting_date) 
     
     print("Emails retrieved...now exporting to PostgreSQL and csv...")
-    df_emails = export_emails_to_csv(all_emails, old_data)
-    export_balance_to_csv(date_now, new_balance)
+    df = pd.DataFrame(all_emails)
+    df_emails = export_emails_to_csv(df, CHANGES_CSV_OUTPUT_PATH)
+    df_balance = export_balance_to_csv(service, num_emails)
     export_to_postgresql(df_emails)
 
 if __name__ == '__main__':
