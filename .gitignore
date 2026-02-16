@@ -6,6 +6,7 @@ airflow_docker/*
 *.pickle
 *.env
 *.log
+.DS_store
 logs/
 
 
