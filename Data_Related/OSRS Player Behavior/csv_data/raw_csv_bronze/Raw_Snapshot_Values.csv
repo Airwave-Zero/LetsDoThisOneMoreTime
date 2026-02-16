@@ -1,0 +1,5 @@
+snapshot_time,snapshot_id,player_id,player_name,metric_type,metric_name,value,rank
+2022-10-21T16:46:33.093Z,67506253,2,test_player,skill,overall,300532325,61254
+2022-10-21T16:46:33.093Z,67506253,2,test_player,boss,abyssal_sire,1049,11931
+2022-10-21T16:46:33.093Z,67506253,2,test_player,activity,bounty_hunter_hunter,-1,-1
+2022-10-21T16:46:33.093Z,67506253,2,test_player,computed,ehp,741.68649,40839
