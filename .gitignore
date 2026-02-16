@@ -22,3 +22,6 @@ Data_Related/Gmail_ETL/csv_data/account_balance_snapshots.csv
 Data_Related/ReallyBigJobData_Pipeline/airflow_docker/*
 !Data_Related/ReallyBigJobData_Pipeline/airflow_docker/dags
 !Data_Related/ReallyBigJobData_Pipeline/airflow_docker/logs
+Data_Related/.DS_Store
+Data_Related/OSRS Player Behavior/.DS_Store
+Data_Related/OSRS Player Behavior/csv_data/.DS_Store
