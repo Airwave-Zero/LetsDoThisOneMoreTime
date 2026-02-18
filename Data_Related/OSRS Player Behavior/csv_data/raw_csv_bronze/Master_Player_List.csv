@@ -1,2 +1,2 @@
-player_id,username,player_type,build,status,country
-1135,zezima,regular,main,active,,
+id,username,displayName,type,build,status,country,patron,exp,ehp,ehb,ttm,tt200m,registeredAt,updatedAt,lastChangedAt,lastImportedAt
+8482,example1,Example__1,regular,main,active,US,False,306176485,5168.41088,174.10383,0,7843.85252576933,2020-05-04T22:24:36.865Z,2026-02-18T20:47:58.493Z,2026-02-18T20:47:58.493Z,2023-07-11T02:03:16.214Z

@@ -2,7 +2,6 @@
   {
     "api_key": "YOUR_API_KEY",
     "discord_username": "YOUR_DISCORD_NAME",
-    "request_delay": 0.7,
-    "raw_csv_output_dir": "csv_data/raw_csv_bronze"
+    "request_delay": 0.7
   }
 ]
