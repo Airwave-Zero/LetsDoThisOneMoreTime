@@ -6,20 +6,30 @@ import requests
 from typing import List, Dict
 from dataclasses import dataclass
 
-# ============================================================
-# Configuration/Initialization Functions and Variables
-# ============================================================
+'''
+============================================================
+Configuration/Initialization Functions and Variables
+============================================================
 
-# Load filter lists from external JSON so they can be edited without
-# modifying the script. A default fallback is included.
+Load filter lists from external JSON so they can be edited without
+modifying the script. A default fallback is included.
+Include all necessary paths for config and output data
+'''
 config_folder_dir = os.path.join(os.path.dirname(__file__), "config")
 os.makedirs(config_folder_dir, exist_ok=True)
 filter_path = os.path.join(config_folder_dir, "osrs_filters.json")
 groupnames_path = os.path.join(config_folder_dir, "group_names.json")
-
 #replace with private config for API key and user agent
 #script_config_path = os.path.join(config_folder_dir, "script_config.json")
 script_config_path = os.path.join(config_folder_dir, "script_config_private.json")
+
+csv_folder_path = os.path.join(os.path.dirname(__file__), "csv_data")
+os.makedirs(csv_folder_path, exist_ok=True)
+bronze_csv_folder_path = os.path.join(csv_folder_path, "raw_csv_bronze")
+silver_csv_folder_path = os.path.join(csv_folder_path, "cleaned_parquet_silver")
+#master_player_list_csv_path = os.path.join(bronze_csv_folder_path, "Master_Player_List.csv")
+master_player_list_csv_path = os.path.join(bronze_csv_folder_path, "Master_Player_List.csv")
+
 
 # object in case file doesn't exist or is unfindable
 default_filters = {
@@ -143,8 +153,6 @@ default_filters = {
 }
 wom_base_url = "https://api.wiseoldman.net/v2"
 
-output_dir = "data_output"
-os.makedirs(output_dir, exist_ok=True)
 
 @dataclass(frozen=True)
 class ScriptConfig:
@@ -176,8 +184,6 @@ def load_filters():
     boss_hiscores = data.get("boss_hiscores", default_filters["boss_hiscores"])
     account_types = data.get("account_types", default_filters["account_types"])
     other_build_types = data.get("other_build_types", default_filters["other_build_types"])
-
-    # todo return dataclass instead of tuple for better readability
     
     return FilterConfig(skill_names, boss_hiscores, account_types, other_build_types)
 
@@ -197,24 +203,166 @@ def load_script_config():
     request_delay = data.get("request_delay", 0.7)
     csv_output_dir_raw = data.get("csv_output_dir_raw", "")
     csv_output_dir_processed = data.get("csv_output_dir_processed", "")
-    # todo return dataclass instead of tuple for better readability
-
     return ScriptConfig(api_key, discord_username, request_delay, csv_output_dir_raw, csv_output_dir_processed)
 
 # ============================================================
 # MAIN EXECUTION
 # ============================================================
 
+
+# ============================================================
+# Helper Functions
+# ============================================================
+
+#
+def make_wom_api_call(url: str, headers:Dict, params: Dict = None, delay_rate: float = 0.7) -> Dict:
+    """
+    Wrapper around requests.get with rate limiting.
+    """
+    print("making api call to: ", url)
+    response = requests.get(url, headers=headers, params=params)
+    time.sleep(delay_rate)
+
+    response.raise_for_status()
+    return response.json()
+
+def write_player_to_csv(player_data: Dict, filepath: str):
+    """
+    Write player data to a CSV file. If the file doesn't exist, it creates it and writes the header.
+    If it does exist, it appends the new player data as a new row.
+    """
+    file_exists = os.path.isfile(filepath)
+
+    with open(filepath, "a", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames=player_data.keys())
+        if not file_exists:
+            writer.writeheader()
+        writer.writerow(player_data)
+
+# ============================================================
+# Leaderboards
+# ============================================================
+
+def fetch_top_players_for_metric(metric: str, headers: Dict, limit: int = 100) -> List[Dict]:
+    """
+    Fetch top players for a given metric.
+    """
+    url = f"{wom_base_url}/leaderboards"
+    params = {
+        "metric": metric,
+        "limit": limit,
+        "offset": 0
+    }
+
+    data = make_wom_api_call(url, headers=headers, params=params)
+    return data.get("entries", [])
+
+
+def fetch_all_leaderboards(metrics: List[str]) -> Dict[str, List[Dict]]:
+    """
+    Fetch top 100 players across all provided metrics.
+    """
+    results = {}
+
+    for metric in metrics:
+        print(f"Fetching leaderboard: {metric}")
+        results[metric] = fetch_top_players_for_metric(metric)
+
+    return results
+
+
+def write_leaderboards_to_csv(leaderboards: Dict[str, List[Dict]]):
+    """
+    Write leaderboard data to CSV files (one per metric).
+    """
+    for metric, entries in leaderboards.items():
+        if not entries:
+            continue
+
+        filepath = os.path.join(OUTPUT_DIR, f"leaderboard_{metric}.csv")
+        print(f"Writing {filepath}")
+
+        with open(filepath, "w", newline="", encoding="utf-8") as f:
+            writer = csv.DictWriter(f, fieldnames=entries[0].keys())
+            writer.writeheader()
+            writer.writerows(entries)
+
+
+# ============================================================
+# Groups / Clans
+# ============================================================
+
+def fetch_all_groups(headers: Dict, limit: int = 50) -> List[Dict]:
+    """
+    Fetch all registered Wise Old Man groups using pagination.
+    """
+    groups = []
+    offset = 0
+    '''
+    curl -X GET https://api.wiseoldman.net/v2/groups?name=the&limit=2 \
+    -H "Content-Type: application/json"'''
+    while len(groups) < limit:
+        print(f"Fetching groups offset={offset}")
+        url = f"{wom_base_url}/groups"
+        params = {
+            "limit": limit,
+            "offset": offset,
+            "name": "",
+        }
+
+        data = make_wom_api_call(url, headers=headers, params=params)
+        batch = data if isinstance(data, list) else data.get("groups", [])
+
+        if not batch:
+            break
+
+        groups.extend(batch)
+        offset += limit
+
+    return groups
+
+
+def write_groups_to_json_file(groups: List[Dict]):
+    """
+    Write groups/clans to JSON file. This list is fairly static, so this only ever
+    needs to be run once/user can delete the file if they want to refresh it.
+    """
+    if not groups:
+        return
+
+    with open(groupnames_path, "w", encoding="utf-8") as f:
+        json.dump(groups, f, indent=4, ensure_ascii=False)
+
+
 def main():
     # actually handles all the control logic flow
     account_filter_class = load_filters()
     script_config_class = load_script_config()
 
-    HEADERS = {
+    wom_headers = {
         "x-api-key": script_config_class.api_key,
         "User-Agent": script_config_class.discord_username
     }
-    ''' 
+    # The groups are essentially random because there is no 
+    # particular order when querying for groups, but the same groups
+    # appear everytime for the query so for our sake we will treat it as static
+    if os.path.exists(groupnames_path) and os.path.getsize(groupnames_path) > 0:
+        print(f"{groupnames_path} already has group data, skipping retrieval process.")
+        with open(groupnames_path, "r", encoding="utf-8") as f:
+            random_groups = json.load(f)
+    else:
+        random_groups = fetch_all_groups(wom_headers, limit=50)
+        write_groups_to_json_file(random_groups)
+
+    for group in random_groups:
+        group_id = group["id"]
+        url = f"{wom_base_url}/groups/{group_id}"
+        group_details = make_wom_api_call(url, headers=wom_headers)
+        for member in group_details["memberships"]:
+            write_player_to_csv(member["player"], master_player_list_csv_path)
+        return
+    
+    '''
     Skeleton code / control structure
     1. Leaderboards
     leaderboards = fetch_all_leaderboards(LEADERBOARD_METRICS)
