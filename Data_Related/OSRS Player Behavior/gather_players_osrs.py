@@ -29,12 +29,11 @@ bronze_csv_folder_path = os.path.join(csv_folder_path, "raw_csv_bronze")
 silver_csv_folder_path = os.path.join(csv_folder_path, "cleaned_parquet_silver")
 #group_player_list_csv_path = os.path.join(bronze_csv_folder_path, "Group_Player_List.csv")
 group_player_list_csv_path = os.path.join(bronze_csv_folder_path, "Group_Player_List_private.csv")
-#leaderboard_player_list_csv_path = os.path.join(bronze_csv_folder_path, "Leaderboard_Player_List.csv")
-leaderboard_player_list_csv_path = os.path.join(bronze_csv_folder_path, "Leaderboard_Player_List_private.csv")
+#leaderboard_player_list_csv_path = os.path.join(bronze_csv_folder_path, "Gains_Leaderboard_Player_List.csv")
+leaderboard_player_list_csv_path = os.path.join(bronze_csv_folder_path, "Gains_Leaderboard_Player_Listt_private.csv")
 
 #common_bot_area_player_list_csv_path = os.path.join(bronze_csv_folder_path, "Common_Bot_Area_List.csv")
 #common_bot_area_player_list_csv_path = os.path.join(bronze_csv_folder_path, "Common_Bot_Area_List_private.csv")
-
 
 
 # object in case file doesn't exist or is unfindable
@@ -211,15 +210,6 @@ def load_script_config():
     csv_output_dir_processed = data.get("csv_output_dir_processed", "")
     return ScriptConfig(api_key, discord_username, request_delay, csv_output_dir_raw, csv_output_dir_processed)
 
-# ============================================================
-# MAIN EXECUTION
-# ============================================================
-
-# ============================================================
-# Helper Functions
-# ============================================================
-
-#
 def make_wom_api_call(url: str, headers:Dict, params: Dict = None, delay_rate: float = 0.7) -> Dict:
     """
     Wrapper around requests.get with rate limiting.
@@ -245,29 +235,13 @@ def write_data_to_csv(data: Dict, filepath: str):
             writer.writeheader()
         writer.writerow(data)
 
-# ============================================================
-# Leaderboards
-# ============================================================
-
-# ============================================================
-# Groups / Clans
-# ============================================================
-
 def fetch_group_names(headers: Dict, limit: int = 50) -> List[Dict]:
     """
     Fetch all registered Wise Old Man groups using pagination.
     """
     groups = []
     offset = 0
-    '''
-    curl -X GET https://api.wiseoldman.net/v2/groups?name=the&limit=2 \
-    -H "Content-Type: application/json"
-        if os.path.exists(groupnames_path) and os.path.getsize(groupnames_path) > 0:
-        print(f"{groupnames_path} already has group data, skipping retrieval process.")
-        with open(groupnames_path, "r", encoding="utf-8") as f:
-            random_groups = json.load(f)
-    else:
-    '''
+    
     if os.path.exists(groupnames_path) and os.path.getsize(groupnames_path) > 0:
         print(f"{groupnames_path} already has group data, skipping retrieval process.")
         with open(groupnames_path, "r", encoding="utf-8") as f:
@@ -300,6 +274,8 @@ def write_groups_to_json_file(groups: List[Dict]):
         json.dump(groups, f, indent=4, ensure_ascii=False)
 
 def write_group_players_to_csv(groups: List[Dict], headers: Dict, output_path: str):
+    '''This file iterates through the list of all groups, looks them up, 
+    and then writes the players into the csv that are within the current group'''
     for group in groups:
         group_id = group["id"]
         url = f"{wom_base_url}/groups/{group_id}"
@@ -307,6 +283,42 @@ def write_group_players_to_csv(groups: List[Dict], headers: Dict, output_path: s
         for member in group_details["memberships"]:
             write_data_to_csv(member["player"], output_path)
         return
+
+def fetch_current_leaderboard_names(headers: Dict, categories: List[str]) -> List[Dict]:
+    """
+    Fetch top players for each category in the provided list.
+    This could be split into a method for each day, week, month, but that seems excessive
+    when they will all but put in the same datalake. Plus the returned object contains
+    the time period anyway.
+    """
+    time_periods = ["day", "week", "month"]
+    leaderboard_players = []
+    for time_period in time_periods:
+        for category in categories:
+            print(f"Fetching leaderboard for category: {category}, time period: {time_period}")
+            params = {
+                "metric": category,
+                "period": time_period
+            }
+            url = f"{wom_base_url}/records/leaderboard"
+            data = make_wom_api_call(url, headers=headers, params=params)
+            leaderboard_players.extend(data)
+        break
+    return leaderboard_players
+
+def write_exp_leaderboards_to_csv(players: List[Dict], output_path: str):
+    '''This file iterates through the list of all players on the exp leaderboards, looks them up, 
+    and then writes the player details into the csv'''
+    for player in players:
+        player_obj = player["player"]
+        player_with_extrafields = {
+            "period": player["period"],
+            "metric": player["metric"],
+            "value": player["value"],
+            "leaderboard_updatedAt": player["updatedAt"],
+            **player_obj,  # expands all player fields
+        }
+        write_data_to_csv(player_with_extrafields, output_path)
 
 
 def main():
@@ -326,22 +338,24 @@ def main():
     write_groups_to_json_file(random_groups)
     write_group_players_to_csv(random_groups, wom_headers, group_player_list_csv_path)
 
-    exp_leaderboard_players = fetch_leaderboard_names(wom_headers, account_filter_class.skill_names)
-    boss_leaderboard_players = fetch_leaderboard_names(wom_headers, account_filter_class.boss_hiscores)
-    write_leaderboards_to_csv(exp_leaderboard_players, wom_headers)
-    write_leaderboards_to_csv(boss_leaderboard_players, wom_headers)
-    '''
+    exp_leaderboard_players = fetch_current_leaderboard_names(wom_headers, account_filter_class.skill_names)
+    exp_bosskc_leaderboard_players = fetch_current_leaderboard_names(wom_headers, account_filter_class.boss_hiscores)
     
-todo1: fetch top 50 for leaderboards in all stats and metrics, put in a csv to track for later
-much later todo_10: write runelite plugin to extract names from screen when gaming in 
+    #optional field, not really much indicator of player behavior or says much at all
+    #activity_leaderboard_players = fetch_current_leaderboard_names(wom_headers, account_filter_class.activity_hiscores)
+    
+    # write to same leaderboard CSV since there is a field for metric and period, can drill down later
+    write_exp_leaderboards_to_csv(exp_leaderboard_players, leaderboard_player_list_csv_path)
+    write_exp_leaderboards_to_csv(exp_bosskc_leaderboard_players, leaderboard_player_list_csv_path)
+
+    
+    '''
+much later todo: write runelite plugin to extract names from screen when gaming in 
 commonly botted areas and add to csvv to track those players as well
 
 todo2: write dag/common script to essentially update/get the stats for all players
 in the separate csv's
 write functions: get_group_player_list_snapshots, get_leaderboard_player_snapshots, 
-
-
-
     
     '''
 
