@@ -135,13 +135,9 @@ default_filters = {
     "zulrah"
   ],
   "activities": [
-    "grid_points",
     "league_points",
-    "deadman_points",
     "bounty_hunter_hunter",
     "bounty_hunter_rogue",
-    "bounty_hunter_legacy_hunter",
-    "bounty_hunter_legacy_rogue",
     "clue_scrolls_all",
     "clue_scrolls_beginner",
     "clue_scrolls_easy",
@@ -150,9 +146,9 @@ default_filters = {
     "clue_scrolls_elite",
     "clue_scrolls_master",
     "last_man_standing",
-    "pvp_arena_rank",
+    "pvp_arena",
     "soul_wars_zeal",
-    "rifts_closed",
+    "guardians_of_the_rift",
     "colosseum_glory",
     "collections_logged"
     ],
@@ -196,10 +192,10 @@ class ScriptConfig:
 class FilterConfig:
     skill_names: list # e.g. overall, attack, strength, etc.
     boss_hiscores: list # e.g. zulrah, vorkath, etc.
-    activities: list # e.g. clue scrolls
-    computed: list # e.g. ehp, ehb, ttm
     account_types: list # e.g. ironman, hardcore ironman, etc.
     other_build_types: list # e.g. 1 defence pure, 1 hp pure, etc.
+    activities: list # e.g. clue scrolls
+    computed: list # e.g. ehp, ehb, ttm
 
 def load_filters():
     '''Loads in different account filter types from default or project JSON file.
@@ -216,7 +212,7 @@ def load_filters():
     boss_hiscores = data.get("boss_hiscores", default_filters["boss_hiscores"])
     account_types = data.get("account_types", default_filters["account_types"])
     other_build_types = data.get("other_build_types", default_filters["other_build_types"])
-    activities = data.get("activity_hiscores", default_filters["activities"])
+    activities = data.get("activities", default_filters["activities"])
     computed = data.get("computed", default_filters["computed"])
     
     return FilterConfig(skill_names, boss_hiscores, account_types, other_build_types, activities, computed)
