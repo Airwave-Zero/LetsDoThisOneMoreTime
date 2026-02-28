@@ -36,7 +36,7 @@ leaderboard_player_list_csv_path = os.path.join(bronze_csv_folder_path, "Gains_L
 #common_bot_area_player_list_csv_path = os.path.join(bronze_csv_folder_path, "Common_Bot_Area_List_private.csv")
 
 # object in case file doesn't exist or is unfindable
-default_filters = {
+default_filters = { 
   "skill_names": [
     "overall",
     "attack",
@@ -134,6 +134,30 @@ default_filters = {
     "zalcano",
     "zulrah"
   ],
+  "activities": [
+    "grid_points",
+    "league_points",
+    "deadman_points",
+    "bounty_hunter_hunter",
+    "bounty_hunter_rogue",
+    "bounty_hunter_legacy_hunter",
+    "bounty_hunter_legacy_rogue",
+    "clue_scrolls_all",
+    "clue_scrolls_beginner",
+    "clue_scrolls_easy",
+    "clue_scrolls_medium",
+    "clue_scrolls_hard",
+    "clue_scrolls_elite",
+    "clue_scrolls_master",
+    "last_man_standing",
+    "pvp_arena_rank",
+    "soul_wars_zeal",
+    "rifts_closed",
+    "colosseum_glory",
+    "collections_logged"
+    ],
+
+  "computed": ["ehp", "ehb", "ttm"],
 
   "account_types": [
     "normal",
@@ -172,6 +196,8 @@ class ScriptConfig:
 class FilterConfig:
     skill_names: list # e.g. overall, attack, strength, etc.
     boss_hiscores: list # e.g. zulrah, vorkath, etc.
+    activities: list # e.g. clue scrolls
+    computed: list # e.g. ehp, ehb, ttm
     account_types: list # e.g. ironman, hardcore ironman, etc.
     other_build_types: list # e.g. 1 defence pure, 1 hp pure, etc.
 
@@ -190,8 +216,10 @@ def load_filters():
     boss_hiscores = data.get("boss_hiscores", default_filters["boss_hiscores"])
     account_types = data.get("account_types", default_filters["account_types"])
     other_build_types = data.get("other_build_types", default_filters["other_build_types"])
+    activities = data.get("activity_hiscores", default_filters["activities"])
+    computed = data.get("computed", default_filters["computed"])
     
-    return FilterConfig(skill_names, boss_hiscores, account_types, other_build_types)
+    return FilterConfig(skill_names, boss_hiscores, account_types, other_build_types, activities, computed)
 
 def load_script_config():
     '''Loads in script config from default or project JSON file.
@@ -332,7 +360,7 @@ def write_group_players_to_csv(groups: List[Dict], headers: Dict, output_path: s
             group_players_list.append(member["player"])
     return group_players_list # in case we want to do anything else with the list of players in groups after writing to csv    
 
-def write_exp_leaderboard_players_to_csv(players: List[Dict], output_path: str):
+def write_leaderboard_players_to_csv(players: List[Dict], output_path: str):
     '''This file iterates through the list of all players on the exp leaderboards, looks them up, 
     and then writes the player details into the csv'''
     for player in players:
@@ -372,14 +400,14 @@ def main():
     # prevent issues when writing too many players and losing data, but for now we will write them all at once 
     # and then break down by category/period in the analysis phase since there is a field for both in the csv.
     exp_leaderboard_players = fetch_current_leaderboard_names(wom_headers, account_filter_class.skill_names)
-    exp_bosskc_leaderboard_players = fetch_current_leaderboard_names(wom_headers, account_filter_class.boss_hiscores)
-    
-    #optional field, not really much indicator of player behavior or says much at all
-    #activity_leaderboard_players = fetch_current_leaderboard_names(wom_headers, account_filter_class.activity_hiscores)
+    bosskc_leaderboard_players = fetch_current_leaderboard_names(wom_headers, account_filter_class.boss_hiscores)
+    activity_leaderboard_players = fetch_current_leaderboard_names(wom_headers, account_filter_class.activities)
+
     
     # write to same leaderboard CSV since there is a field for metric and period, can drill down later
-    write_exp_leaderboard_players_to_csv(exp_leaderboard_players, leaderboard_player_list_csv_path)
-    write_exp_leaderboard_players_to_csv(exp_bosskc_leaderboard_players, leaderboard_player_list_csv_path)
+    write_leaderboard_players_to_csv(exp_leaderboard_players, leaderboard_player_list_csv_path)
+    write_leaderboard_players_to_csv(bosskc_leaderboard_players, leaderboard_player_list_csv_path)
+    write_leaderboard_players_to_csv(activity_leaderboard_players, leaderboard_player_list_csv_path)
 
     # Dataset 3: Common Bot Area Players - this is more of a manual process where we would identify commonly botted areas 
     # and then query the players in those hiscores and track them in a separate csv.
