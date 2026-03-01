@@ -64,7 +64,6 @@ activities = [
 computed = ["ehp", "ehb", "ttm"]
 
 # big TODO: refactor everything from bronze csv to bronze parquet instead
-
 def parse_dates(df, cols):
     for c in cols:
         if c in df.columns:
@@ -243,14 +242,16 @@ def main():
     if(playerSetSameColumns):
         print("Group and leaderboard player dims have the same columns, creating combined player dim.")
         combined_dim = pd.concat([leaderboard_player_dim, group_player_dim], ignore_index=True).drop_duplicates(subset=["player_id"])
+        combined_dim = combined_dim.drop(columns=["username"]) # drop for privacy/security
+        combined_dim = combined_dim.drop(columns=["display_name"]) # drop for privacy/security
         combined_player_dim_path = write_df_to_parquet(combined_dim, f"{dims_folder_dir}/combined_player_dim.parquet")
+
     else:
-        leaderboard_player_dim_path = write_df_to_parquet(leaderboard_player_dim, f"{dims_folder_dir}/leaderboard_player_dim.parquet")
+        leaderboard_player_dim_path = write_df_to_parquet(leaderboard_player_dim, f"{dims_folder_dir}/leaderboard_player_dim.parquet")        
         group_player_dim_path = write_df_to_parquet(group_player_dim, f"{dims_folder_dir}/group_player_dim.parquet")
     metric_dim_path = write_df_to_parquet(metric_dim, f"{dims_folder_dir}/metric_dim.parquet")
     period_dim_path = write_df_to_parquet(period_dim, f"{dims_folder_dir}/period_dim.parquet")
 
-    #fact_df = build_leaderboard_fact(df, metric_dim, period_dim)
     snapshot_data_df = pd.read_csv(raw_snapshot_csv)
     snapshot_df = build_snapshot_fact(snapshot_data_df, metric_dim)
     snapshot_path = write_df_to_parquet(snapshot_df, f"{fact_table_dir}/snapshot_fact.parquet")
