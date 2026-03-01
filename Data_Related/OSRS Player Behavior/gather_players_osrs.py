@@ -13,6 +13,9 @@ Configuration/Initialization Functions and Variables
 Establish all global variable names and file locations here
 Establish functions for loading in configurations and returning objects that store important config types
 '''
+
+# big TODO: refactor everything from bronze csv to bronze parquet instead
+
 config_folder_dir = os.path.join(os.path.dirname(__file__), "config")
 os.makedirs(config_folder_dir, exist_ok=True)
 filter_path = os.path.join(config_folder_dir, "osrs_filters.json")

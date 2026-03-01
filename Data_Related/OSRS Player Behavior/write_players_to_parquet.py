@@ -63,6 +63,8 @@ activities = [
 
 computed = ["ehp", "ehb", "ttm"]
 
+# big TODO: refactor everything from bronze csv to bronze parquet instead
+
 def parse_dates(df, cols):
     for c in cols:
         if c in df.columns:
