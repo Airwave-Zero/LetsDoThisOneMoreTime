@@ -308,6 +308,7 @@ def fetch_current_leaderboard_names(headers: Dict, categories: List[str]) -> Lis
             for each_player_dict in data:
                 each_player_dict["metric"] = category # add metric and period to each player dict so we know which category and time period they belong to when we write to csv
                 each_player_dict["period"] = time_period
+                each_player_dict["dataCategory"] = "leaderboard" # add data category to player dict so we know which dataset they belong to when we write to csv
             leaderboard_players.extend(data)
     return leaderboard_players
 '''
@@ -347,13 +348,18 @@ def write_group_players_to_csv(groups: List[Dict], headers: Dict, output_path: s
     '''This file iterates through the list of all groups, looks them up, 
     and then writes the players into the csv that are within the current group'''
     group_players_list = []
+    totalCount = len(groups)
+    idx = 1
     for group in groups:
+        print(f"Fetching players for group: {group['name']} ({idx}/{totalCount})")
         group_id = group["id"]
         url = f"{wom_base_url}/groups/{group_id}"
         group_details = make_wom_api_call(url, headers=headers)
         for member in group_details["memberships"]:
+            member["player"]["dataCategory"] = "group" # add data category to player dict so we know which dataset they belong to when we write to csv
             write_data_to_csv(member["player"], output_path)
             group_players_list.append(member["player"])
+        idx += 1
     return group_players_list # in case we want to do anything else with the list of players in groups after writing to csv    
 
 def write_leaderboard_players_to_csv(players: List[Dict], output_path: str):
@@ -367,6 +373,7 @@ def write_leaderboard_players_to_csv(players: List[Dict], output_path: str):
             "expGained": player["gained"],
             "metric": player["metric"],
             "period": player["period"],
+            "dataCategory": player["dataCategory"],
             **player_obj,  # expands all player fields
         }
         write_data_to_csv(player_with_extrafields, output_path)
@@ -380,7 +387,7 @@ def main():
         "x-api-key": script_config_class.api_key,
         "User-Agent": script_config_class.discord_username
     }
-    # The groups are essentially random because there is no 
+    # The groups are essentially random because there is no  
     # particular order when querying for groups, but the same groups
     # appear everytime for the query so for our sake we will treat it as static
 
@@ -388,7 +395,6 @@ def main():
     #random_groups = fetch_group_names(wom_headers, limit=50)
     #group_players = write_group_players_to_csv(random_groups, wom_headers, group_player_list_csv_path)
     #write_groups_to_json_file(random_groups)
-
 
     # Dataset 2: Leaderboard Players (by category and time periods)
     # NOTE: If filtering by account type, the proper query parameter name is playerType
