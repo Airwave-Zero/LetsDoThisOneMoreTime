@@ -5,16 +5,15 @@ import json
 import requests
 from typing import List, Dict
 from dataclasses import dataclass
+import pandas as pd
 
 '''
 ============================================================
-Configuration/Initialization Functions and Variables
+Configuration/Initialization/Helper Functions and Variables
 ============================================================
 Establish all global variable names and file locations here
 Establish functions for loading in configurations and returning objects that store important config types
 '''
-
-# big TODO: refactor everything from bronze csv to bronze parquet instead
 
 config_folder_dir = os.path.join(os.path.dirname(__file__), "config")
 os.makedirs(config_folder_dir, exist_ok=True)
@@ -24,19 +23,19 @@ groupnames_path = os.path.join(config_folder_dir, "group_names.json")
 #script_config_path = os.path.join(config_folder_dir, "script_config.json")
 script_config_path = os.path.join(config_folder_dir, "script_config_private.json")
 
-csv_folder_path = os.path.join(os.path.dirname(__file__), "csv_data")
-os.makedirs(csv_folder_path, exist_ok=True)
-bronze_csv_folder_path = os.path.join(csv_folder_path, "raw_csv_bronze")
-silver_csv_folder_path = os.path.join(csv_folder_path, "cleaned_parquet_silver")
+parquet_folder_path = os.path.join(os.path.dirname(__file__), "parquet_data")
+os.makedirs(parquet_folder_path, exist_ok=True)
+bronze_parquet_folder_path = os.path.join(parquet_folder_path, "raw_parquet_bronze")
 
-#group_player_list_csv_path = os.path.join(bronze_csv_folder_path, "Group_Player_List.csv")
-#leaderboard_player_list_csv_path = os.path.join(bronze_csv_folder_path, "Gains_Leaderboard_Player_List.csv")
-#common_bot_area_player_list_csv_path = os.path.join(bronze_csv_folder_path, "Common_Bot_Area_List.csv")
+#group_player_list_parquet_path = os.path.join(bronze_parquet_folder_path, "Group_Player_List.parquet")
+#leaderboard_player_list_parquet_path = os.path.join(bronze_parquet_folder_path, "Gains_Leaderboard_Player_List.parquet")
+#common_bot_area_player_list_parquet_path = os.path.join(bronze_parquet_folder_path, "Common_Bot_Area_List.parquet")
 
 # distinction between private and non private, only push non private to github
-group_player_list_csv_path = os.path.join(bronze_csv_folder_path, "Group_Player_List_private.csv")
-leaderboard_player_list_csv_path = os.path.join(bronze_csv_folder_path, "Gains_Leaderboard_Player_List_private.csv")
-#common_bot_area_player_list_csv_path = os.path.join(bronze_csv_folder_path, "Common_Bot_Area_List_private.csv")
+group_player_list_parquet_path = os.path.join(bronze_parquet_folder_path, "Group_Player_List_private.parquet")
+leaderboard_player_list_parquet_path = os.path.join(bronze_parquet_folder_path, "Gains_Leaderboard_Player_List_private.parquet")
+#common_bot_area_player_list_parquet_path = os.path.join(bronze_parquet_folder_path, "Common_Bot_Area_List_private.parquet")
+combined_player_list_parquet_path = os.path.join(bronze_parquet_folder_path, "Combined_Player_List_private.parquet")
 
 # object in case file doesn't exist or is unfindable
 default_filters = { 
@@ -187,8 +186,8 @@ class ScriptConfig:
     api_key: str # api key to raise API limits from 20 to 100 requests/minute
     discord_username: str # user discord ign so WOM API knows who to contact if necessary
     request_delay: float # adjustable delay to ensure we stay under 100 calls per minute
-    csv_output_dir_raw: str # directory for raw bronze data
-    csv_output_dir_processed: str # directory for cleaned silver data (parquet, etc.)
+    parquet_output_dir_raw: str # directory for raw bronze data
+    parquet_output_dir_processed: str # directory for cleaned silver data (parquet, etc.)
 
 # Configs relevant for filtering players and categorizing them into different buckets for analysis
 @dataclass(frozen=True)
@@ -234,18 +233,10 @@ def load_script_config():
     api_key = data.get("api_key", "")
     discord_username = data.get("discord_username", "")
     request_delay = data.get("request_delay", 0.7)
-    csv_output_dir_raw = data.get("csv_output_dir_raw", "")
-    csv_output_dir_processed = data.get("csv_output_dir_processed", "")
-    return ScriptConfig(api_key, discord_username, request_delay, csv_output_dir_raw, csv_output_dir_processed)
+    parquet_output_dir_raw = data.get("parquet_output_dir_raw", "")
+    parquet_output_dir_processed = data.get("parquet_output_dir_processed", "")
+    return ScriptConfig(api_key, discord_username, request_delay, parquet_output_dir_raw, parquet_output_dir_processed)
 
-'''
-============================================================
-Getter/Fetch Functions
-============================================================
-These functions are responsible for making API calls and fetching the relevant data. 
-This includes fetching group names, players from group names, and players from the leaderboards from
-different categories. The functions are built to be reusable and modular.
-'''
 def make_wom_api_call(url: str, headers:Dict, params: Dict = None, delay_rate: float = 0.7) -> Dict:
     """
     Wrapper around requests.get with rate limiting.
@@ -256,17 +247,34 @@ def make_wom_api_call(url: str, headers:Dict, params: Dict = None, delay_rate: f
     response.raise_for_status()
     return response.json()
 
+def parse_dates(df, cols):
+    '''Helper function to parse date columns from API into proper datetime format in pandas'''
+    for c in cols:
+        if c in df.columns:
+            df[c] = pd.to_datetime(df[c], utc=True, errors="coerce")
+    return df
 
-def fetch_group_names(headers: Dict, limit: int = 50) -> List[Dict]:
+'''
+============================================================
+Fetch Player Data Functions
+============================================================
+These functions are responsible for making API calls and fetching the relevant data. 
+This includes fetching group names, players from group names, and players from the leaderboards from
+different categories. The functions are built to be reusable and modular.
+'''
+
+def fetch_group_names(headers: Dict, json_file_path: str, limit: int = 50) -> List[Dict]:
     """
-    Fetch all registered Wise Old Man groups using pagination.
+    Fetch all registered Wise Old Man groups using pagination, returns a list of all groups with their details. 
+    This first 50 groups to appear is arbitrary and doesn't really matter, but # of groups can be changed to expand/decrease dataset size.
+    If the groupnames JSON file already exists and has data, this function will skip the API call and load from the JSON file instead.
     """
     groups = []
     offset = 0
     
-    if os.path.exists(groupnames_path) and os.path.getsize(groupnames_path) > 0:
-        print(f"{groupnames_path} already has group data, skipping retrieval process.")
-        with open(groupnames_path, "r", encoding="utf-8") as f:
+    if os.path.exists(json_file_path) and os.path.getsize(json_file_path) > 0:
+        print(f"{json_file_path} already has group data, skipping API lookup.")
+        with open(json_file_path, "r", encoding="utf-8") as f:
             groups = json.load(f)    
     else:
         while len(groups) < limit:
@@ -283,6 +291,7 @@ def fetch_group_names(headers: Dict, limit: int = 50) -> List[Dict]:
                 break
             groups.extend(batch)
             offset += limit
+    print(f"Total groups fetched: {len(groups)}")
     return groups
 
 def fetch_current_leaderboard_names(headers: Dict, categories: List[str]) -> List[Dict]:
@@ -309,47 +318,15 @@ def fetch_current_leaderboard_names(headers: Dict, categories: List[str]) -> Lis
             url = f"{wom_base_url}/deltas/leaderboard"
             data = make_wom_api_call(url, headers=headers, params=params) # returns a list of player dicts
             for each_player_dict in data:
-                each_player_dict["metric"] = category # add metric and period to each player dict so we know which category and time period they belong to when we write to csv
+                each_player_dict["metric"] = category # add metric and period to each player dict so we know which category and time period they belong to when we write to parquet
                 each_player_dict["period"] = time_period
-                each_player_dict["dataCategory"] = "leaderboard" # add data category to player dict so we know which dataset they belong to when we write to csv
+                each_player_dict["dataCategory"] = "leaderboard" # add data category to player dict so we know which dataset they belong to when we write to parquet
             leaderboard_players.extend(data)
     return leaderboard_players
-'''
-============================================================
-Write Functions
-============================================================
-These functions are responsible for writing the fetched data to CSV or JSON files. 
-Most are built on top of calling write_data_to_csv since that writes every item in a list to a row
-'''
-def write_data_to_csv(data: Dict, filepath: str):
-    """
-    Write data to a CSV file. If the file doesn't exist, it creates it and writes the header.
-    If it does exist, it appends the new data as a new row.
-    This function is generic as this can be used for players, snapshots, etc.
-    """
-    file_exists = os.path.isfile(filepath)
 
-    with open(filepath, "a", newline="", encoding="utf-8") as f:
-        writer = csv.DictWriter(f, fieldnames=data.keys())
-        if not file_exists:
-            writer.writeheader()
-        writer.writerow(data)
-
-def write_groups_to_json_file(groups: List[Dict]):
-    """
-    Write groups/clans to JSON file. This list is fairly static, so this only ever
-    needs to be run once/user can delete the file if they want to refresh it.
-    This is different than CSV because the data is more nested and doesn't fit well into a tabular format, 
-    plus we don't need to track changes over time for groups/clans, just need a reference of group names and IDs
-    """
-    if not groups:
-        return
-    with open(groupnames_path, "w", encoding="utf-8") as f:
-        json.dump(groups, f, indent=4, ensure_ascii=False)
-
-def write_group_players_to_csv(groups: List[Dict], headers: Dict, output_path: str):
-    '''This file iterates through the list of all groups, looks them up, 
-    and then writes the players into the csv that are within the current group'''
+def fetch_all_group_players(groups: List[Dict], headers: Dict) -> List[Dict]:
+    '''This file iterates through the list of all groups, looks the group up, 
+    and then writes each player from the group'''
     group_players_list = []
     totalCount = len(groups)
     idx = 1
@@ -359,16 +336,41 @@ def write_group_players_to_csv(groups: List[Dict], headers: Dict, output_path: s
         url = f"{wom_base_url}/groups/{group_id}"
         group_details = make_wom_api_call(url, headers=headers)
         for member in group_details["memberships"]:
-            member["player"]["dataCategory"] = "group" # add data category to player dict so we know which dataset they belong to when we write to csv
-            write_data_to_csv(member["player"], output_path)
+            member["player"]["dataCategory"] = "group" # add data category to player dict so we know which dataset they belong to when we write to parquet
             group_players_list.append(member["player"])
         idx += 1
-    return group_players_list # in case we want to do anything else with the list of players in groups after writing to csv    
+    return group_players_list
 
-def write_leaderboard_players_to_csv(players: List[Dict], output_path: str):
-    '''This file iterates through the list of all players on the exp leaderboards, looks them up, 
-    and then writes the player details into the csv'''
-    for player in players:
+'''
+============================================================
+Write Functions
+============================================================
+These functions are responsible for writing the fetched data to CSV or JSON files. 
+Most are built on top of calling write_data_to_parquet since that writes every item in a list to a row
+'''
+
+def write_dataframe_to_parquet(listofrows: list, datecols: list, endLocation: str, compression: str = "snappy") -> pd.DataFrame:
+    '''Write a DataFrame to Parquet format with specified date columns. This function also handles basic normalizing
+    for ease of use later on'''
+    df = pd.DataFrame(listofrows)
+    df = parse_dates(df, datecols)
+    df = df.rename(columns={"id": "player_id"}) # for clarity purposes
+
+    #protect personally identifiable info 
+    if "username" in df.columns:
+        df = df.drop(columns=["username"])
+    if "displayName" in df.columns:
+        df = df.drop(columns=["displayName"])
+        
+    print(f"Writing DataFrame to Parquet at {endLocation} with compression={compression}...")
+    df.to_parquet(endLocation, index=False, compression=compression, engine="pyarrow")
+    return df
+
+def write_leaderboard_data_to_parquet(data: list, endLocation: str, compression: str = "snappy") -> str:
+    """Flattens leaderboard players and writes them to Parquet.
+    This function returns the path to the Parquet file for ease of debugging/locating."""
+    flattened_rows = []
+    for player in data:
         player_obj = player["player"]
         player_with_extrafields = {
             "startDate": player["startDate"],
@@ -377,9 +379,57 @@ def write_leaderboard_players_to_csv(players: List[Dict], output_path: str):
             "metric": player["metric"],
             "period": player["period"],
             "dataCategory": player["dataCategory"],
-            **player_obj,  # expands all player fields
-        }
-        write_data_to_csv(player_with_extrafields, output_path)
+            **player_obj,
+            }
+        flattened_rows.append(player_with_extrafields)
+    date_cols = ["startDate", "endDate", "registeredAt", "updatedAt", "lastChangedAt","lastImportedAt"]
+    df = write_dataframe_to_parquet(flattened_rows, date_cols, endLocation, compression)
+    return str(endLocation)
+
+def write_groups_to_json_file(groups: List[Dict], json_file_path: str) -> None:
+    """
+    Write groups/clans to JSON file. This list is fairly static, so this only ever
+    needs to be run once/user can delete the file if they want to refresh it.
+    This is different than CSV because the data is more nested and doesn't fit well into a tabular format, 
+    plus we don't need to track changes over time for groups/clans, just need a reference of group names and IDs
+    """
+    if not groups:
+        return
+    with open(json_file_path, "w", encoding="utf-8") as f:
+        json.dump(groups, f, indent=4, ensure_ascii=False)
+    return json_file_path
+
+def write_group_players_to_parquet(groups: List[Dict], endLocation: str, compression: str = "snappy") -> str:
+    '''Write group players to parquet. This function returns the path to the Parquet file for ease of debugging/locating.'''
+    date_cols = ["registeredAt","updatedAt","lastChangedAt","lastImportedAt"]
+    df = write_dataframe_to_parquet(groups, date_cols, endLocation, compression)
+    return str(endLocation)
+    
+def generate_group_players(group_player_list_parquet_path: str, groups: List[Dict], headers: Dict) -> List[Dict]:
+    '''This function checks if group players are already written to parquet, if so it loads from parquet and returns a List[Dict]
+    otherwise it builds the list via API calls'''
+    if os.path.exists(group_player_list_parquet_path) and os.path.getsize(group_player_list_parquet_path) > 0:
+        print(f"Group player's already extracted to parquet at {group_player_list_parquet_path}, skipping parquet writing.")
+        group_players = pd.read_parquet(group_player_list_parquet_path).to_dict(orient="records")
+    else:
+        print("Group players not found in parquet format, fetching players from API and writing to parquet.")    
+        group_players = fetch_all_group_players(groups, headers)
+    return group_players
+
+def generate_all_leaderboard_players(combined_player_list_parquet_path: str, headers: Dict, account_filter_class: FilterConfig) -> List[Dict]:
+    '''This function checks if leaderboard players are already written to parquet, if so it loads from parquet and returns a List[Dict]
+    otherwise it builds the list via API calls'''
+    if os.path.exists(combined_player_list_parquet_path) and os.path.getsize(combined_player_list_parquet_path) > 0:
+        print(f"Combined player list already extracted to parquet at {combined_player_list_parquet_path}, skipping parquet writing.")
+        combined_players = pd.read_parquet(combined_player_list_parquet_path).to_dict(orient="records")
+    else:
+        print("Combined player list not found in parquet format, fetching players from API and writing to parquet.")    
+        exp_leaderboard_players = fetch_current_leaderboard_names(headers, account_filter_class.skill_names) # list of dict
+        bosskc_leaderboard_players = fetch_current_leaderboard_names(headers, account_filter_class.boss_hiscores) # list of dict
+        activity_leaderboard_players = fetch_current_leaderboard_names(headers, account_filter_class.activities) # list of dict
+
+        combined_players = exp_leaderboard_players + bosskc_leaderboard_players + activity_leaderboard_players
+    return combined_players
 
 def main():
     # actually handles all the control logic flow
@@ -394,46 +444,18 @@ def main():
     # particular order when querying for groups, but the same groups
     # appear everytime for the query so for our sake we will treat it as static
 
-    # Dataset 1: Group/Clan Players
-    #random_groups = fetch_group_names(wom_headers, limit=50)
-    #group_players = write_group_players_to_csv(random_groups, wom_headers, group_player_list_csv_path)
-    #write_groups_to_json_file(random_groups)
+    # ============== Dataset 1: Group/Clan Players ==============
+    # Always do b/c cheap, also fetch_group_names has built in check to see if we already have group names in JSON and will skip API call if found
+    first_X_groups = fetch_group_names(wom_headers, json_file_path=groupnames_path, limit=50)
+    json_filepath = write_groups_to_json_file(first_X_groups, groupnames_path) # write group names to json for easy reference since they are more static and don't fit well into parquet format
+    group_players = generate_group_players(group_player_list_parquet_path, first_X_groups, wom_headers)
+    write_group_players_to_parquet(group_players, group_player_list_parquet_path, compression="snappy")
 
-    # Dataset 2: Leaderboard Players (by category and time periods)
-    # NOTE: If filtering by account type, the proper query parameter name is playerType
-    # NOTE: It is also worth breaking these writes down by time period/writing more frequently in order to 
-    # prevent issues when writing too many players and losing data, but for now we will write them all at once 
-    # and then break down by category/period in the analysis phase since there is a field for both in the csv.
-    exp_leaderboard_players = fetch_current_leaderboard_names(wom_headers, account_filter_class.skill_names)
-    bosskc_leaderboard_players = fetch_current_leaderboard_names(wom_headers, account_filter_class.boss_hiscores)
-    activity_leaderboard_players = fetch_current_leaderboard_names(wom_headers, account_filter_class.activities)
-
-    
-    # write to same leaderboard CSV since there is a field for metric and period, can drill down later
-    write_leaderboard_players_to_csv(exp_leaderboard_players, leaderboard_player_list_csv_path)
-    write_leaderboard_players_to_csv(bosskc_leaderboard_players, leaderboard_player_list_csv_path)
-    write_leaderboard_players_to_csv(activity_leaderboard_players, leaderboard_player_list_csv_path)
-
-    # Dataset 3: Common Bot Area Players - this is more of a manual process where we would identify commonly botted areas 
-    # and then query the players in those hiscores and track them in a separate csv.
-    # common_botarea_players = load data from JSON
-    # write_common_botarea_players_to_csv(common_botarea_players, wom_headers, common_bot_area_player_list_csv_path)
-
-    '''
-    much later todo: write runelite plugin to extract names from screen when gaming in 
-    commonly botted areas and add to csvv to track those players as well
-
-    todo2: write dag/common script to essentially update/get the stats for all players
-    in the separate csv's
-    write functions: get_group_player_list_snapshots, get_leaderboard_player_snapshots, 
-
-    # this is for getting the top of ALL TIME RECORDS leaderboard
-    https://api.wiseoldman.net/v2/records/leaderboard?metric=abyssal_sire&period=day&playerType=hardcore
-
-    # this is for getting the CURRENT TOP leaderboard for a category
-    https://api.wiseoldman.net/v2/deltas/leaderboard?metric=agility&period=day
-    '''
-
+    # ============== Dataset 2: Leaderboard Players ==============
+    combined_players = generate_all_leaderboard_players(combined_player_list_parquet_path, wom_headers, account_filter_class)
+    write_leaderboard_data_to_parquet(combined_players, combined_player_list_parquet_path, compression="snappy")
+ 
+ 
 if __name__ == "__main__":
     # keep this simple/bare
     main()

@@ -229,6 +229,7 @@ def main():
     group_player_df = pd.read_csv(group_player_csv)
     player_data_df = pd.read_csv(leaderboard_gains_csv)
 
+    # originals for preservation sake, but we drop username/displayname later for protecting info since pushing to github
     leaderboard_player_dim = build_player_dim(player_data_df, "leaderboard")
     group_player_dim = build_player_dim(group_player_df, "group")
     metric_dim = build_metric_dim(player_data_df)
@@ -241,14 +242,17 @@ def main():
     playerSetSameColumns = set(leaderboard_player_dim.columns) == set(group_player_dim.columns)
     if(playerSetSameColumns):
         print("Group and leaderboard player dims have the same columns, creating combined player dim.")
-        combined_dim = pd.concat([leaderboard_player_dim, group_player_dim], ignore_index=True).drop_duplicates(subset=["player_id"])
-        combined_dim = combined_dim.drop(columns=["username"]) # drop for privacy/security
-        combined_dim = combined_dim.drop(columns=["display_name"]) # drop for privacy/security
-        combined_player_dim_path = write_df_to_parquet(combined_dim, f"{dims_folder_dir}/combined_player_dim.parquet")
+        combined_dim = pd.concat([leaderboard_player_dim, group_player_dim], ignore_index=True).drop_duplicates(subset=["player_id"]) #keep for debugging
+        privatized_dim = combined_dim.drop(columns=["username", "display_name"])
+        combined_player_dim_path = write_df_to_parquet(privatized_dim, f"{dims_folder_dir}/combined_player_dim.parquet")
 
     else:
-        leaderboard_player_dim_path = write_df_to_parquet(leaderboard_player_dim, f"{dims_folder_dir}/leaderboard_player_dim.parquet")        
-        group_player_dim_path = write_df_to_parquet(group_player_dim, f"{dims_folder_dir}/group_player_dim.parquet")
+        private_leaderboard_dim = leaderboard_player_dim.drop(columns=["username", "display_name"])
+        leaderboard_player_dim_path = write_df_to_parquet(private_leaderboard_dim, f"{dims_folder_dir}/leaderboard_player_dim.parquet")   
+             
+        private_group_dim = group_player_dim.drop(columns=["username", "display_name"])
+        group_player_dim_path = write_df_to_parquet(private_group_dim, f"{dims_folder_dir}/group_player_dim.parquet")
+        
     metric_dim_path = write_df_to_parquet(metric_dim, f"{dims_folder_dir}/metric_dim.parquet")
     period_dim_path = write_df_to_parquet(period_dim, f"{dims_folder_dir}/period_dim.parquet")
 
@@ -256,7 +260,7 @@ def main():
     snapshot_df = build_snapshot_fact(snapshot_data_df, metric_dim)
     snapshot_path = write_df_to_parquet(snapshot_df, f"{fact_table_dir}/snapshot_fact.parquet")
     
-
+    
     
 if __name__ == "__main__":    
     main()
