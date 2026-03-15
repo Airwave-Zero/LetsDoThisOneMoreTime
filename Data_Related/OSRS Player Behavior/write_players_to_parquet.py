@@ -1,67 +1,28 @@
 import os
 from pathlib import Path
 import pandas as pd
+import json
 
-csv_folder_dir = os.path.join(os.path.dirname(__file__), "csv_data")
-raw_csv_bronze_dir = os.path.join(csv_folder_dir, "raw_csv_bronze")
-cleaned_parquet_silver_dir = os.path.join(csv_folder_dir, "cleaned_parquet_silver")
+config_folder_dir = os.path.join(os.path.dirname(__file__), "config")
+os.makedirs(config_folder_dir, exist_ok=True)
+filter_path = os.path.join(config_folder_dir, "osrs_filters.json")
+
+parquet_folder_dir = os.path.join(os.path.dirname(__file__), "parquet_data")
+raw_parquet_bronze_dir = os.path.join(parquet_folder_dir, "raw_parquet_bronze")
+cleaned_parquet_silver_dir = os.path.join(parquet_folder_dir, "cleaned_parquet_silver")
 dims_folder_dir = os.path.join(cleaned_parquet_silver_dir, "dims")
 fact_table_dir = os.path.join(cleaned_parquet_silver_dir, "fact_tables")
 
-group_player_csv = os.path.join(raw_csv_bronze_dir, "Group_Player_List_private.csv")
-leaderboard_gains_csv = os.path.join(raw_csv_bronze_dir, "Gains_Leaderboard_Player_List_private.csv")
-raw_snapshot_csv = os.path.join(raw_csv_bronze_dir, "Raw_Snapshot_Values.csv")
+group_player_parquet = os.path.join(raw_parquet_bronze_dir, "Group_Player_List_private.parquet")
+leaderboard_gains_parquet = os.path.join(raw_parquet_bronze_dir, "Leaderboard_Combined_Player_List_private.parquet")
 
-skills_list = [
-        "overall", "attack", "strength", "defence", "hitpoints",
-        "ranged", "prayer", "magic", "cooking", "woodcutting",
-        "fishing", "firemaking", "crafting", "smithing", "mining",
-        "herblore", "agility", "thieving", "slayer", "farming",
-        "runecrafting", "hunter", "construction", "sailing",
-    ]
-bosses_list = [
-        "abyssal_sire", "alchemical_hydra", "amoxliatl", "araxxor",
-        "artio", "barrows_chests", "bryophyta", "callisto",
-        "calvarion", "cerberus", "chambers_of_xeric",
-        "chambers_of_xeric_challenge_mode", "chaos_elemental",
-        "chaos_fanatic", "commander_zilyana", "corporeal_beast",
-        "crazy_archaeologist", "dagannoth_prime", "dagannoth_rex",
-        "dagannoth_supreme", "deranged_archaeologist",
-        "doom_of_mokhaiotl", "duke_sucellus", "general_graardor",
-        "giant_mole", "grotesque_guardians", "hespori",
-        "kalphite_queen", "king_black_dragon", "kraken",
-        "kreearra", "kril_tsutsaroth", "lunar_chests", "mimic",
-        "nex", "nightmare", "obor", "phantom_muspah",
-        "phosanis_nightmare", "sarachnis", "scorpia", "scurrius",
-        "shellbane_gryphon", "skotizo", "sol_heredit", "spindel",
-        "tempoross", "the_gauntlet", "the_corrupted_gauntlet",
-        "the_hueycoatl", "the_leviathan", "the_royal_titans",
-        "the_whisperer", "theatre_of_blood",
-        "theatre_of_blood_hard_mode", "thermonuclear_smoke_devil",
-        "tombs_of_amascut", "tombs_of_amascut_expert",
-        "tzkal_zuk", "tztok_jad", "vardorvis", "venenatis",
-        "vetion", "vorkath", "wintertodt", "yama",
-        "zalcano", "zulrah",
-    ]
-activities = [
-    "league_points",
-    "bounty_hunter_hunter",
-    "bounty_hunter_rogue",
-    "clue_scrolls_all",
-    "clue_scrolls_beginner",
-    "clue_scrolls_easy",
-    "clue_scrolls_medium",
-    "clue_scrolls_hard",
-    "clue_scrolls_elite",
-    "clue_scrolls_master",
-    "last_man_standing",
-    "pvp_arena",
-    "soul_wars_zeal",
-    "guardians_of_the_rift",
-    "colosseum_glory",
-    "collections_logged"]
-
-computed = ["ehp", "ehb", "ttm"]
+with open(filter_path, "r", encoding="utf-8") as fh:
+    data = json.load(fh)
+    
+skills_list = data.get("skill_names")
+bosses_list = data.get("boss_hiscores")
+activities = data.get("activities")
+computed = data.get("computed")
 
 # big TODO: refactor everything from bronze csv to bronze parquet instead
 def parse_dates(df, cols):
@@ -87,15 +48,14 @@ def write_df_to_parquet(df: pd.DataFrame, endLocation: str, compression: str = "
 
 def build_player_dim(df: pd.DataFrame, dataCategory:str) -> pd.DataFrame:
     player_cols = [
-        "id", "username", "displayName", "type", "build",
+        "player_id", "username", "displayName", "type", "build",
         "status", "country", "patron", "registeredAt", "dataCategory"
     ]
 
     player_dim = (
         df[player_cols]
-        .drop_duplicates(subset=["id"])
+        .drop_duplicates(subset=["player_id"])
         .rename(columns={
-            "id": "player_id",
             "displayName": "display_name",
             "registeredAt": "registered_at",
             "dataCategory": "data_category"
@@ -203,7 +163,6 @@ def build_leaderboard_fact(df, metric_dim, period_dim) -> pd.DataFrame:
         .merge(metric_dim, on="metric", how="left")
         .merge(period_dim, on="period", how="left")
         .rename(columns={
-            "id": "player_id",
             "startDate": "start_date",
             "endDate": "end_date",
             "expGained": "exp_gained"
@@ -226,8 +185,8 @@ def build_leaderboard_fact(df, metric_dim, period_dim) -> pd.DataFrame:
 
 def main():
 
-    group_player_df = pd.read_csv(group_player_csv)
-    player_data_df = pd.read_csv(leaderboard_gains_csv)
+    group_player_df = pd.read_parquet(group_player_parquet)
+    player_data_df = pd.read_parquet(leaderboard_gains_parquet)
 
     # originals for preservation sake, but we drop username/displayname later for protecting info since pushing to github
     leaderboard_player_dim = build_player_dim(player_data_df, "leaderboard")
@@ -243,22 +202,18 @@ def main():
     if(playerSetSameColumns):
         print("Group and leaderboard player dims have the same columns, creating combined player dim.")
         combined_dim = pd.concat([leaderboard_player_dim, group_player_dim], ignore_index=True).drop_duplicates(subset=["player_id"]) #keep for debugging
-        privatized_dim = combined_dim.drop(columns=["username", "display_name"])
-        combined_player_dim_path = write_df_to_parquet(privatized_dim, f"{dims_folder_dir}/combined_player_dim.parquet")
-
+        privatized_dim = combined_dim.drop(columns=["username", "display_name"]) # leave in if pushing to public/writing to public
+        combined_player_dim_path = write_df_to_parquet(privatized_dim, f"{dims_folder_dir}/all_player_dim_EXAMPLE.parquet")
+        #combined_player_dim_path = write_df_to_parquet(combined_dim, f"{dims_folder_dir}/all_player_dim_private.parquet")
     else:
         private_leaderboard_dim = leaderboard_player_dim.drop(columns=["username", "display_name"])
         leaderboard_player_dim_path = write_df_to_parquet(private_leaderboard_dim, f"{dims_folder_dir}/leaderboard_player_dim.parquet")   
              
         private_group_dim = group_player_dim.drop(columns=["username", "display_name"])
         group_player_dim_path = write_df_to_parquet(private_group_dim, f"{dims_folder_dir}/group_player_dim.parquet")
-        
+            
     metric_dim_path = write_df_to_parquet(metric_dim, f"{dims_folder_dir}/metric_dim.parquet")
     period_dim_path = write_df_to_parquet(period_dim, f"{dims_folder_dir}/period_dim.parquet")
-
-    snapshot_data_df = pd.read_csv(raw_snapshot_csv)
-    snapshot_df = build_snapshot_fact(snapshot_data_df, metric_dim)
-    snapshot_path = write_df_to_parquet(snapshot_df, f"{fact_table_dir}/snapshot_fact.parquet")
     
     
     

@@ -33,9 +33,9 @@ bronze_parquet_folder_path = os.path.join(parquet_folder_path, "raw_parquet_bron
 
 # distinction between private and non private, only push non private to github
 group_player_list_parquet_path = os.path.join(bronze_parquet_folder_path, "Group_Player_List_private.parquet")
-leaderboard_player_list_parquet_path = os.path.join(bronze_parquet_folder_path, "Gains_Leaderboard_Player_List_private.parquet")
 #common_bot_area_player_list_parquet_path = os.path.join(bronze_parquet_folder_path, "Common_Bot_Area_List_private.parquet")
-combined_player_list_parquet_path = os.path.join(bronze_parquet_folder_path, "Combined_Player_List_private.parquet")
+combined_player_list_parquet_path = os.path.join(bronze_parquet_folder_path, "Leaderboard_Combined_Player_List_private.parquet")
+#combined_player_list_parquet_path = os.path.join(bronze_parquet_folder_path, "Leaderboard_Combined_Player_List_private.parquet") # private because it contains usernames
 
 # object in case file doesn't exist or is unfindable
 default_filters = { 
@@ -137,7 +137,6 @@ default_filters = {
     "zulrah"
   ],
   "activities": [
-    "league_points",
     "bounty_hunter_hunter",
     "bounty_hunter_rogue",
     "clue_scrolls_all",
@@ -322,6 +321,7 @@ def fetch_current_leaderboard_names(headers: Dict, categories: List[str]) -> Lis
                 each_player_dict["period"] = time_period
                 each_player_dict["dataCategory"] = "leaderboard" # add data category to player dict so we know which dataset they belong to when we write to parquet
             leaderboard_players.extend(data)
+        # break comment out if testing
     return leaderboard_players
 
 def fetch_all_group_players(groups: List[Dict], headers: Dict) -> List[Dict]:
@@ -339,6 +339,7 @@ def fetch_all_group_players(groups: List[Dict], headers: Dict) -> List[Dict]:
             member["player"]["dataCategory"] = "group" # add data category to player dict so we know which dataset they belong to when we write to parquet
             group_players_list.append(member["player"])
         idx += 1
+        # break comment out if testing
     return group_players_list
 
 '''
@@ -355,13 +356,16 @@ def write_dataframe_to_parquet(listofrows: list, datecols: list, endLocation: st
     df = pd.DataFrame(listofrows)
     df = parse_dates(df, datecols)
     df = df.rename(columns={"id": "player_id"}) # for clarity purposes
-
-    #protect personally identifiable info 
+    
+    ### Leave in if you DON'T want usernames (privacy reasons, publishing to public, etc.), leave in if you want usernames
+    '''
     if "username" in df.columns:
-        df = df.drop(columns=["username"])
+        df.drop(columns=["username"], inplace=True) # drop username column for 
     if "displayName" in df.columns:
-        df = df.drop(columns=["displayName"])
-        
+        df.drop(columns=["displayName"], inplace=True) # drop displayName column for privacy
+    '''
+    ### End comment out section ###
+
     print(f"Writing DataFrame to Parquet at {endLocation} with compression={compression}...")
     df.to_parquet(endLocation, index=False, compression=compression, engine="pyarrow")
     return df
@@ -452,8 +456,8 @@ def main():
     write_group_players_to_parquet(group_players, group_player_list_parquet_path, compression="snappy")
 
     # ============== Dataset 2: Leaderboard Players ==============
-    combined_players = generate_all_leaderboard_players(combined_player_list_parquet_path, wom_headers, account_filter_class)
-    write_leaderboard_data_to_parquet(combined_players, combined_player_list_parquet_path, compression="snappy")
+    all_leaderboard_players = generate_all_leaderboard_players(combined_player_list_parquet_path, wom_headers, account_filter_class)
+    write_leaderboard_data_to_parquet(all_leaderboard_players, combined_player_list_parquet_path, compression="snappy")
  
  
 if __name__ == "__main__":
