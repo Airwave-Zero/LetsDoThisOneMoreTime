@@ -1,257 +1,13 @@
 import os
 import time
-import csv
 import json
 import requests
 from typing import List, Dict
 from dataclasses import dataclass
 import pandas as pd
-
-'''
-============================================================
-Configuration/Initialization/Helper Functions and Variables
-============================================================
-Establish all global variable names and file locations here
-Establish functions for loading in configurations and returning objects that store important config types
-'''
-
-config_folder_dir = os.path.join(os.path.dirname(__file__), "config")
-os.makedirs(config_folder_dir, exist_ok=True)
-filter_path = os.path.join(config_folder_dir, "osrs_filters.json")
-groupnames_path = os.path.join(config_folder_dir, "group_names.json")
-#replace with private config for API key and user agent
-#script_config_path = os.path.join(config_folder_dir, "script_config.json")
-script_config_path = os.path.join(config_folder_dir, "script_config_private.json")
-
-parquet_folder_path = os.path.join(os.path.dirname(__file__), "parquet_data")
-os.makedirs(parquet_folder_path, exist_ok=True)
-bronze_parquet_folder_path = os.path.join(parquet_folder_path, "raw_parquet_bronze")
-
-#group_player_list_parquet_path = os.path.join(bronze_parquet_folder_path, "Group_Player_List.parquet")
-#leaderboard_player_list_parquet_path = os.path.join(bronze_parquet_folder_path, "Gains_Leaderboard_Player_List.parquet")
-#common_bot_area_player_list_parquet_path = os.path.join(bronze_parquet_folder_path, "Common_Bot_Area_List.parquet")
-
-# distinction between private and non private, only push non private to github
-group_player_list_parquet_path = os.path.join(bronze_parquet_folder_path, "Group_Player_List_private.parquet")
-#common_bot_area_player_list_parquet_path = os.path.join(bronze_parquet_folder_path, "Common_Bot_Area_List_private.parquet")
-combined_player_list_parquet_path = os.path.join(bronze_parquet_folder_path, "Leaderboard_Combined_Player_List_private.parquet")
-#combined_player_list_parquet_path = os.path.join(bronze_parquet_folder_path, "Leaderboard_Combined_Player_List_private.parquet") # private because it contains usernames
-
-# object in case file doesn't exist or is unfindable
-default_filters = { 
-  "skill_names": [
-    "overall",
-    "attack",
-    "strength",
-    "defence",
-    "hitpoints",
-    "ranged",
-    "prayer",
-    "magic",
-    "cooking",
-    "woodcutting",
-    "fishing",
-    "firemaking",
-    "crafting",
-    "smithing",
-    "mining",
-    "herblore",
-    "agility",
-    "thieving",
-    "slayer",
-    "farming",
-    "runecrafting",
-    "hunter",
-    "construction",
-    "sailing"
-  ],
-
-  "boss_hiscores": [
-    "abyssal_sire",
-    "alchemical_hydra",
-    "amoxliatl",
-    "araxxor",
-    "artio",
-    "barrows_chests",
-    "bryophyta",
-    "callisto",
-    "calvarion",
-    "cerberus",
-    "chambers_of_xeric",
-    "chambers_of_xeric_challenge_mode",
-    "chaos_elemental",
-    "chaos_fanatic",
-    "commander_zilyana",
-    "corporeal_beast",
-    "crazy_archaeologist",
-    "dagannoth_prime",
-    "dagannoth_rex",
-    "dagannoth_supreme",
-    "deranged_archaeologist",
-    "doom_of_mokhaiotl",
-    "duke_sucellus",
-    "general_graardor",
-    "giant_mole",
-    "grotesque_guardians",
-    "hespori",
-    "kalphite_queen",
-    "king_black_dragon",
-    "kraken",
-    "kreearra",
-    "kril_tsutsaroth",
-    "lunar_chests",
-    "mimic",
-    "nex",
-    "nightmare",
-    "obor",
-    "phantom_muspah",
-    "phosanis_nightmare",
-    "sarachnis",
-    "scorpia",
-    "scurrius",
-    "shellbane_gryphon",
-    "skotizo",
-    "sol_heredit",
-    "spindel",
-    "tempoross",
-    "the_gauntlet",
-    "the_corrupted_gauntlet",
-    "the_hueycoatl",
-    "the_leviathan",
-    "the_royal_titans",
-    "the_whisperer",
-    "theatre_of_blood",
-    "theatre_of_blood_hard_mode",
-    "thermonuclear_smoke_devil",
-    "tombs_of_amascut",
-    "tombs_of_amascut_expert",
-    "tzkal_zuk",
-    "tztok_jad",
-    "vardorvis",
-    "venenatis",
-    "vetion",
-    "vorkath",
-    "wintertodt",
-    "yama",
-    "zalcano",
-    "zulrah"
-  ],
-  "activities": [
-    "bounty_hunter_hunter",
-    "bounty_hunter_rogue",
-    "clue_scrolls_all",
-    "clue_scrolls_beginner",
-    "clue_scrolls_easy",
-    "clue_scrolls_medium",
-    "clue_scrolls_hard",
-    "clue_scrolls_elite",
-    "clue_scrolls_master",
-    "last_man_standing",
-    "pvp_arena",
-    "soul_wars_zeal",
-    "guardians_of_the_rift",
-    "colosseum_glory",
-    "collections_logged"
-    ],
-
-  "computed": ["ehp", "ehb", "ttm"],
-
-  "account_types": [
-    "normal",
-    "ironman",
-    "ultimate_ironman",
-    "hardcore_ironman"
-  ],
-
-  "other_build_types": [
-    "main",
-    "f2p",
-    "p2p",
-    "skillers",
-    "1_defence",
-    "level_3",
-    "1_hitpoint_pure",
-    "pure",
-    "zero_defence",
-    "iron_pure"
-  ]
-}
-wom_base_url = "https://api.wiseoldman.net/v2"
-
-
-# Configs relevant for running the script
-@dataclass(frozen=True)
-class ScriptConfig:
-    api_key: str # api key to raise API limits from 20 to 100 requests/minute
-    discord_username: str # user discord ign so WOM API knows who to contact if necessary
-    request_delay: float # adjustable delay to ensure we stay under 100 calls per minute
-    parquet_output_dir_raw: str # directory for raw bronze data
-    parquet_output_dir_processed: str # directory for cleaned silver data (parquet, etc.)
-
-# Configs relevant for filtering players and categorizing them into different buckets for analysis
-@dataclass(frozen=True)
-class FilterConfig:
-    skill_names: list # e.g. overall, attack, strength, etc.
-    boss_hiscores: list # e.g. zulrah, vorkath, etc.
-    account_types: list # e.g. ironman, hardcore ironman, etc.
-    other_build_types: list # e.g. 1 defence pure, 1 hp pure, etc.
-    activities: list # e.g. clue scrolls
-    computed: list # e.g. ehp, ehb, ttm
-
-def load_filters():
-    '''Loads in different account filter types from default or project JSON file.
-    Returns a FilterConfig dataclass instance with all necessary filter types.'''
-    try:
-        with open(filter_path, "r", encoding="utf-8") as fh:
-            data = json.load(fh)
-            print(f"Filter Data successfully loaded from: {filter_path}")
-    except Exception:
-        print(f"Config not found or unreadable at {filter_path}; using defaults.")
-        data = default_filters
-
-    skill_names = data.get("skill_names", default_filters["skill_names"])
-    boss_hiscores = data.get("boss_hiscores", default_filters["boss_hiscores"])
-    account_types = data.get("account_types", default_filters["account_types"])
-    other_build_types = data.get("other_build_types", default_filters["other_build_types"])
-    activities = data.get("activities", default_filters["activities"])
-    computed = data.get("computed", default_filters["computed"])
-    
-    return FilterConfig(skill_names, boss_hiscores, account_types, other_build_types, activities, computed)
-
-def load_script_config():
-    '''Loads in script config from default or project JSON file.
-    Returns a ScriptConfig dataclass instance with all necessary config values.'''
-    try:
-        with open(script_config_path, "r", encoding="utf-8") as fh:
-            data = json.load(fh)
-            print(f"Script Config data successfully loaded from: {script_config_path}")
-    except Exception:
-        print(f"Script config not found or unreadable at {script_config_path}; using environment variables.")
-        data = {}
-
-    api_key = data.get("api_key", "")
-    discord_username = data.get("discord_username", "")
-    request_delay = data.get("request_delay", 0.7)
-    parquet_output_dir_raw = data.get("parquet_output_dir_raw", "")
-    parquet_output_dir_processed = data.get("parquet_output_dir_processed", "")
-    return ScriptConfig(api_key, discord_username, request_delay, parquet_output_dir_raw, parquet_output_dir_processed)
-
-def make_wom_api_call(url: str, headers:Dict, params: Dict = None, delay_rate: float = 0.7) -> Dict:
-    """
-    Wrapper around requests.get with rate limiting.
-    """
-    response = requests.get(url, headers=headers, params=params)
-    time.sleep(delay_rate)
-
-    response.raise_for_status()
-    return response.json()
-
-def parse_dates(df, cols):
-    '''Helper function to parse date columns from API into proper datetime format in pandas'''
-    for c in cols:
-        if c in df.columns:
-            df[c] = pd.to_datetime(df[c], utc=True, errors="coerce")
-    return df
+from utils.project_paths import *
+from utils.generic_util import load_filters, load_script_config, parse_dates, make_wom_api_call, wom_base_url
+from utils.generic_util import FilterConfig
 
 '''
 ============================================================
@@ -321,7 +77,7 @@ def fetch_current_leaderboard_names(headers: Dict, categories: List[str]) -> Lis
                 each_player_dict["period"] = time_period
                 each_player_dict["dataCategory"] = "leaderboard" # add data category to player dict so we know which dataset they belong to when we write to parquet
             leaderboard_players.extend(data)
-        # break comment out if testing
+        # break # comment out if testing
     return leaderboard_players
 
 def fetch_all_group_players(groups: List[Dict], headers: Dict) -> List[Dict]:
@@ -339,7 +95,7 @@ def fetch_all_group_players(groups: List[Dict], headers: Dict) -> List[Dict]:
             member["player"]["dataCategory"] = "group" # add data category to player dict so we know which dataset they belong to when we write to parquet
             group_players_list.append(member["player"])
         idx += 1
-        # break comment out if testing
+        # break # comment out if testing
     return group_players_list
 
 '''
@@ -450,14 +206,14 @@ def main():
 
     # ============== Dataset 1: Group/Clan Players ==============
     # Always do b/c cheap, also fetch_group_names has built in check to see if we already have group names in JSON and will skip API call if found
-    first_X_groups = fetch_group_names(wom_headers, json_file_path=groupnames_path, limit=50)
-    json_filepath = write_groups_to_json_file(first_X_groups, groupnames_path) # write group names to json for easy reference since they are more static and don't fit well into parquet format
-    group_players = generate_group_players(group_player_list_parquet_path, first_X_groups, wom_headers)
-    write_group_players_to_parquet(group_players, group_player_list_parquet_path, compression="snappy")
+    first_X_groups = fetch_group_names(wom_headers, json_file_path=group_names_path, limit=50)
+    json_filepath = write_groups_to_json_file(first_X_groups, group_names_path) # write group names to json for easy reference since they are more static and don't fit well into parquet format
+    group_players = generate_group_players(bronze_group_player_parquet_path, first_X_groups, wom_headers)
+    write_group_players_to_parquet(group_players, bronze_group_player_parquet_path, compression="snappy")
 
     # ============== Dataset 2: Leaderboard Players ==============
-    all_leaderboard_players = generate_all_leaderboard_players(combined_player_list_parquet_path, wom_headers, account_filter_class)
-    write_leaderboard_data_to_parquet(all_leaderboard_players, combined_player_list_parquet_path, compression="snappy")
+    all_leaderboard_players = generate_all_leaderboard_players(bronze_all_leaderboard_player_parquet_path, wom_headers, account_filter_class)
+    write_leaderboard_data_to_parquet(all_leaderboard_players, bronze_all_leaderboard_player_parquet_path, compression="snappy")
  
  
 if __name__ == "__main__":

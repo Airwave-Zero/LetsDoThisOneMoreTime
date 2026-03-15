@@ -1,35 +1,21 @@
 import os
 from pathlib import Path
 import pandas as pd
-import json
+from utils import project_paths
+from utils.generic_util import parse_dates, read_json_config
 
-config_folder_dir = os.path.join(os.path.dirname(__file__), "config")
-os.makedirs(config_folder_dir, exist_ok=True)
-filter_path = os.path.join(config_folder_dir, "osrs_filters.json")
-
-parquet_folder_dir = os.path.join(os.path.dirname(__file__), "parquet_data")
-raw_parquet_bronze_dir = os.path.join(parquet_folder_dir, "raw_parquet_bronze")
-cleaned_parquet_silver_dir = os.path.join(parquet_folder_dir, "cleaned_parquet_silver")
-dims_folder_dir = os.path.join(cleaned_parquet_silver_dir, "dims")
-fact_table_dir = os.path.join(cleaned_parquet_silver_dir, "fact_tables")
-
-group_player_parquet = os.path.join(raw_parquet_bronze_dir, "Group_Player_List_private.parquet")
-leaderboard_gains_parquet = os.path.join(raw_parquet_bronze_dir, "Leaderboard_Combined_Player_List_private.parquet")
-
-with open(filter_path, "r", encoding="utf-8") as fh:
-    data = json.load(fh)
-    
+data = read_json_config(project_paths.filter_path)    
 skills_list = data.get("skill_names")
 bosses_list = data.get("boss_hiscores")
 activities = data.get("activities")
 computed = data.get("computed")
+group_player_parquet = project_paths.bronze_group_player_parquet_path
+leaderboard_gains_parquet = project_paths.bronze_all_leaderboard_player_parquet_path
+dims_folder_dir = project_paths.dims_folder_path
+silver_all_player_dim_path = project_paths.silver_combined_player_dim_path
+silver_metric_dim_path = project_paths.silver_metric_dim_path
+silver_period_dim_path = project_paths.silver_period_dim_path
 
-# big TODO: refactor everything from bronze csv to bronze parquet instead
-def parse_dates(df, cols):
-    for c in cols:
-        if c in df.columns:
-            df[c] = pd.to_datetime(df[c], utc=True, errors="coerce")
-    return df
 
 def write_df_to_parquet(df: pd.DataFrame, endLocation: str, compression: str = "snappy") -> str:
     """
@@ -203,7 +189,7 @@ def main():
         print("Group and leaderboard player dims have the same columns, creating combined player dim.")
         combined_dim = pd.concat([leaderboard_player_dim, group_player_dim], ignore_index=True).drop_duplicates(subset=["player_id"]) #keep for debugging
         privatized_dim = combined_dim.drop(columns=["username", "display_name"]) # leave in if pushing to public/writing to public
-        combined_player_dim_path = write_df_to_parquet(privatized_dim, f"{dims_folder_dir}/all_player_dim_EXAMPLE.parquet")
+        combined_player_dim_path = write_df_to_parquet(privatized_dim, silver_all_player_dim_path)
         #combined_player_dim_path = write_df_to_parquet(combined_dim, f"{dims_folder_dir}/all_player_dim_private.parquet")
     else:
         private_leaderboard_dim = leaderboard_player_dim.drop(columns=["username", "display_name"])
@@ -212,11 +198,9 @@ def main():
         private_group_dim = group_player_dim.drop(columns=["username", "display_name"])
         group_player_dim_path = write_df_to_parquet(private_group_dim, f"{dims_folder_dir}/group_player_dim.parquet")
             
-    metric_dim_path = write_df_to_parquet(metric_dim, f"{dims_folder_dir}/metric_dim.parquet")
-    period_dim_path = write_df_to_parquet(period_dim, f"{dims_folder_dir}/period_dim.parquet")
-    
-    
-    
+    metric_dim_path = write_df_to_parquet(metric_dim, silver_metric_dim_path)
+    period_dim_path = write_df_to_parquet(period_dim, silver_period_dim_path)
+
 if __name__ == "__main__":    
     main()
 
