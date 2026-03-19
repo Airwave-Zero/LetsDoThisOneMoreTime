@@ -1,9 +1,6 @@
 import os
-import time
 import json
-import requests
 from typing import List, Dict
-from dataclasses import dataclass
 import pandas as pd
 from utils.project_paths import *
 from utils.generic_util import load_filters, load_script_config, parse_dates, make_wom_api_call, wom_base_url
@@ -73,9 +70,10 @@ def fetch_current_leaderboard_names(headers: Dict, categories: List[str]) -> Lis
             url = f"{wom_base_url}/deltas/leaderboard"
             data = make_wom_api_call(url, headers=headers, params=params) # returns a list of player dicts
             for each_player_dict in data:
-                each_player_dict["metric"] = category # add metric and period to each player dict so we know which category and time period they belong to when we write to parquet
+                each_player_dict["metric"] = category
                 each_player_dict["period"] = time_period
-                each_player_dict["dataCategory"] = "leaderboard" # add data category to player dict so we know which dataset they belong to when we write to parquet
+                each_player_dict["data_category_type"] = "leaderboard" 
+                each_player_dict["data_category_name"] = category
             leaderboard_players.extend(data)
         # break # comment out if testing
     return leaderboard_players
@@ -92,7 +90,8 @@ def fetch_all_group_players(groups: List[Dict], headers: Dict) -> List[Dict]:
         url = f"{wom_base_url}/groups/{group_id}"
         group_details = make_wom_api_call(url, headers=headers)
         for member in group_details["memberships"]:
-            member["player"]["dataCategory"] = "group" # add data category to player dict so we know which dataset they belong to when we write to parquet
+            member["player"]["data_category_type"] = "group" 
+            member["player"]["data_category_name"] = group["name"] 
             group_players_list.append(member["player"])
         idx += 1
         # break # comment out if testing
@@ -106,44 +105,46 @@ These functions are responsible for writing the fetched data to CSV or JSON file
 Most are built on top of calling write_data_to_parquet since that writes every item in a list to a row
 '''
 
-def write_dataframe_to_parquet(listofrows: list, datecols: list, endLocation: str, compression: str = "snappy") -> pd.DataFrame:
+def write_dataframe_to_parquet(listofrows: list, datecols: list, endLocation: str, compression: str = "snappy", dropNames: bool = False) -> pd.DataFrame:
     '''Write a DataFrame to Parquet format with specified date columns. This function also handles basic normalizing
     for ease of use later on'''
     df = pd.DataFrame(listofrows)
     df = parse_dates(df, datecols)
     df = df.rename(columns={"id": "player_id"}) # for clarity purposes
     
-    ### Leave in if you DON'T want usernames (privacy reasons, publishing to public, etc.), leave in if you want usernames
-    '''
-    if "username" in df.columns:
-        df.drop(columns=["username"], inplace=True) # drop username column for 
-    if "displayName" in df.columns:
-        df.drop(columns=["displayName"], inplace=True) # drop displayName column for privacy
-    '''
-    ### End comment out section ###
-
+    if dropNames:
+        if "username" in df.columns:
+            df.drop(columns=["username"], inplace=True) 
+        if "displayName" in df.columns:
+            df.drop(columns=["displayName"], inplace=True)
+            
     print(f"Writing DataFrame to Parquet at {endLocation} with compression={compression}...")
     df.to_parquet(endLocation, index=False, compression=compression, engine="pyarrow")
     return df
 
-def write_leaderboard_data_to_parquet(data: list, endLocation: str, compression: str = "snappy") -> str:
+def write_leaderboard_data_to_parquet(data: list, endLocation: str, compression: str = "snappy", dropNames: bool = False) -> str:
     """Flattens leaderboard players and writes them to Parquet.
     This function returns the path to the Parquet file for ease of debugging/locating."""
     flattened_rows = []
     for player in data:
-        player_obj = player["player"]
-        player_with_extrafields = {
-            "startDate": player["startDate"],
-            "endDate": player["endDate"],
-            "expGained": player["gained"],
-            "metric": player["metric"],
-            "period": player["period"],
-            "dataCategory": player["dataCategory"],
-            **player_obj,
-            }
-        flattened_rows.append(player_with_extrafields)
+        if "player" in player:
+            # Unflattened data
+            player_obj = player["player"]
+            player_with_extrafields = {
+                "startDate": player["startDate"],
+                "endDate": player["endDate"],
+                "expGained": player["gained"],
+                "metric": player["metric"],
+                "period": player["period"],
+                "data_category_type": player["data_category_type"],
+                "data_category_name": player["data_category_name"],
+                **player_obj,
+                }
+            flattened_rows.append(player_with_extrafields)
+        else:
+            flattened_rows.append(player)
     date_cols = ["startDate", "endDate", "registeredAt", "updatedAt", "lastChangedAt","lastImportedAt"]
-    df = write_dataframe_to_parquet(flattened_rows, date_cols, endLocation, compression)
+    df = write_dataframe_to_parquet(flattened_rows, date_cols, endLocation, compression, dropNames=dropNames)
     return str(endLocation)
 
 def write_groups_to_json_file(groups: List[Dict], json_file_path: str) -> None:
@@ -159,10 +160,10 @@ def write_groups_to_json_file(groups: List[Dict], json_file_path: str) -> None:
         json.dump(groups, f, indent=4, ensure_ascii=False)
     return json_file_path
 
-def write_group_players_to_parquet(groups: List[Dict], endLocation: str, compression: str = "snappy") -> str:
+def write_group_players_to_parquet(groups: List[Dict], endLocation: str, compression: str = "snappy", dropNames: bool = False) -> str:
     '''Write group players to parquet. This function returns the path to the Parquet file for ease of debugging/locating.'''
     date_cols = ["registeredAt","updatedAt","lastChangedAt","lastImportedAt"]
-    df = write_dataframe_to_parquet(groups, date_cols, endLocation, compression)
+    df = write_dataframe_to_parquet(groups, date_cols, endLocation, compression, dropNames=dropNames)
     return str(endLocation)
     
 def generate_group_players(group_player_list_parquet_path: str, groups: List[Dict], headers: Dict) -> List[Dict]:
@@ -214,7 +215,7 @@ def main():
     # ============== Dataset 2: Leaderboard Players ==============
     all_leaderboard_players = generate_all_leaderboard_players(bronze_all_leaderboard_player_parquet_path, wom_headers, account_filter_class)
     write_leaderboard_data_to_parquet(all_leaderboard_players, bronze_all_leaderboard_player_parquet_path, compression="snappy")
- 
+
  
 if __name__ == "__main__":
     # keep this simple/bare

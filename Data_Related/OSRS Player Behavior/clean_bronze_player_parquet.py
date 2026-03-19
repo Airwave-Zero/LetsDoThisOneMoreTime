@@ -1,5 +1,4 @@
 import os
-from pathlib import Path
 import pandas as pd
 from utils import project_paths
 from utils.generic_util import parse_dates, read_json_config
@@ -12,12 +11,13 @@ computed = data.get("computed")
 group_player_parquet = project_paths.bronze_group_player_parquet_path
 leaderboard_gains_parquet = project_paths.bronze_all_leaderboard_player_parquet_path
 dims_folder_dir = project_paths.dims_folder_path
-silver_all_player_dim_path = project_paths.silver_combined_player_dim_path
+silver_all_player_dim_path = project_paths.silver_all_player_dim_path
 silver_metric_dim_path = project_paths.silver_metric_dim_path
 silver_period_dim_path = project_paths.silver_period_dim_path
+silver_group_dim_path = project_paths.silver_group_dim_path
 
 
-def write_df_to_parquet(df: pd.DataFrame, endLocation: str, compression: str = "snappy") -> str:
+def write_df_to_parquet(df: pd.DataFrame, endLocation: str, compression: str = "snappy", dropNames:bool = False) -> str:
     """
     This function takes a DataFrame and an end location for the parquet file, and only
     creates a parquet file if it doesn't already exist at that location. 
@@ -28,6 +28,8 @@ def write_df_to_parquet(df: pd.DataFrame, endLocation: str, compression: str = "
         print(f"Leaderboard player dim already exists at {endLocation}, skipping creation.")
     else:
         print("Writing DataFrame to Parquet at: ", endLocation)
+        if dropNames:
+            df = df.drop(columns=["username", "display_name"], errors="ignore") # drop username/display_name if they exist and if dropNames is true, but ignore if they don't exist since some dims may not have these columns
         df.to_parquet(endLocation, index=False, compression=compression, engine="pyarrow")
 
     return str(endLocation)
@@ -35,7 +37,7 @@ def write_df_to_parquet(df: pd.DataFrame, endLocation: str, compression: str = "
 def build_player_dim(df: pd.DataFrame, dataCategory:str) -> pd.DataFrame:
     player_cols = [
         "player_id", "username", "displayName", "type", "build",
-        "status", "country", "patron", "registeredAt", "dataCategory"
+        "status", "country", "patron", "registeredAt", "data_category_type", "data_category_name"
     ]
 
     player_dim = (
@@ -43,11 +45,9 @@ def build_player_dim(df: pd.DataFrame, dataCategory:str) -> pd.DataFrame:
         .drop_duplicates(subset=["player_id"])
         .rename(columns={
             "displayName": "display_name",
-            "registeredAt": "registered_at",
-            "dataCategory": "data_category"
+            "registeredAt": "registered_at"
         })
     )
-
     return parse_dates(player_dim, ["registered_at"])
 
 
@@ -108,6 +108,16 @@ def build_period_dim(df: pd.DataFrame) -> pd.DataFrame:
 
     period_dim["period_id"] = period_dim.index + 1
     return period_dim[["period_id", "period"]]
+
+def build_group_name_dim(group_player_df: pd.DataFrame) -> pd.DataFrame:
+    group_dim = (
+        group_player_df[["data_category_name"]]
+        .drop_duplicates()
+        .reset_index(drop=True)
+    )
+    group_dim["group_id"] = group_dim.index + 1
+    group_dim = group_dim.rename(columns={"data_category_name": "group_name"})
+    return group_dim[["group_id", "group_name"]]
 
 def build_snapshot_fact(snapshot_df: pd.DataFrame, metric_dim: pd.DataFrame,) -> pd.DataFrame:
     df = snapshot_df.copy()
@@ -179,6 +189,7 @@ def main():
     group_player_dim = build_player_dim(group_player_df, "group")
     metric_dim = build_metric_dim(player_data_df)
     period_dim = build_period_dim(player_data_df)
+    group_dim = build_group_name_dim(group_player_df)
 
     leaderboard_player_dim_path = ''
     group_player_dim_path = ''
@@ -188,18 +199,15 @@ def main():
     if(playerSetSameColumns):
         print("Group and leaderboard player dims have the same columns, creating combined player dim.")
         combined_dim = pd.concat([leaderboard_player_dim, group_player_dim], ignore_index=True).drop_duplicates(subset=["player_id"]) #keep for debugging
-        privatized_dim = combined_dim.drop(columns=["username", "display_name"]) # leave in if pushing to public/writing to public
-        combined_player_dim_path = write_df_to_parquet(privatized_dim, silver_all_player_dim_path)
-        #combined_player_dim_path = write_df_to_parquet(combined_dim, f"{dims_folder_dir}/all_player_dim_private.parquet")
+        combined_player_dim_path = write_df_to_parquet(combined_dim, silver_all_player_dim_path)
     else:
-        private_leaderboard_dim = leaderboard_player_dim.drop(columns=["username", "display_name"])
-        leaderboard_player_dim_path = write_df_to_parquet(private_leaderboard_dim, f"{dims_folder_dir}/leaderboard_player_dim.parquet")   
+        leaderboard_player_dim_path = write_df_to_parquet(leaderboard_player_dim, f"{dims_folder_dir}/leaderboard_player_dim.parquet")   
              
-        private_group_dim = group_player_dim.drop(columns=["username", "display_name"])
-        group_player_dim_path = write_df_to_parquet(private_group_dim, f"{dims_folder_dir}/group_player_dim.parquet")
+        group_player_dim_path = write_df_to_parquet(group_player_dim, f"{dims_folder_dir}/group_player_dim.parquet")
             
     metric_dim_path = write_df_to_parquet(metric_dim, silver_metric_dim_path)
     period_dim_path = write_df_to_parquet(period_dim, silver_period_dim_path)
+    group_dim_path = write_df_to_parquet(group_dim, silver_group_dim_path)
 
 if __name__ == "__main__":    
     main()
