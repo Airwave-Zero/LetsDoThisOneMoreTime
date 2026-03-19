@@ -198,9 +198,10 @@ def read_json_config(file_path: str, default_data: Dict = default_filters) -> Di
         data = default_data
     return data
 
-def make_wom_api_call(url: str, headers:Dict, params: Dict = None, delay_rate: float = 0.7) -> Dict:
+def make_wom_api_call(url: str, headers:Dict, params: Dict = None, delay_rate: float = 0.65) -> Dict:
     """
     Wrapper around requests.get with rate limiting.
+    Delay must be >= .6 because maximum API rate is 100 requests per minute, which is 1 request every 0.6 seconds.
     """
     response = requests.get(url, headers=headers, params=params)
     time.sleep(delay_rate)

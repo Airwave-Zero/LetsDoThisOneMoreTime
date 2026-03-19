@@ -70,7 +70,6 @@ def fetch_current_leaderboard_names(headers: Dict, categories: List[str]) -> Lis
             url = f"{wom_base_url}/deltas/leaderboard"
             data = make_wom_api_call(url, headers=headers, params=params) # returns a list of player dicts
             for each_player_dict in data:
-                each_player_dict["metric"] = category
                 each_player_dict["period"] = time_period
                 each_player_dict["data_category_type"] = "leaderboard" 
                 each_player_dict["data_category_name"] = category
