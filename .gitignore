@@ -9,21 +9,22 @@ airflow_docker/*
 .vscode/
 .DS_store
 logs/
+*_notes.*
 SQL_Drills/
 
 
-Data_Related/Pokemon_TCG_Prices/eBay_Card_Prices
-Data_Related/Pokemon_TCG_Prices/artist_summary.csv
-Data_Related/Pokemon_TCG_Prices/TCG_ScriptGetCardArt.py
+Data Pipelines/Pokemon_TCG_Prices/eBay_Card_Prices
+Data Pipelines/Pokemon_TCG_Prices/artist_summary.csv
+Data Pipelines/Pokemon_TCG_Prices/TCG_ScriptGetCardArt.py
 
-Data_Related/Gmail_ETL/csv_data/Categorized Emails.csv
-Data_Related/Gmail_ETL/csv_data/email_training_data.csv
-Data_Related/Gmail_ETL/csv_data/financial_report.csv
-Data_Related/Gmail_ETL/csv_data/account_balance_changes.csv
-Data_Related/Gmail_ETL/csv_data/account_balance_snapshots.csv
-Data_Related/ReallyBigJobData_Pipeline/airflow_docker/*
-!Data_Related/ReallyBigJobData_Pipeline/airflow_docker/dags
-!Data_Related/ReallyBigJobData_Pipeline/airflow_docker/logs
-Data_Related/.DS_Store
-Data_Related/OSRS Player Behavior/.DS_Store
-Data_Related/OSRS Player Behavior/csv_data/.DS_Store
+Data Pipelines/Gmail_ETL/csv_data/Categorized Emails.csv
+Data Pipelines/Gmail_ETL/csv_data/email_training_data.csv
+Data Pipelines/Gmail_ETL/csv_data/financial_report.csv
+Data Pipelines/Gmail_ETL/csv_data/account_balance_changes.csv
+Data Pipelines/Gmail_ETL/csv_data/account_balance_snapshots.csv
+Data Pipelines/ReallyBigJobData_Pipeline/airflow_docker/*
+!Data Pipelines/ReallyBigJobData_Pipeline/airflow_docker/dags
+!Data Pipelines/ReallyBigJobData_Pipeline/airflow_docker/logs
+Data Pipelines/.DS_Store
+Data Pipelines/OSRS Player Behavior/.DS_Store
+Data Pipelines/OSRS Player Behavior/csv_data/.DS_Store
