@@ -14,9 +14,7 @@ bronze_group_player_parquet_path = os.path.join(raw_player_parquet_folder_path, 
 bronze_all_leaderboard_player_parquet_path = os.path.join(raw_player_parquet_folder_path, "Leaderboard_Combined_Player_List_private.parquet")
 bronze_snapshot_parquet_folder_path = os.path.join(bronze_parquet_folder_path, "snapshots")
 bronze_group_snapshot_parquet_folder_path = os.path.join(bronze_snapshot_parquet_folder_path, "groups")
-bronze_group_snapshot_parquet_path = os.path.join(bronze_group_snapshot_parquet_folder_path, "group_player_snapshots.parquet")
 bronze_leaderboard_snapshot_parquet_folder_path = os.path.join(bronze_snapshot_parquet_folder_path, "leaderboards")
-bronze_leaderboard_snapshot_parquet_path = os.path.join(bronze_leaderboard_snapshot_parquet_folder_path, "leaderboard_player_snapshots.parquet")
 
 
 silver_parquet_folder_path = os.path.join(parquet_folder_path, "cleaned_parquet_silver")

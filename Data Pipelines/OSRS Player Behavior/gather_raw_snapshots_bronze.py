@@ -14,9 +14,7 @@ dims_folder_dir = project_paths.dims_folder_path
 
 bronze_snapshots_folder_dir = project_paths.bronze_snapshot_parquet_folder_path
 bronze_group_snapshot_parquet_folder_path = project_paths.bronze_group_snapshot_parquet_folder_path
-bronze_group_snapshot_parquet_path = project_paths.bronze_group_snapshot_parquet_path
 bronze_leaderboard_snapshot_parquet_folder_path = project_paths.bronze_leaderboard_snapshot_parquet_folder_path
-bronze_leaderboard_snapshot_parquet_path = project_paths.bronze_leaderboard_snapshot_parquet_path
 
 silver_all_player_dim_path = project_paths.silver_all_player_dim_path
 silver_metric_dim_path = project_paths.silver_metric_dim_path
@@ -36,6 +34,7 @@ def lookup_single_player(player_username:str, headers: Dict, script_config: data
             player_username = player_username.replace(" ", "%20") # replace spaces with ASCII encoding for URL
         url = f"{wom_base_url}/players/{player_username}"
         updated_player = make_wom_api_call(url, headers, delay_rate=script_config.request_delay)
+        # print(updated_player)
         username = updated_player.get("username")
         display_name = updated_player.get("displayName")
         updated_player = updated_player.get("latestSnapshot") # we mainly care about this, most recent one
@@ -69,7 +68,7 @@ def lookup_all_groups(group_player_df, headers: Dict, script_config: dataclass) 
     for each_group in group_names:
         print(f"Looking up group {idx+1}/{len(group_names)}: {each_group}")
         player_usernames = group_player_df[group_player_df["data_category_name"] == each_group]["username"] # this is a list of usernames for each group
-        group_snapshot = lookup_player_batch_set_size(player_usernames[0:5], headers, script_config) # set progress print to every 5% of the batch
+        group_snapshot = lookup_player_batch_set_size(player_usernames, headers, script_config) # set progress print to every 5% of the batch
         for each_person in group_snapshot:
             each_person["data_category_type"] = "group"
             each_person["data_category_name"] = each_group
@@ -103,10 +102,10 @@ def write_snapshots_to_parquet(snapshots_list: List[Dict], end_location:str, com
     snapshots_df = pd.DataFrame(snapshots_list)
     
     # add date and time partitioning
-    end_location = os.path.join(bronze_group_snapshot_parquet_folder_path, f"{date_str}")
+    end_location = os.path.join(end_location, f"{date_str}")
     # make folder if it doesnt exist
     pathlib.Path(end_location).mkdir(parents=True, exist_ok=True)
-    end_location = os.path.join(end_location, f"snapshot_{time_str}.parquet")
+    end_location = os.path.join(end_location, f"snapshot_{time_str}_private.parquet")
     
     if os.path.exists(end_location) and os.path.getsize(end_location) > 0:
         print(f"Snapshot parquet already exists at {end_location}, skipping creation.")
@@ -149,12 +148,12 @@ def main():
     group_player_df = pd.read_parquet(group_player_parquet_path)
     group_player_snapshots = lookup_all_groups(group_player_df, wom_headers, script_config_class)
     group_player_flattened = flatten_bronze(group_player_snapshots)
-    group_player_snapshots_parquet = write_snapshots_to_parquet(group_player_flattened, bronze_group_snapshot_parquet_path)
+    group_player_snapshots_parquet = write_snapshots_to_parquet(group_player_flattened, bronze_group_snapshot_parquet_folder_path)
     
     leaderboard_players_df = pd.read_parquet(leaderboard_gains_parquet_path)
     leaderboard_player_snapshots = lookup_all_leaderboard_categories(leaderboard_players_df, wom_headers, script_config_class)
     leaderboard_players_flattened = flatten_bronze(leaderboard_player_snapshots)
-    leaderboard_player_snapshots_parquet = write_snapshots_to_parquet(leaderboard_players_flattened, bronze_leaderboard_snapshot_parquet_path)
+    leaderboard_player_snapshots_parquet = write_snapshots_to_parquet(leaderboard_players_flattened, bronze_leaderboard_snapshot_parquet_folder_path)
     
 if __name__ == "__main__":
     main()
