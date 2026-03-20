@@ -101,23 +101,19 @@ Scores can be derived from combinations of signals such as:
 
 ### Core Technologies
 
-- **Python** – scraping, API calls, ingestion, and feature generation
-- **Dagster** – orchestration and scheduled pipelines
-- **CSV** – raw ingestion format
-- **dbt** – cleaning, transforming, and modeling analytical tables  
-- **Parquet** – OLAP-oriented analytical storage
-- **DuckDB** – fast local analytical queries
-- **Power BI** – visualization and exploratory analysis
-- **GitHub** – version control and documentation  
+**Snowflake** for data warehousing + cloud capabilities
+**Dagster** for orchestration
+***PySpark**, Python for transformation, processing, ingestion,
+**Parquet** format for efficient storage
+**Azure Data Lake Storage GenII** for storage + cloud friendliness
+**Power BI** for visualizations
+
 
 ---
 
 ## Future Plans
 
 - Introduce machine learning for clustering or anomaly-assistance  
-- Migrate orchestration to **Azure Data Factory**
-- Store analytical data in **Azure Blob Storage** (Parquet-based data lake)
-- Use **Azure Functions** for lightweight ingestion and refresh jobs
 - Publish a public dashboard with aggregated, non-identifying metrics
 
 ---

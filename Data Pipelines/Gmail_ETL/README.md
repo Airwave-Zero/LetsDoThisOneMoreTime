@@ -23,30 +23,6 @@ To streamline classification, a Logistic Regression model was trained using ~600
 
 ---
 
-## Project Structure
-
-email_data/
-├── email_training_data_public.csv # Labeled dataset used for training
-├── Categorized Emails_public.csv # Output of processed and tagged emails (sanitized)
-
-gmail_related/
-├── Job_Gmail_ETL.py # Main pipeline script for jobs (OAuth, Gmail API, cleaning, export)
-├── BoA_Gmail.py # Main pipeline script for financial progress
-├── email_judge_model.pkl # Pretrained Logistic Regression model
-
-ml_model/
-├── LogisticRegression_Model.py # Training script with train-test evaluation
-
-visualizations/
-├── Job Applications/
-│ ├── Application Journey.pbix # Power BI dashboard file
-│ ├── Application Journey2024.pdf # Snapshot of job search (all of 2024)
-│ ├── Application Journey2025Q1.pdf # Snapshot of job search (2025 Q1)
-│ ├── Full Application Journey.pdf # Snapshot of job search (2015–present)
-├── Financial Dashboard/
-
----
-
 ## Technologies Used
 
 * **Python** for scripting and automation

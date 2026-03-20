@@ -10,8 +10,8 @@ The goal was to explore the growing demand in Pokémon TCG markets and discern n
 
 The primary factors driving card pricing appear to be:
 * Individual Pokémon popularity (e.g., Charizards are typically more expensive than random Pokémon)
-* Card condition
 * Card age (i.e., when the card came out)
+* Card set (related to age, but not necessarily)
 
 
 ## Project Scope
@@ -54,15 +54,6 @@ The primary factors driving card pricing appear to be:
 * **Data**: 
     * Pokémon TCG CSV (custom-compiled dataset)
     * eBay price scraping (via Python)
-
-
-## Pipeline Structure
-
-* eBayCardPrices/ # Contains price listings .csvs for the top 25 Pokémon featured in the project
-* eBay_Script.py # Handles the process of connecting to eBay, parsing BeautifulSoup, extracting and normalizing prices, and exporting to .csv/dataframe for Power BI usage
-* pkmn_tcg_data.pbix # Power BI file showing actual visualizations
-* TCG_Artist_Script.py # Summarizes the artist counts of all the cards in the database
-* TCG_Script # Looks up prices of all cards and their various rarities using the official TCGPlayer API
 
 ## Future Enhancements
 
