@@ -5,6 +5,8 @@ from utils.generic_util import load_script_config, make_wom_api_call, wom_base_u
 from utils import project_paths
 import pandas as pd
 import os
+import pathlib
+import time
 
 group_player_parquet_path = project_paths.bronze_group_player_parquet_path
 leaderboard_gains_parquet_path = project_paths.bronze_all_leaderboard_player_parquet_path
@@ -21,7 +23,10 @@ silver_metric_dim_path = project_paths.silver_metric_dim_path
 silver_period_dim_path = project_paths.silver_period_dim_path
 silver_group_dim_path = project_paths.silver_group_dim_path
 # step 1 gather the list of players from the parquet files in the raw_parquet_bronze folder
-# step2 for each player, gather snapshot data and write to parquet in the raw_parquet_bronze folder, partitioned by snapshot_date
+# step 2 for each player, gather snapshot data and write to parquet in the raw_parquet_bronze folder, partitioned by snapshot_date
+date_str = time.strftime("%Y-%m-%d")
+time_str = time.strftime("%H%M%S")
+
 
 def lookup_single_player(player_username:str, headers: Dict, script_config: dataclass) -> Dict:
     # Modular function to just lookup one player, returns a (nested) json object
@@ -31,7 +36,11 @@ def lookup_single_player(player_username:str, headers: Dict, script_config: data
             player_username = player_username.replace(" ", "%20") # replace spaces with ASCII encoding for URL
         url = f"{wom_base_url}/players/{player_username}"
         updated_player = make_wom_api_call(url, headers, delay_rate=script_config.request_delay)
-        updated_player = updated_player.get("latestSnapshot") # we only care about this, most recent one
+        username = updated_player.get("username")
+        display_name = updated_player.get("displayName")
+        updated_player = updated_player.get("latestSnapshot") # we mainly care about this, most recent one
+        updated_player["username"] = username
+        updated_player["display_name"] = display_name
     except Exception as e:
         print(f"Error looking up player {player_username}: {e}")
         updated_player = {"player": {"username": player_username, "error": str(e)}}
@@ -49,6 +58,7 @@ def lookup_player_batch_set_size(player_batch: List[str], headers: Dict, script_
         current_player = lookup_single_player(player_username, headers, script_config)
         player_list.append(current_player)
         idx += 1
+        # break # uncomment if testing
     print(f"Finished looking up batch of {len(player_batch)} players.")
     return player_list
 
@@ -66,13 +76,13 @@ def lookup_all_groups(group_player_df, headers: Dict, script_config: dataclass) 
         all_group_snapshots.append(group_snapshot)
         idx += 1
         print(f"Finished looking up group {each_group}.")
-        break # if doing 1 group for testing
+        # break # if doing 1 group for testing
     return all_group_snapshots
 
-def lookup_all_leaderboard_categories(leaderboard_players_df, headers: Dict, script_config: dataclass) -> List[Dict]:
+def lookup_all_leaderboard_categories(leaderboard_players_df, headers: Dict, script_config: dataclass) -> List[List[Dict]]:
     all_leaderboard_snapshots = []
     leaderboard_categories = leaderboard_players_df["data_category_name"].unique()
-    print(leaderboard_categories)
+    #print(leaderboard_categories)
     idx = 0
     for each_category in leaderboard_categories:
         print(f"Looking up leaderboard category: {idx+1}/{len(leaderboard_categories)}: {each_category}")
@@ -91,6 +101,13 @@ def write_snapshots_to_parquet(snapshots_list: List[Dict], end_location:str, com
     # takes a list of snapshot dicts and writes to parquet at the end location specified, with optional compression (default snappy)
     # returns the path to the Parquet file for ease of debugging/locating
     snapshots_df = pd.DataFrame(snapshots_list)
+    
+    # add date and time partitioning
+    end_location = os.path.join(bronze_group_snapshot_parquet_folder_path, f"{date_str}")
+    # make folder if it doesnt exist
+    pathlib.Path(end_location).mkdir(parents=True, exist_ok=True)
+    end_location = os.path.join(end_location, f"snapshot_{time_str}.parquet")
+    
     if os.path.exists(end_location) and os.path.getsize(end_location) > 0:
         print(f"Snapshot parquet already exists at {end_location}, skipping creation.")
     else:
@@ -100,20 +117,44 @@ def write_snapshots_to_parquet(snapshots_list: List[Dict], end_location:str, com
         snapshots_df.to_parquet(end_location, index=False, compression=compression, engine="pyarrow")
     return str(end_location)
 
+def flatten_bronze(data):
+    flattened_rows = []
+    for batch in data:
+        for player in batch:
+            flattened_rows.append({
+                "username": player["username"],
+                "display_name": player["display_name"],
+                "player_id": player["playerId"],
+                "created_at": player["createdAt"],
+                "imported_at": player["importedAt"],
+                "data_category_type": player["data_category_type"],
+                "data_category_name": player["data_category_name"],
+                # For bronze layer, we are going to keep nested json for the fields:
+                # This is so schema doesn't explode with 100 columns, can clean and process later for silver
+                "skills": player["data"]["skills"],
+                "bosses": player["data"]["bosses"],
+                "activities": player["data"]["activities"],
+                "computed": player["data"]["computed"],
+            })
+    return flattened_rows
+
 def main():
     script_config_class = load_script_config()
     wom_headers = {
         "x-api-key": script_config_class.api_key,
         "User-Agent": script_config_class.discord_username
     }
-        
+
+    
     group_player_df = pd.read_parquet(group_player_parquet_path)
     group_player_snapshots = lookup_all_groups(group_player_df, wom_headers, script_config_class)
-    group_player_snapshots_parquet = write_snapshots_to_parquet(group_player_snapshots, bronze_group_snapshot_parquet_path)
+    group_player_flattened = flatten_bronze(group_player_snapshots)
+    group_player_snapshots_parquet = write_snapshots_to_parquet(group_player_flattened, bronze_group_snapshot_parquet_path)
     
     leaderboard_players_df = pd.read_parquet(leaderboard_gains_parquet_path)
     leaderboard_player_snapshots = lookup_all_leaderboard_categories(leaderboard_players_df, wom_headers, script_config_class)
-    leaderboard_player_snapshots_parquet = write_snapshots_to_parquet(leaderboard_player_snapshots, bronze_leaderboard_snapshot_parquet_path)
-
+    leaderboard_players_flattened = flatten_bronze(leaderboard_player_snapshots)
+    leaderboard_player_snapshots_parquet = write_snapshots_to_parquet(leaderboard_players_flattened, bronze_leaderboard_snapshot_parquet_path)
+    
 if __name__ == "__main__":
     main()
