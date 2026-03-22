@@ -15,10 +15,10 @@ This includes fetching group names, players from group names, and players from t
 different categories. The functions are built to be reusable and modular.
 '''
 
-def fetch_group_names(headers: Dict, json_file_path: str, limit: int = 50) -> List[Dict]:
+def fetch_group_names(headers: Dict, json_file_path: str, limit: int = 30) -> List[Dict]:
     """
     Fetch all registered Wise Old Man groups using pagination, returns a list of all groups with their details. 
-    This first 50 groups to appear is arbitrary and doesn't really matter, but # of groups can be changed to expand/decrease dataset size.
+    This first 30 groups to appear is arbitrary and doesn't really matter, but # of groups can be changed to expand/decrease dataset size.
     If the groupnames JSON file already exists and has data, this function will skip the API call and load from the JSON file instead.
     """
     groups = []
@@ -74,6 +74,7 @@ def fetch_current_leaderboard_names(headers: Dict, categories: List[str]) -> Lis
                 each_player_dict["data_category_type"] = "leaderboard" 
                 each_player_dict["data_category_name"] = category
             leaderboard_players.extend(data)
+            # break
         # break # comment out if testing
     return leaderboard_players
 
@@ -133,7 +134,7 @@ def write_leaderboard_data_to_parquet(data: list, endLocation: str, compression:
                 "startDate": player["startDate"],
                 "endDate": player["endDate"],
                 "expGained": player["gained"],
-                "metric": player["metric"],
+                #"metric": player["metric"],
                 "period": player["period"],
                 "data_category_type": player["data_category_type"],
                 "data_category_name": player["data_category_name"],
@@ -212,8 +213,8 @@ def main():
     write_group_players_to_parquet(group_players, bronze_group_player_parquet_path, compression="snappy")
 
     # ============== Dataset 2: Leaderboard Players ==============
-    all_leaderboard_players = generate_all_leaderboard_players(bronze_all_leaderboard_player_parquet_path, wom_headers, account_filter_class)
-    write_leaderboard_data_to_parquet(all_leaderboard_players, bronze_all_leaderboard_player_parquet_path, compression="snappy")
+    #all_leaderboard_players = generate_all_leaderboard_players(bronze_all_leaderboard_player_parquet_path, wom_headers, account_filter_class)
+    #write_leaderboard_data_to_parquet(all_leaderboard_players, bronze_all_leaderboard_player_parquet_path, compression="snappy", dropNames=False) # dropNames because we don't need username/display_name for leaderboard players, and it makes the parquet writing faster since there are a lot of players
 
  
 if __name__ == "__main__":
