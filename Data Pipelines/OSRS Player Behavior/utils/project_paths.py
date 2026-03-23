@@ -16,7 +16,7 @@ bronze_snapshot_parquet_folder_path = os.path.join(bronze_parquet_folder_path, "
 
 silver_parquet_folder_path = os.path.join(parquet_folder_path, "cleaned_parquet_silver")
 silver_dims_folder_path = os.path.join(silver_parquet_folder_path, "dims")
-silver_fact_table_folder_path = os.path.join(silver_parquet_folder_path, "fact_tables")
+silver_fact_table_folder_path = os.path.join(silver_parquet_folder_path, "snapshot_fact_tables")
 silver_all_player_dim_path = os.path.join(silver_dims_folder_path, "all_player_dim_private.parquet")
 silver_metric_dim_path = os.path.join(silver_dims_folder_path, "metric_dim.parquet")
 silver_period_dim_path = os.path.join(silver_dims_folder_path, "period_dim.parquet")

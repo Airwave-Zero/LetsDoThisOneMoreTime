@@ -50,12 +50,10 @@ def build_player_dim(df: pd.DataFrame, dataCategory:str) -> pd.DataFrame:
     )
     return parse_dates(player_dim, ["registered_at"])
 
-
 def build_metric_dim(df: pd.DataFrame) -> pd.DataFrame:
     # Normalize expected columns
-    metric_col = "metric_name" if "metric_name" in df.columns else "metric"
-    type_col = "metric_type" if "metric_type" in df.columns else None
-
+    metric_col = "data_category_name" 
+    type_col = "data_category_type" 
     metric_dim = (
         df[[c for c in [metric_col, type_col] if c is not None]]
         .drop_duplicates()
@@ -118,66 +116,6 @@ def build_group_name_dim(group_player_df: pd.DataFrame) -> pd.DataFrame:
     group_dim["group_id"] = group_dim.index + 1
     group_dim = group_dim.rename(columns={"data_category_name": "group_name"})
     return group_dim[["group_id", "group_name"]]
-
-def build_snapshot_fact(snapshot_df: pd.DataFrame, metric_dim: pd.DataFrame,) -> pd.DataFrame:
-    df = snapshot_df.copy()
-
-    df["snapshot_time"] = pd.to_datetime(
-        df["snapshot_time"], utc=True, errors="coerce"
-    )
-
-    df = (
-        df
-        .merge(
-            metric_dim[["metric_id", "metric", "metric_category"]],
-            left_on=["metric_name", "metric_type"],
-            right_on=["metric", "metric_category"],
-            how="left",
-        )
-        .rename(columns={
-            "value": "metric_value",
-            "rank": "metric_rank",
-        })
-    )
-
-    return df[
-        [
-            "snapshot_time",
-            "snapshot_id",
-            "player_id",
-            "metric_id",
-            "metric_value",
-            "metric_rank",
-        ]
-    ]
-
-def build_leaderboard_fact(df, metric_dim, period_dim) -> pd.DataFrame:
-    df = parse_dates(df, ["startDate", "endDate"])
-
-    df = (
-        df
-        .merge(metric_dim, on="metric", how="left")
-        .merge(period_dim, on="period", how="left")
-        .rename(columns={
-            "startDate": "start_date",
-            "endDate": "end_date",
-            "expGained": "exp_gained"
-        })
-    )
-
-    df["snapshot_ts"] = pd.Timestamp.utcnow()
-
-    return df[
-        [
-            "player_id",
-            "metric_id",
-            "period_id",
-            "start_date",
-            "end_date",
-            "exp_gained",
-            "snapshot_ts",
-        ]
-    ]
 
 def main():
 

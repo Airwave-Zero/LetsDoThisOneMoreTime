@@ -142,12 +142,13 @@ def main():
         "x-api-key": script_config_class.api_key,
         "User-Agent": script_config_class.discord_username
     }
-    
+    # first file in folder is groups
     group_player_df = pd.read_parquet(group_player_parquet_path)
     group_player_snapshots = lookup_all_groups(group_player_df, wom_headers, script_config_class)
     group_player_flattened = flatten_bronze(group_player_snapshots)
     group_player_snapshots_parquet = write_snapshots_to_parquet(group_player_flattened, bronze_snapshots_folder_dir)
     
+    # second file in folder is leaderboard
     leaderboard_players_df = pd.read_parquet(leaderboard_gains_parquet_path)
     leaderboard_player_snapshots = lookup_all_leaderboard_categories(leaderboard_players_df, wom_headers, script_config_class)
     leaderboard_players_flattened = flatten_bronze(leaderboard_player_snapshots)
