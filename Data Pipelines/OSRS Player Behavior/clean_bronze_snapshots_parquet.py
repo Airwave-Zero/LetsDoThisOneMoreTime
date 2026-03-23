@@ -59,12 +59,12 @@ def flatten_dataframe(file_dataframe:Dict) -> List[Dict]:
     all_flattened_rows_from_df = []
     for _, player in file_dataframe.iterrows():
         for data_category in ["skills", "bosses", "activities"]:
-            print(f"Flattening data category: {data_category}...")
+            # print(f"Flattening data category: {data_category}...")
             thing = flatten_dict(player, data_category)
             all_flattened_rows_from_df.extend(thing)
     return all_flattened_rows_from_df
 
-def generate_snapshot_fact_table(snapshot_file_path:str, snapshot_date:str, player_dim:pd.DataFrame, metric_dim:pd.DataFrame, period_dim: pd.DataFrame):
+def generate_snapshot_fact_table(snapshot_file_path:str, snapshot_date:str, player_dim:pd.DataFrame, metric_dim:pd.DataFrame, period_dim: pd.DataFrame, final_parquet_path:str) -> str:
     '''This function takes in a folder of snapshot parquet data (1 folder = 2 parquets, 1 for group and 1 for leader) and generates 1 big fact table for that folder/date.'''
     all_flattened_snapshots = []
     snapshots_per_folder = os.listdir(snapshot_file_path)
@@ -77,9 +77,9 @@ def generate_snapshot_fact_table(snapshot_file_path:str, snapshot_date:str, play
             flattened_data = flatten_dataframe(file_dataframe)
             all_flattened_snapshots.extend(flattened_data)
     flattened_df = pd.DataFrame(all_flattened_snapshots)
-    silver_snapshot_parquet_path = os.path.join(silver_fact_table_folder_path, f"snapshot_fact_{snapshot_date}_private.parquet")
-    print(f"Saving snapshot fact table to: {silver_snapshot_parquet_path}")
-    flattened_df.to_parquet(silver_snapshot_parquet_path, compression="snappy", index=False, engine="pyarrow")
+    print(f"Saving snapshot fact table to: {final_parquet_path}")
+    flattened_df.to_parquet(final_parquet_path, compression="snappy", index=False, engine="pyarrow")
+    return final_parquet_path
 
 def main():
     all_player_dim  = pd.read_parquet(silver_all_player_dim_path)
@@ -88,12 +88,20 @@ def main():
     
     all_snapshot_folders = os.listdir(bronze_snapshot_parquet_folder_path)
     all_paths = []
+    
+    existing_files = os.listdir(silver_fact_table_folder_path)
+    #print(existing_files)
     for each_folder in all_snapshot_folders:
         if each_folder != '.DS_Store':
             print(f"Cleaning snapshot folder: {each_folder}")
             full_folder_path = os.path.join(bronze_snapshot_parquet_folder_path, each_folder)
-            snapshot_fact_path = generate_snapshot_fact_table(full_folder_path, each_folder, all_player_dim, metric_dim, period_dim)
-            all_paths.append(snapshot_fact_path)
+            new_parquet_path = os.path.join(silver_fact_table_folder_path, f"snapshot_fact_{each_folder}_private.parquet")
+            # only generate a fact table if it doesn't already exist
+            if not os.path.exists(new_parquet_path):
+                snapshot_fact_path = generate_snapshot_fact_table(full_folder_path, each_folder, all_player_dim, metric_dim, period_dim, new_parquet_path)
+                all_paths.append(snapshot_fact_path)
+            else:
+                print(f"Fact table for snapshot {each_folder} already exists at {new_parquet_path}, skipping fact table generation.")
 
 if __name__ == "__main__":
     main()
