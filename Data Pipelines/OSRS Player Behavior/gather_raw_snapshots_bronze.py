@@ -142,7 +142,11 @@ def main():
         "x-api-key": script_config_class.api_key,
         "User-Agent": script_config_class.discord_username
     }
+    # set a timer to see how long this program runs for
+    start_time = time.time()
+    print(f"Start time: {start_time}")
     # first file in folder is groups
+
     group_player_df = pd.read_parquet(group_player_parquet_path)
     group_player_snapshots = lookup_all_groups(group_player_df, wom_headers, script_config_class)
     group_player_flattened = flatten_bronze(group_player_snapshots)
@@ -153,6 +157,28 @@ def main():
     leaderboard_player_snapshots = lookup_all_leaderboard_categories(leaderboard_players_df, wom_headers, script_config_class)
     leaderboard_players_flattened = flatten_bronze(leaderboard_player_snapshots)
     leaderboard_player_snapshots_parquet = write_snapshots_to_parquet(leaderboard_players_flattened, bronze_snapshots_folder_dir)
+
+    end_time = time.time()
+
+    group_pd = pd.read_parquet(group_player_snapshots_parquet)
+    group_count = group_pd.shape[0]
+    group_unique = group_pd["player_id"].nunique()
+    leaderboard_pd = pd.read_parquet(leaderboard_player_snapshots_parquet)
+    leaderboard_count = leaderboard_pd.shape[0]
+    leaderboard_unique = leaderboard_pd["player_id"].nunique()
+    
+    combined = pd.concat([group_pd, leaderboard_pd], ignore_index=True)
+    combined_count = combined.shape[0]
+    combined_unique = combined["player_id"].nunique()
+    
+    elapsed_time = end_time - start_time
+    file_write_string = f"{time.strftime("%Y-%m-%d")}: Total time taken: {elapsed_time:.2f} seconds ; {elapsed_time/60:.2f} minutes. Total players looked up: {combined_count} with {combined_unique} unique players. Group players: {group_count} with {group_unique} unique. Leaderboard players: {leaderboard_count} with {leaderboard_unique} unique."
+    with open(os.path.join(project_paths.root_dir, "osrs_snapshot_runtimes.txt"), "a") as log_file:
+        log_file.write(file_write_string + "\n")
+    print(file_write_string)
+    
+    
+    
 
 if __name__ == "__main__":
     main()
