@@ -176,9 +176,6 @@ def main():
     with open(os.path.join(project_paths.root_dir, "osrs_snapshot_runtimes.txt"), "a") as log_file:
         log_file.write(file_write_string + "\n")
     print(file_write_string)
-    
-    
-    
 
 if __name__ == "__main__":
     main()

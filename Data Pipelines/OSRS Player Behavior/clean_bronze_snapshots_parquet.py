@@ -94,10 +94,10 @@ def main():
     for each_folder in all_snapshot_folders:
         if each_folder != '.DS_Store':
             print(f"Cleaning snapshot folder: {each_folder}")
-            full_folder_path = os.path.join(bronze_snapshot_parquet_folder_path, each_folder)
             new_parquet_path = os.path.join(silver_fact_table_folder_path, f"snapshot_fact_{each_folder}_private.parquet")
-            # only generate a fact table if it doesn't already exist
+            # only generate a fact table if it doesn't already existw
             if not os.path.exists(new_parquet_path):
+                full_folder_path = os.path.join(bronze_snapshot_parquet_folder_path, each_folder)
                 snapshot_fact_path = generate_snapshot_fact_table(full_folder_path, each_folder, all_player_dim, metric_dim, period_dim, new_parquet_path)
                 all_paths.append(snapshot_fact_path)
             else:
