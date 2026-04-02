@@ -3,5 +3,8 @@
 2026-03-25: Total time taken: 19613.06 seconds ; 326.88 minutes. Total players looked up: 17974 with 15579 unique players. Group players: 11562 with 11386 unique. Leaderboard players: 6412 with 4417 unique.
 2026-03-26: Total time taken: 17468.46 seconds ; 291.14 minutes. Total players looked up: 17974 with 15660 unique players. Group players: 11562 with 11475 unique. Leaderboard players: 6412 with 4409 unique.
 2026-03-27: Total time taken: 17304.56 seconds ; 288.41 minutes. Total players looked up: 17974 with 15644 unique players. Group players: 11562 with 11466 unique. Leaderboard players: 6412 with 4402 unique.
-2026-03-29: Total time taken: 17605.29 seconds ; 293.42 minutes. Total players looked up: 17974 with 15631 unique players. Group players: 11562 with 11460 unique. Leaderboard players: 6412 with 4395 unique.
+2026-03-28: Total time taken: 17605.29 seconds ; 293.42 minutes. Total players looked up: 17974 with 15631 unique players. Group players: 11562 with 11460 unique. Leaderboard players: 6412 with 4395 unique.
 2026-03-29: Total time taken: 17421.04 seconds ; 290.35 minutes. Total players looked up: 17974 with 15610 unique players. Group players: 11562 with 11449 unique. Leaderboard players: 6412 with 4384 unique.
+2026-03-30: Total time taken: 17425.40 seconds ; 290.42 minutes. Total players looked up: 17974 with 15580 unique players. Group players: 11562 with 11432 unique. Leaderboard players: 6412 with 4371 unique.
+2026-03-31: Total time taken: 19822.89 seconds ; 330.38 minutes. Total players looked up: 17974 with 15564 unique players. Group players: 11562 with 11424 unique. Leaderboard players: 6412 with 4363 unique.
+2026-04-01: Total time taken: 19426.59 seconds ; 323.78 minutes. Total players looked up: 17974 with 15551 unique players. Group players: 11562 with 11418 unique. Leaderboard players: 6412 with 4354 unique.
