@@ -198,16 +198,24 @@ def read_json_config(file_path: str, default_data: Dict = default_filters) -> Di
         data = default_data
     return data
 
-def make_wom_api_call(url: str, headers:Dict, params: Dict = None, delay_rate: float = 0.65) -> Dict:
+def make_wom_api_call(url: str, headers:Dict, params: Dict = None, delay_rate: float = 0.65, max_retries:int = 3) -> Dict:
     """
     Wrapper around requests.get with rate limiting.
     Delay must be >= .6 because maximum API rate is 100 requests per minute, which is 1 request every 0.6 seconds.
     """
-    response = requests.get(url, headers=headers, params=params)
-    time.sleep(delay_rate)
-
-    response.raise_for_status()
-    return response.json()
+    for attempt in range (max_retries):
+        try:
+            response = requests.get(url, headers=headers, params=params)
+            return response.json()
+        except requests.exceptions.RequestException as e:
+            if attempt == max_retries - 1:
+                raise
+            # Otherwise wait and retry
+            wait_time = 1 + attempt  # simple backoff: 1s, 2s, 3s
+            print(f"Retry {attempt+1}/{max_retries} for {url} after error: {e}")
+            time.sleep(wait_time)
+        finally:
+            time.sleep(delay_rate)
 
 def parse_dates(df, cols):
     '''Helper function to parse date columns from API into proper datetime format in pandas'''
