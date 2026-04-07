@@ -1,7 +1,5 @@
-[
-  {
-    "api_key": "YOUR_API_KEY",
-    "discord_username": "YOUR_DISCORD_NAME",
-    "request_delay": 0.65
-  }
-]
+{
+  "api_key": "YOUR_API_KEY",
+  "discord_username": "YOUR_DISCORD_NAME",
+  "request_delay": 0.65
+}
