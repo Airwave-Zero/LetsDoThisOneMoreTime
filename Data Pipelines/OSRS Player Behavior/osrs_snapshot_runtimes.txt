@@ -10,3 +10,4 @@
 2026-04-01: Total time taken: 19426.59 seconds ; 323.78 minutes. Total players looked up: 17974 with 15551 unique players. Group players: 11562 with 11418 unique. Leaderboard players: 6412 with 4354 unique.
 2026-04-03: Total time taken: 17624.50 seconds ; 293.74 minutes. Total players looked up: 17974 with 15531 unique players. Group players: 11562 with 11407 unique. Leaderboard players: 6412 with 4345 unique.
 2026-04-03: Total time taken: 18024.41 seconds ; 300.41 minutes. Total players looked up: 17974 with 15521 unique players. Group players: 11562 with 11403 unique. Leaderboard players: 6412 with 4339 unique.
+2026-04-07: Total time taken: 17306.89 seconds ; 288.45 minutes. Total players looked up: 17974 with 15464 unique players. Group players: 11562 with 11367 unique. Leaderboard players: 6412 with 4316 unique.
