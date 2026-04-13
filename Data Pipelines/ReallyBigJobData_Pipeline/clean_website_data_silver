@@ -1,0 +1,22 @@
+# This file is to take the raw bronze parquet website data and clean it into
+# dims and fact tables if necessary
+
+import pandas as pd
+
+def clean_website(df: pd.DataFrame) -> pd.DataFrame:
+    # Placeholder for cleaning logic. This could include:
+    # - Extracting job title, company, location, etc. from the HTML
+    # - Normalizing text (e.g., lowercasing, removing special characters)
+    # - Removing duplicates
+    # - Handling missing values
+    # For now, we will just return the original DataFrame.
+    return df
+
+def main():
+    df = pd.read_parquet("extracted_jobs.parquet")
+    cleaned_df = clean_website(df)
+    #load in parquet data
+    #clean it
+
+if __name__ == "__main__":
+    main()

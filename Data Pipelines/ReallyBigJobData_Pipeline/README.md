@@ -6,10 +6,8 @@ A large-scale job listing analytics project powered by public Common Crawl data,
 
 #### Technologies Used:
 * Docker for containerization
-* Airflow for orchestration
 * PySpark, Python for transformation, processing, ingestion, NLP
 * dbt for modular SQL transformation and lineage tracking
 * Parquet format for efficient storage
-* DuckDB for storage
+* DuckDB + BigQuery for storage
 * Power BI for visualizations
-

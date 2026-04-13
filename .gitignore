@@ -1,6 +1,8 @@
 ignore_folder/*
 airflow_docker/*
 **/__pycache__/
+snapshots_private/
+snapshots2_private/
 *_private.*
 *_secret.*
 *.pickle
