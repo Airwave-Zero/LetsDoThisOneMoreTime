@@ -1,8 +1,9 @@
 ignore_folder/*
 airflow_docker/*
 **/__pycache__/
-snapshots_private/
-snapshots2_private/
+snapshot_json_responses_private/
+snapshot_parquet_private/
+snapshot_visited_private/
 *_private.*
 *_secret.*
 *.pickle
@@ -28,6 +29,7 @@ Data Pipelines/Gmail_ETL/csv_data/account_balance_snapshots.csv
 Data Pipelines/ReallyBigJobData_Pipeline/airflow_docker/*
 !Data Pipelines/ReallyBigJobData_Pipeline/airflow_docker/dags
 !Data Pipelines/ReallyBigJobData_Pipeline/airflow_docker/logs
+
 Data Pipelines/.DS_Store
 Data Pipelines/OSRS Player Behavior/.DS_Store
 Data Pipelines/OSRS Player Behavior/csv_data/.DS_Store
