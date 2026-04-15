@@ -10,14 +10,16 @@ from threading import Semaphore
 from typing import Dict
 import re
 
-rate_limit_semaphore = Semaphore(5)  # Allow only 1 request at a time to respect API limits
+worker_amount = 6  # Number of threads to use for concurrent requests, adjust based on API limits and system capabilities
+semaphore_amount = 6
 
-years = ["2025"] # Format: ["year1", "year2", ... "yearN"], keep as 2026 for now because of size/scale
+rate_limit_semaphore = Semaphore(semaphore_amount)  # Allow only 1 request at a time to respect API limits
+
+years = ["2024"] # Format: ["year1", "year2", ... "yearN"]
 job_sites_with_regex = [
-    ("*.jobs.ashbyhq.com/*", re.compile(r"^https://jobs\.ashbyhq\.com/[^/]+/[^/?#]+")),
+    ("*.jobs.ashbyhq.com/*", re.compile(r"^https://jobs\.ashbyhq\.com/[^/]+/[^/?#]+")),    
     ("*.greenhouse.io/*", re.compile(r"^https://boards.greenhouse\.io/[^/]+/jobs/[^/?#]+")),
     ("*.jobs.lever.co/*", re.compile(r"^https://(?:[^/]+\.)?jobs\.lever\.co/[^?#]*")), # some have robots.txt
-    #("*.bamboohr.com/*", re.compile(r"^https://[^/]+\.bamboohr\.com/careers/[^/?#]*")), # not needed b/c too unique of domain names , plenty to sift from anyway
     ]
 
 def fetch(url, headers=None, stream=False, retries=3, request_delay=1, retry_delay=10, show_logs=True):

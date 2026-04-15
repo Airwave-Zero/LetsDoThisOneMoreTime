@@ -7,12 +7,11 @@ import logging
 import re
 import time
 from typing import List, Dict
-from unittest import skip
 import pandas as pd
 import os
 from warcio.archiveiterator import ArchiveIterator
 from bs4 import BeautifulSoup
-from utils.generic_util import fetch, determine_regex_pattern, job_sites_with_regex, years
+from utils.generic_util import fetch, determine_regex_pattern, job_sites_with_regex, years, worker_amount
 from utils import project_paths
 import datetime
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -56,6 +55,84 @@ def get_candidates_from_json_response(resp_text, proper_regex, candidate_url_set
         progress += 1
     return (candidates, candidate_url_set, len(candidates), file_length)
 
+def do_warc_processing(warc_candidates, parquet_path) -> List[Dict]:
+    '''This function processes all candidates by fetching the corresponding WARC file, extracting the HTML content, and then applying some basic extraction logic to extract the job description text from the HTML. 
+    We then save the results as a parquet file at the end. However, we are incorporating threads to significantly boost performance and process in parallel. . We also log progress as we go along so that we can track how many candidates we have processed and how many valid results we have gotten.'''
+
+    total = len(warc_candidates)
+    logging.info(f"Starting WARC processing for {total} candidates")
+
+    results = []
+    completed = 0
+    progress_increment = max(total // 10, 1)  # log progress every 10%
+    with ThreadPoolExecutor(max_workers=worker_amount) as executor:
+        futures = [executor.submit(process_single_candidate, c) for c in warc_candidates]
+        for future in as_completed(futures):
+            r = future.result()
+            if r:
+                results.append(r)
+            completed += 1
+            if completed % progress_increment == 0 or completed == total:
+                logging.info(f"Progress: {completed}/{total} ({completed/total:.1%})")
+
+    df = pd.DataFrame(results)
+    df.to_parquet(parquet_path, index=False)
+
+    logging.info(f"Finished processing {len(results)} valid results")
+    return results
+
+def process_single_candidate(warc_candidate):
+    ''' This function handles the processing of a single candidate record by fetching the corresponding WARC file, extracting the HTML content, and then applying some basic extraction logic to extract the job description text from the HTML. We return a dictionary with the extracted information for this candidate, or an empty dictionary if there was an error or if the candidate did not meet our criteria. This function is designed to be run in parallel across multiple candidates to boost performance, as opposed to processing all warc_candidates sequentially.'''
+
+    warc_url = f"https://data.commoncrawl.org/{warc_candidate['filename']}"
+    headers = {
+        "Range": f"bytes={warc_candidate['offset']}-{int(warc_candidate['offset']) + int(warc_candidate['length']) - 1}"
+    }
+    warc_obj = {}
+    try:
+        warc_resp = fetch(warc_url, headers=headers, stream=False, show_logs=False)
+        if warc_resp.status_code == 403:
+            logging.warning(f"Received 403 Forbidden for WARC URL: {warc_url}, skipping.")
+            return warc_obj
+        content = warc_resp.content
+        if not content:
+            logging.warning(f"No content in WARC response for {warc_candidate.get('url')}, skipping.")
+            return warc_obj
+        if not content.startswith(b"\x1f\x8b"):
+            logging.warning(f"WARC response for {warc_candidate.get('url')} does not appear to be gzip-compressed, skipping.")
+            return warc_obj
+        
+        buffered = io.BytesIO(content)
+        decompressed = gzip.GzipFile(fileobj=buffered)
+        for record in ArchiveIterator(decompressed):
+            html_bytes = record.content_stream().read()
+            try:
+                html = html_bytes.decode("utf-8", errors="ignore")
+            except Exception:
+                html = html_bytes.decode("latin-1", errors="ignore")
+            soup = BeautifulSoup(html, "lxml")
+            # 1. try structured data first
+            job_text = ""
+            ld_json = soup.find("script", type="application/ld+json")
+            if ld_json and "JobPosting" in ld_json.text:
+                job_text = ld_json.text  # parse JSON later if needed
+            # 2. fallback DOM extraction
+            if not job_text:
+                blocks = soup.find_all(["div", "section", "article"])
+                text_candidates = [
+                    b.get_text(" ", strip=True)
+                    for b in blocks
+                ]
+                job_text = max(text_candidates, key=len, default="")
+            warc_obj = {
+                "url": warc_candidate.get("url"),
+                "html": html,          # raw snapshot
+                "job_text": job_text,  # normalized extraction
+                "timestamp": warc_candidate.get("timestamp"),
+            }
+    except Exception:
+        logging.exception(f"Failed WARC processing: {warc_candidate.get('url')}")
+    return warc_obj
 
 ######################## MAIN FUNCTIONS ##################
 def get_snapshot_urls_to_visit() -> List[str]:
@@ -152,86 +229,6 @@ def visit_urls_and_process_immediately(index_urls: List[str]):
                 log_file.write(f"Finished WARC processing for index {idx}/{len(index_urls)}: {index_url} in {snapshot_processing_elapsed:.2f} seconds\n")
     print(f"Total candidates found across all indexes: {total_candidates_count}")
     # return all_warc_objects
-
-
-def do_warc_processing(warc_candidates, parquet_path) -> List[Dict]:
-    '''This function processes all candidates by fetching the corresponding WARC file, extracting the HTML content, and then applying some basic extraction logic to extract the job description text from the HTML. 
-    We then save the results as a parquet file at the end. However, we are incorporating threads to significantly boost performance and process in parallel. . We also log progress as we go along so that we can track how many candidates we have processed and how many valid results we have gotten.'''
-
-    total = len(warc_candidates)
-    logging.info(f"Starting WARC processing for {total} candidates")
-
-    results = []
-    completed = 0
-    progress_increment = max(total // 10, 1)  # log progress every 10%
-    with ThreadPoolExecutor(max_workers=5) as executor:
-        futures = [executor.submit(process_single_candidate, c) for c in warc_candidates]
-        for future in as_completed(futures):
-            r = future.result()
-            if r:
-                results.append(r)
-            completed += 1
-            if completed % progress_increment == 0 or completed == total:
-                logging.info(f"Progress: {completed}/{total} ({completed/total:.1%})")
-
-    df = pd.DataFrame(results)
-    df.to_parquet(parquet_path, index=False)
-
-    logging.info(f"Finished processing {len(results)} valid results")
-    return results
-
-def process_single_candidate(warc_candidate):
-    ''' This function handles the processing of a single candidate record by fetching the corresponding WARC file, extracting the HTML content, and then applying some basic extraction logic to extract the job description text from the HTML. We return a dictionary with the extracted information for this candidate, or an empty dictionary if there was an error or if the candidate did not meet our criteria. This function is designed to be run in parallel across multiple candidates to boost performance, as opposed to processing all warc_candidates sequentially.'''
-
-    warc_url = f"https://data.commoncrawl.org/{warc_candidate['filename']}"
-    headers = {
-        "Range": f"bytes={warc_candidate['offset']}-{int(warc_candidate['offset']) + int(warc_candidate['length']) - 1}"
-    }
-    warc_obj = {}
-    try:
-        warc_resp = fetch(warc_url, headers=headers, stream=False, show_logs=False)
-        if warc_resp.status_code == 403:
-            logging.warning(f"Received 403 Forbidden for WARC URL: {warc_url}, skipping.")
-            return warc_obj
-        content = warc_resp.content
-        if not content:
-            logging.warning(f"No content in WARC response for {warc_candidate.get('url')}, skipping.")
-            return warc_obj
-        if not content.startswith(b"\x1f\x8b"):
-            logging.warning(f"WARC response for {warc_candidate.get('url')} does not appear to be gzip-compressed, skipping.")
-            return warc_obj
-        
-        buffered = io.BytesIO(content)
-        decompressed = gzip.GzipFile(fileobj=buffered)
-        for record in ArchiveIterator(decompressed):
-            html_bytes = record.content_stream().read()
-            try:
-                html = html_bytes.decode("utf-8", errors="ignore")
-            except Exception:
-                html = html_bytes.decode("latin-1", errors="ignore")
-            soup = BeautifulSoup(html, "lxml")
-            # 1. try structured data first
-            job_text = ""
-            ld_json = soup.find("script", type="application/ld+json")
-            if ld_json and "JobPosting" in ld_json.text:
-                job_text = ld_json.text  # parse JSON later if needed
-            # 2. fallback DOM extraction
-            if not job_text:
-                blocks = soup.find_all(["div", "section", "article"])
-                text_candidates = [
-                    b.get_text(" ", strip=True)
-                    for b in blocks
-                ]
-                job_text = max(text_candidates, key=len, default="")
-            warc_obj = {
-                "url": warc_candidate.get("url"),
-                "html": html,          # raw snapshot
-                "job_text": job_text,  # normalized extraction
-                "timestamp": warc_candidate.get("timestamp"),
-            }
-    except Exception:
-        logging.exception(f"Failed WARC processing: {warc_candidate.get('url')}")
-    return warc_obj
 
 def main():
 

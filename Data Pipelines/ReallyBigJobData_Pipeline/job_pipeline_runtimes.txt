@@ -1,3 +1,9 @@
 2026-04-10: Total time taken: 1167.31 seconds ; 19.46 minutes.
 2026-04-11: Total time taken: 2199.86 seconds ; 36.66 minutes.
 2026-04-14: Total time taken for entire program: 39671.48 seconds ; 661.19 minutes.
+2026-04-14: Total time taken for entire program: 229.56 seconds ; 3.83 minutes.
+
+2026-04-15: Total time taken for entire program: 472.78 seconds ; 7.88 minutes.
+
+2026-04-15: Total time taken for entire program: 1873.55 seconds ; 31.23 minutes.
+
