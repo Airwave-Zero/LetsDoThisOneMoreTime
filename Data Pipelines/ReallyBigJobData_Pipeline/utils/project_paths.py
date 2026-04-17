@@ -14,3 +14,5 @@ cleaned_website_data_silver_dir = os.path.join(website_data_dir, "Cleaned_Websit
 snapshot_json_responses_dir = os.path.join(root_dir, "snapshot_json_responses_private")
 snapshot_visited_dir = os.path.join(root_dir, "snapshot_visited_private")
 snapshots_parquet_dir = os.path.join(root_dir, "snapshot_parquet_private")
+
+cleaned_parquet_dir = os.path.join(root_dir, "cleaned_parquet_private")

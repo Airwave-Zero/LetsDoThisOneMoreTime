@@ -1,6 +1,5 @@
 from __future__ import annotations
 import gzip
-from importlib.metadata import metadata
 import io
 import json
 import logging
@@ -238,7 +237,7 @@ def main():
     visit_urls_and_process_immediately(all_snapshot_urls) # this function technically returns nothing, but could if we wanted to
 
     full_program_elapsed_time = time.time() - full_program_runtime
-    file_write_string = f"{time.strftime("%Y-%m-%d")}: Total time taken for entire program: {full_program_elapsed_time:.2f} seconds ; {full_program_elapsed_time/60:.2f} minutes.\n"
+    file_write_string = f"{time.strftime("%Y-%m-%d")}: Total time taken for entire program (bronze extraction): {full_program_elapsed_time:.2f} seconds ; {full_program_elapsed_time/60:.2f} minutes.\n"
     with open(os.path.join(project_paths.root_dir, "job_pipeline_runtimes.txt"), "a") as output_file:
         output_file.write(file_write_string + "\n")
 
