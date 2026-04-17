@@ -1,9 +1,10 @@
-ignore_folder/*
+ignore_folder/
 airflow_docker/*
 **/__pycache__/
 snapshot_json_responses_private/
 snapshot_parquet_private/
 snapshot_visited_private/
+cleaned_parquet_private/
 *_private.*
 *_secret.*
 *.pickle
