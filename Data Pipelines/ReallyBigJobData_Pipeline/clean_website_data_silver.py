@@ -20,11 +20,17 @@ snapshots_cleaned_parquet_dir = project_paths.cleaned_parquet_dir
 
 ########### HELPER FUNCTIONS ############
 def extract_job_id(url):
+    # Example URLs to parse: https://boards.greenhouse.io/10xgenomics/jobs/5361076
+    # Example 2: https://boards.greenhouse.io/10xgenomics/jobs/5515988?gh_jid=5515988&utm_source=Venrock+job+board&utm_medium=getro.com&gh_src=Venrock+job+board
     if not url: 
         return None
     parts = url.strip('/').split('/')
-    if len(parts) >= 2:    
-        return parts[-1] 
+    if len(parts) >= 2:
+        # drop query parameters if they exist, otherwise return the last part as is
+        if '?' in parts[-1]:
+             return parts[-1].split('?')[0]
+        else:
+            return parts[-1] 
     return None
 
 def extract_job_source(url):
@@ -57,6 +63,7 @@ def extract_all_info(df: pd.DataFrame) -> List[Dict]:
         job_id = extract_job_id(url)
         company = extract_company(url)
         job_source = extract_job_source(url)
+        raw_html = row.get('html')
         description = row.get('job_text')
         timestamp = row.get('timestamp')
         
@@ -64,6 +71,7 @@ def extract_all_info(df: pd.DataFrame) -> List[Dict]:
             'job_id': job_id,
             'company_name': company,
             'job_source': job_source,
+            'raw_html': raw_html,
             'description': description,
             'timestamp': timestamp,
             'url': url,
@@ -76,17 +84,20 @@ def process_all_parquets():
     clean_parquet_file_list = []
     for file in os.listdir(snapshots_parquet_dir):
         if file.endswith(".parquet"):
-            cleaned_file_name = os.path.join(snapshots_cleaned_parquet_dir, f"cleaned_{file}.parquet")
             print(f"Processing {file}...")
             curr_file_df = pd.read_parquet(os.path.join(snapshots_parquet_dir, file))
-            # get all job info
+            if curr_file_df.empty:
+                logging.warning(f"{file} is empty. Skipping.")
+                continue
             all_job_info = extract_all_info(curr_file_df) # list of objects
             try:
+                cleaned_file_name = os.path.join(snapshots_cleaned_parquet_dir, f"cleaned_{file}.parquet")
                 cleaned_silver_df = pd.DataFrame(all_job_info)
                 cleaned_silver_df.to_parquet(cleaned_file_name)
                 clean_parquet_file_list.append(cleaned_file_name)
             except Exception as e:
                 logging.error(f"Error writing cleaned parquet for {file}: {e}")
+            # break # for testing
     return clean_parquet_file_list
 
 ########### MAIN FUNCTIONS ############
