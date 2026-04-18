@@ -41,7 +41,8 @@ def lookup_player_batch_set_size(player_batch: List[str], headers: Dict, script_
     progress_amount = max(1, len(player_batch) // progress_amount) # set progress print to every 5% of the batch, but at least every 1 player for small batches
     for player_username in player_batch:
         if (idx+1) % progress_amount == 0:
-            print(f"Batch Progress: {idx+1}/{len(player_batch)} ({(idx+1)/len(player_batch)*100:.1f}%)")
+            curr_time = time.time()
+            print(f"[{curr_time}] Batch Progress: {idx+1}/{len(player_batch)} ({(idx+1)/len(player_batch)*100:.1f}%)")
         current_player = lookup_single_player(player_username, headers, script_config)
         player_list.append(current_player)
         idx += 1
