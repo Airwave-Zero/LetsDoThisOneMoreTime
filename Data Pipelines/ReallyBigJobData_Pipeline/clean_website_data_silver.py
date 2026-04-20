@@ -84,10 +84,10 @@ def extract_all_info(df: pd.DataFrame, cleaned_file_name:str) -> List[Dict]:
 
 def process_one_parquet(file):
     curr_file_df = pd.read_parquet(os.path.join(snapshots_parquet_dir, file))
-    cleaned_file_name = os.path.join(snapshots_cleaned_parquet_dir, f"cleaned_{file}.parquet")
+    cleaned_file_name = os.path.join(snapshots_cleaned_parquet_dir, f"cleaned_{file}")
     if curr_file_df.empty:
         logging.warning(f"{file} is empty. Skipping.")
-        cleaned_file_name = os.path.join(snapshots_cleaned_parquet_dir, f"empty_{file}.parquet")
+        cleaned_file_name = os.path.join(snapshots_cleaned_parquet_dir, f"empty_{file}")
     if os.path.exists(cleaned_file_name):
         logging.info(f"Cleaned file for {file} already exists. Skipping.")
         return cleaned_file_name
@@ -97,7 +97,7 @@ def process_one_parquet(file):
         cleaned_silver_df.to_parquet(cleaned_file_name)
     except Exception as e:
         logging.error(f"Error writing cleaned parquet for {file}: {e}")
-        cleaned_file_name = os.path.join(snapshots_cleaned_parquet_dir, f"error_{file}.parquet")
+        cleaned_file_name = os.path.join(snapshots_cleaned_parquet_dir, f"error_{file}")
     return cleaned_file_name
     
 
