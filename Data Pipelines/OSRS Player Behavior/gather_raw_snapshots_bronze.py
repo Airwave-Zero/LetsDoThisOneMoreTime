@@ -41,7 +41,7 @@ def lookup_player_batch_set_size(player_batch: List[str], headers: Dict, script_
     progress_amount = max(1, len(player_batch) // progress_amount) # set progress print to every 5% of the batch, but at least every 1 player for small batches
     for player_username in player_batch:
         if (idx+1) % progress_amount == 0:
-            curr_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+            curr_time = time.strftime("%Y-%m-%d %H:%M:%S")
             print(f"[{curr_time}] Batch Progress: {idx+1}/{len(player_batch)} ({(idx+1)/len(player_batch)*100:.1f}%)")
         current_player = lookup_single_player(player_username, headers, script_config)
         player_list.append(current_player)
@@ -145,7 +145,7 @@ def main():
     }
     # set a timer to see how long this program runs for
     start_time = time.time()
-    print(f"Start time: {time.strftime('%Y-%m-%d %H:%M:%S')}")
+    print(f"Start time: {time.strftime('%Y-%m-%d')} {time.strftime('%H:%M:%S')}")
     # first file in folder is groups
 
     group_player_df = pd.read_parquet(group_player_parquet_path)
@@ -173,7 +173,7 @@ def main():
     combined_unique = combined["player_id"].nunique()
     
     elapsed_time = end_time - start_time
-    file_write_string = f"{time.strftime("%Y-%m-%d: %H:%M:%S")}: Total time taken: {elapsed_time:.2f} seconds ; {elapsed_time/60:.2f} minutes. Total players looked up: {combined_count} with {combined_unique} unique players. Group players: {group_count} with {group_unique} unique. Leaderboard players: {leaderboard_count} with {leaderboard_unique} unique."
+    file_write_string = f"{time.strftime("%Y-%m-%d")}: Total time taken: {elapsed_time:.2f} seconds ; {elapsed_time/60:.2f} minutes. Total players looked up: {combined_count} with {combined_unique} unique players. Group players: {group_count} with {group_unique} unique. Leaderboard players: {leaderboard_count} with {leaderboard_unique} unique."
     with open(os.path.join(project_paths.root_dir, "osrs_snapshot_runtimes.txt"), "a") as log_file:
         log_file.write(file_write_string + "\n")
     print(file_write_string)
