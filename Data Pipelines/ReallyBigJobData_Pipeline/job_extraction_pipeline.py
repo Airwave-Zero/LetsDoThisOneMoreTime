@@ -415,30 +415,40 @@ def process_parquet_file(
 
 def batch_process_parquets(cleaned_parquet_start_dir: str, output_folder_dir:str):
     os.makedirs(output_folder_dir, exist_ok=True)
+    master_parquet_list = []
     for year_folder in os.listdir(cleaned_parquet_start_dir):
+        yearly_list = []
         if year_folder == "empty":
             continue
         year_path = os.path.join(cleaned_parquet_start_dir, year_folder)
         output_year_path = os.path.join(output_folder_dir, year_folder)
-        os.makedirs(output_year_path, exist_ok=True)
+        #os.makedirs(output_year_path, exist_ok=True)
         if not os.path.isdir(year_path):
             continue
         for job_board_folder in os.listdir(year_path):
             job_board_path = os.path.join(year_path, job_board_folder)
             output_board_path = os.path.join(output_year_path, job_board_folder)
-            os.makedirs(output_board_path, exist_ok=True)
-            combined_output_path_dir = os.path.join(output_board_path, "combined")
+            #os.makedirs(output_board_path, exist_ok=True)
+            #combined_output_path_dir = os.path.join(output_board_path, "combined")
             raw_output_path_dir = os.path.join(output_board_path, "raw")
-            os.makedirs(combined_output_path_dir, exist_ok = True)
-            os.makedirs(raw_output_path_dir, exist_ok = True)
+            #os.makedirs(combined_output_path_dir, exist_ok = True)
+            #os.makedirs(raw_output_path_dir, exist_ok = True)
             if not os.path.isdir(job_board_path):
                 continue
             combined_silver_path = os.path.join(job_board_path, "combined")
             for each_parquet_file in os.listdir(combined_silver_path):
                 gold_layer_parquet_output_path = os.path.join(raw_output_path_dir, each_parquet_file.replace('combined', 'gold_layer'))
                 full_silver_filepath = os.path.join(combined_silver_path, each_parquet_file)
-                processed_parquet_file_tuple = process_parquet_file(full_silver_filepath)
-                processed_parquet_file_tuple.to_parquet(gold_layer_parquet_output_path)
+                processed_parquet_file = process_parquet_file(full_silver_filepath)
+                yearly_list.append(processed_parquet_file)
+                #processed_parquet_file.to_parquet(gold_layer_parquet_output_path)
+        yearly_df = pd.concat(yearly_list, ignore_index=True)
+        yearly_output_path = os.path.join(output_folder_dir, f"{year_folder}_all_combined_job_desc.parquet")
+        yearly_df.to_parquet(yearly_output_path)
+        master_parquet_list.extend(yearly_list)
+    master_df = pd.concat(master_parquet_list, ignore_index=True)
+    master_output_path = os.path.join( output_folder_dir, "all_combined_job_desc.parquet")
+    master_df.to_parquet(master_output_path)  
                 
 if __name__ == '__main__':
     
