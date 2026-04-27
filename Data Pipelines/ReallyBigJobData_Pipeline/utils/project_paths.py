@@ -16,3 +16,5 @@ snapshot_visited_dir = os.path.join(root_dir, "snapshot_visited_private")
 snapshots_parquet_dir = os.path.join(root_dir, "snapshot_parquet_private")
 
 cleaned_parquet_dir = os.path.join(root_dir, "cleaned_parquet_private")
+
+gold_extracted_parquet_dir = os.path.join(root_dir, "gold_layer_extracted")

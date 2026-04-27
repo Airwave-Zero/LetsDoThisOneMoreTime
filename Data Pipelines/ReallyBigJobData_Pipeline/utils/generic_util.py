@@ -22,6 +22,77 @@ job_sites_with_regex = [
     ("*.jobs.lever.co/*", re.compile(r"^https://(?:[^/]+\.)?jobs\.lever\.co/[^?#]*")), # some have robots.txt
     ]
 
+TECHNICAL_JOB_TITLE_KEYWORDS = {
+    'engineer', 'developer', 'scientist', 'analyst', 'manager',
+    'architect', 'designer', 'consultant', 'specialist', 'coordinator',
+    'lead', 'senior', 'junior', 'principal', 'director'
+}
+
+# should break this down by domain / skillset e.g. backend, frontend, etc.
+SOFTWARE_KEYWORDS = {
+    'python', 'java', 'javascript', 'typescript', 'sql', 'r',
+    'golang', 'rust', 'c++', 'c#', 'php', 'ruby', 'swift',
+    'react', 'angular', 'vue', 'node', 'django', 'flask',
+    'aws', 'gcp', 'azure', 'kubernetes', 'docker',
+    'tensorflow', 'pytorch', 'scikit-learn', 'pandas', 'numpy',
+    'git', 'ci/cd', 'jenkins', 'gitlab', 'github',
+    'machine learning', 'deep learning', 'nlp', 'computer vision',
+    'data analysis', 'statistics', 'etl', 'spark', 'hadoop',
+    'agile', 'scrum', 'jira', 'linux', 'windows', 'macos'
+}
+
+SECTION_PATTERNS = {
+    "benefits": [
+        "benefits", "what we offer", "perks"
+    ],
+    "overview": [
+        "about the role", "role overview", "about this role"
+    ],
+    "preferred_qualifications": [
+        "preferred", "nice to have", "bonus", "preferred qualifications"
+    ],
+    "requirements": [
+        "requirements", "who you are", "what we're looking for", "what you need to succeed",
+        "minimum requirements", "qualifications", "skills required", "required"
+    ],
+    "responsibilities": [
+        "responsibilities", "what you will do", "what you'll do"
+    ]
+}
+
+SENIORITY_LEVEL_PATTERNS = {
+    'entry-level': r'entry[- ]level|junior|intern|graduate',
+    'mid-level': r'mid[- ]level|mid\s*career',
+    'senior': r'senior|lead|principal|manager',
+    'executive': r'director|vp|chief|cto|ceo|cfo',    
+}
+
+JOB_TYPE_PATTERNS = {
+    'full-time': r'full[- ]time',
+    'part-time': r'part[- ]time',
+    'contract': r'contract(?:or)?|contracted',
+    'temporary': r'temporary|temp\b',
+    'internship': r'internship|intern',
+}
+# Exclude common words, used to know what to skip over when counting important keywords in job descriptions
+JOB_COMMON_WORDS = {
+    'the', 'that', 'what', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for',
+    'of', 'with', 'is', 'are', 'be', 'been', 'being', 'will', 'would',
+    'could', 'should', 'may', 'might', 'can', 'must', 'you', 'we', 'i',
+    'job', 'position', 'role', 'we', 'our', 'your', 'company', 'team'
+}
+
+def clean_text(text):
+    return re.sub(r"\s+", " ", text).strip()
+def classify_section(text):
+    t = text.lower()
+    for section, patterns in SECTION_PATTERNS.items():
+        for p in patterns:
+            if p in t:
+                return section
+    return None
+
+
 def fetch(url, headers=None, stream=False, retries=3, request_delay=1, retry_delay=10, show_logs=True):
     # Simple URL fetch request, allow multiple retries with long waits due to 
     # commoncrawl API being slow
