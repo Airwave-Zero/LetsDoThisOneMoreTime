@@ -136,7 +136,7 @@ def combine_by_month(folder_path, output_folder_name="by_month"):
         
         if dfs:
             combined_df = pd.concat(dfs, ignore_index=True)
-            output_file = os.path.join(output_path, f"month_{year_month}.parquet")
+            output_file = os.path.join(output_path, f"month_{year_month}_private.parquet")
             write_df_to_parquet(combined_df, output_file)
             combined_month_files.append(output_file)
     
@@ -156,7 +156,7 @@ def combine_parquets_from_folder(folder_path, output_folder_name="combined", tar
     os.makedirs(gold_parquet_fact_tables_path, exist_ok=True)
     
     # Step 1: Combine by month
-    month_combined_folder, month_files = combine_by_month(folder_path, output_folder_name=gold_parquet_by_month_path)
+    month_combined_folder, month_files = combine_by_month(folder_path, gold_parquet_by_month_path)
     
     # Step 2: Chunk the month-combined files separately per month
     output_base_path = os.path.join(folder_path, gold_parquet_combined_path)
@@ -261,7 +261,7 @@ def process_and_chunk_parquets(folder_path, output_path, year_month, target_mb=3
             if current_rows >= rows_per_file:
                 final_df = pd.concat(buffer_chunks, ignore_index=True)
 
-                output_file = os.path.join(output_path, f"combined_{year}_{month}_part{part_num}.parquet")
+                output_file = os.path.join(output_path, f"combined_{year}_{month}_part{part_num}_private.parquet")
 
                 write_df_to_parquet(final_df, output_file)
 
@@ -274,7 +274,7 @@ def process_and_chunk_parquets(folder_path, output_path, year_month, target_mb=3
     if buffer_chunks:
         final_df = pd.concat(buffer_chunks, ignore_index=True)
 
-        output_file = os.path.join(output_path, f"combined_{year}_{month}_part{part_num}.parquet")
+        output_file = os.path.join(output_path, f"combined_{year}_{month}_part{part_num}_private.parquet")
         write_df_to_parquet(final_df, output_file)
 
 def create_folder_partitions(start_dir):
