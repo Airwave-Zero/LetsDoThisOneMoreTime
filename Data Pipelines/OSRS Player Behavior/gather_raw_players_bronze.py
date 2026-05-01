@@ -213,8 +213,8 @@ def main():
     write_group_players_to_parquet(group_players, bronze_group_player_parquet_path, compression="snappy")
 
     # ============== Dataset 2: Leaderboard Players ==============
-    #all_leaderboard_players = generate_all_leaderboard_players(bronze_all_leaderboard_player_parquet_path, wom_headers, account_filter_class)
-    #write_leaderboard_data_to_parquet(all_leaderboard_players, bronze_all_leaderboard_player_parquet_path, compression="snappy", dropNames=False) # dropNames because we don't need username/display_name for leaderboard players, and it makes the parquet writing faster since there are a lot of players
+    all_leaderboard_players = generate_all_leaderboard_players(bronze_all_leaderboard_player_parquet_path, wom_headers, account_filter_class)
+    write_leaderboard_data_to_parquet(all_leaderboard_players, bronze_all_leaderboard_player_parquet_path, compression="snappy", dropNames=False) # dropNames because we don't need username/display_name for leaderboard players, and it makes the parquet writing faster since there are a lot of players
 
  
 if __name__ == "__main__":

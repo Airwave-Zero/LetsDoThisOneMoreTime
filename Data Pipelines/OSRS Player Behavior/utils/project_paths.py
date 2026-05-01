@@ -21,3 +21,8 @@ silver_all_player_dim_path = os.path.join(silver_dims_folder_path, "all_player_d
 silver_metric_dim_path = os.path.join(silver_dims_folder_path, "metric_dim.parquet")
 silver_period_dim_path = os.path.join(silver_dims_folder_path, "period_dim.parquet")
 silver_group_dim_path = os.path.join(silver_dims_folder_path, "group_dim.parquet")
+
+gold_parquet_folder_path = os.path.join(parquet_folder_path, "parquet_gold")
+gold_parquet_fact_tables_path = os.path.join(gold_parquet_folder_path, "fact_tables")
+gold_parquet_by_month_path = os.path.join(gold_parquet_fact_tables_path, "by_month")
+gold_parquet_combined_path = os.path.join(gold_parquet_fact_tables_path, "combined")
