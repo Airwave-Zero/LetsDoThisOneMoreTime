@@ -277,31 +277,8 @@ def process_and_chunk_parquets(folder_path, output_path, year_month, target_mb=3
         output_file = os.path.join(output_path, f"combined_{year}_{month}_part{part_num}_private.parquet")
         write_df_to_parquet(final_df, output_file)
 
-def create_folder_partitions(start_dir):
-    '''
-    for each file in the folder, get the snapshot information from the file name, and then create a nested folder structure based on the year and month (if it doesn't already exist)
-    '''
-    for each_file in os.listdir(start_dir):
-        file_path = os.path.join(start_dir, each_file)
-        if os.path.isfile(file_path) and each_file.endswith(".parquet"):
-            snapshot_info = get_snapshot_info_from_name(each_file)
-            if snapshot_info:
-                year, month, year_month = snapshot_info
-                new_folder_path = os.path.join(start_dir, year, month)
-                os.makedirs(new_folder_path, exist_ok=True)
-                new_file_path = os.path.join(new_folder_path, each_file)
-            else:
-                os.makedirs(os.path.join(start_dir, "other"), exist_ok=True)
-                new_file_path = os.path.join(start_dir, "other", each_file)
-            if not os.path.exists(new_file_path):
-                os.rename(file_path, new_file_path)
-                logging.info(f"Moved {each_file} to {new_folder_path}")
-            else:
-                logging.warning(f"File already exists at destination: {new_file_path}. Skipping move for {each_file}.")
-             
 def main():
     #test_fact_tables_folder = r"/Users/airwavezero/Desktop/coding/LetsDoThisOneMoreTime/Data Pipelines/OSRS Player Behavior/legacy/fact_tables"
-    
     combine_parquets_from_folder(snapshots_fact_tables_dir)
 
 if __name__ == "__main__":
