@@ -4,6 +4,7 @@ import requests
 from typing import Dict
 from dataclasses import dataclass
 import json
+import math
 from utils import project_paths
 
 default_filters = { 
@@ -24,6 +25,7 @@ default_filters = {
     "smithing",
     "mining",
     "herblore",
+    "fletching",
     "agility",
     "thieving",
     "slayer",
@@ -223,3 +225,48 @@ def parse_dates(df, cols):
         if c in df.columns:
             df[c] = pd.to_datetime(df[c], utc=True, errors="coerce")
     return df
+
+
+# Precompute XP thresholds up to level 120
+def calculate_level_from_xp(xp: int, levelcap:bool = False) -> int:
+    points = 0
+    for level in range(1, 121):  # RuneScape levels go 1–99, but many players go past that up  to 120 
+        points += math.floor(level + 300 * 2 ** (level / 7.0))
+        xp_for_level = math.floor(points / 4)
+
+        if xp < xp_for_level:
+            if level >= 99 and levelcap:
+                # return 99 if we actually care about only 99, because this affects combat level calculations if >99
+                return 99
+            return level # to show the actual level achieved before next threshhold
+    return 120  # max level
+
+def combat_level_from_xp(attack_xp, strength_xp, defence_xp, hitpoints_xp, prayer_xp, ranged_xp, magic_xp):
+    # Convert XP → levels
+    attack = calculate_level_from_xp(attack_xp, levelcap=True)
+    strength = calculate_level_from_xp(strength_xp, levelcap=True)
+    defence = calculate_level_from_xp(defence_xp, levelcap=True)
+    hitpoints = calculate_level_from_xp(hitpoints_xp, levelcap=True)
+    prayer = calculate_level_from_xp(prayer_xp, levelcap=True)
+    ranged = calculate_level_from_xp(ranged_xp, levelcap=True)
+    magic = calculate_level_from_xp(magic_xp, levelcap=True)
+
+    # Base combat level
+    base = 0.25 * (defence + hitpoints + math.floor(prayer / 2))
+
+    # Style calculations
+    melee = 0.325 * (attack + strength)
+    ranged_calc = 0.325 * math.floor(ranged * 1.5)
+    mage_calc = 0.325 * math.floor(magic * 1.5)
+
+    # Final combat level
+    combat = math.floor(base + max(melee, ranged_calc, mage_calc))
+
+    if combat >= 126:
+        return 126 # max possible level anyway
+    
+    return combat
+
+def check_metric_has_level(metric_name:str) -> bool:
+    # if its a skill, it will have a level; everything else is a killcount/completion amount, do not calculate
+    return metric_name in default_filters['skill_names'] if metric_name != 'overall' else False

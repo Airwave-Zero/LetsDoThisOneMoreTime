@@ -2,7 +2,7 @@
 import os
 import pandas as pd
 from utils import project_paths
-from utils.generic_util import parse_dates
+from utils.generic_util import parse_dates, calculate_level_from_xp, check_metric_has_level
 from typing import List,Dict
 
 bronze_snapshot_parquet_folder_path = project_paths.bronze_snapshot_parquet_folder_path
@@ -11,6 +11,15 @@ silver_fact_table_folder_path = project_paths.silver_fact_table_folder_path
 silver_all_player_dim_path = project_paths.silver_all_player_dim_path
 silver_metric_dim_path = project_paths.silver_metric_dim_path
 silver_period_dim_path = project_paths.silver_period_dim_path
+
+def get_metric_level(metric_obj:Dict):
+    if check_metric_has_level(metric_obj['metric']):
+        if metric_obj['level'] >= 99:
+            return calculate_level_from_xp(metric_obj['experience'])
+        else:
+            return metric_obj['level']
+    return None
+    #calculate_level_from_xp(nested_metric_obj[metric_type]) if check_metric_has_level(metric) else None,
 
 def flatten_dict(player, data_category:str) -> List[Dict]:
     '''This function takes in a row of the player dataframe and unpacks/flattens the nested json for one of the data categories (skills, bosses, or activities) into a long format table with other necessary things. Returns a list of dicts that all correspond to one player and can be converted to a dataframe.'''
@@ -34,22 +43,24 @@ def flatten_dict(player, data_category:str) -> List[Dict]:
             "rank": None,
             "data_category_type": player["data_category_type"],
             "data_category_name": player["data_category_name"],
+            "level": None,
             "error": player["error"]})
     else:
-        for thing in player[data_category]:
-            nested_metric_obj = player[data_category][thing]
+        for metric in player[data_category]:
+            nested_metric_obj = player[data_category][metric]
             flattened_player_rows.append({
                 "snapshot_ts": player["created_at"],
                 "player_id": player["player_id"],
                 "username": player["username"],
                 "display_name": player["display_name"],
-                "metric": thing,
+                "metric": metric,
                 "value": nested_metric_obj[metric_type],
                 "rank": nested_metric_obj["rank"],
                 "data_category_type": player["data_category_type"],
                 "data_category_name": player["data_category_name"],
                 # completely drop level since only skills have it and it's easy to just get from the metric_dim if needed, and it will save a lot of space and performance on the fact table
-                # "level": nested_metric_object["level"]
+                # re-add levels, and calculate 'true' level early on to save downstream gold time
+                "level": get_metric_level(nested_metric_obj),
                 "error": player["error"]
             })
     return flattened_player_rows # a list where each row is one stat/metric for the player, i.e. only one player's data is returned from this function but its just in long format
@@ -60,8 +71,8 @@ def flatten_dataframe(file_dataframe:Dict) -> List[Dict]:
     for _, player in file_dataframe.iterrows():
         for data_category in ["skills", "bosses", "activities"]:
             # print(f"Flattening data category: {data_category}...")
-            thing = flatten_dict(player, data_category)
-            all_flattened_rows_from_df.extend(thing)
+            curr_flattened = flatten_dict(player, data_category)
+            all_flattened_rows_from_df.extend(curr_flattened)
     return all_flattened_rows_from_df
 
 def generate_snapshot_fact_table(snapshot_file_path:str, snapshot_date:str, player_dim:pd.DataFrame, metric_dim:pd.DataFrame, period_dim: pd.DataFrame, final_parquet_path:str) -> str:
