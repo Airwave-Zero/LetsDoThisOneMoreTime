@@ -18,22 +18,32 @@ logging.basicConfig(
     format="%(asctime)s %(levelname)s %(message)s"
 )
 
-# Column name mappings
-COLUMN_MAPPING = {
-    'timestamp': 'snapshot_ts',
-    'player': 'player_id',
-    'skill': 'data_category_name',
-}
-
 ############### HELPER FUNCTIONS ###############
 
 def add_calculated_levels(df):
-    # Only operate on relevant rows
-    mask = df['metric'].apply(check_metric_has_level)
-
-    # Convert XP → level in a vectorized way
-    df.loc[mask, 'level'] = df.loc[mask, 'value'].astype(int).apply(calculate_level_from_xp)
-
+    '''
+    Add level calculations for each row in the dataframe (vectorized).
+    For skills (where check_metric_has_level is True), calculate level from XP value.
+    '''
+    logging.info("Calculating levels from XP values...")
+    
+    df = df.copy()
+    
+    # Create mask for skills only
+    if 'metric' in df.columns:
+        skill_mask = df['metric'].isin(default_filters['skill_names'])
+        
+        # Vectorize the level calculation using np.vectorize
+        calculate_level_vec = np.vectorize(calculate_level_from_xp)
+        
+        # Initialize level column
+        df['level'] = None
+        
+        # Apply vectorized calculation only to skills
+        df.loc[skill_mask, 'level'] = calculate_level_vec(
+            df.loc[skill_mask, 'value'].astype(int).values
+        )
+    
     return df
 
 def find_parquet_files(base_directory):
@@ -83,99 +93,105 @@ def load_and_concatenate_parquets(parquet_files):
 
 def extract_player_level_aggregates(df):
     '''
-    Extract: Player-Level Aggregates (Core Gold Table)
-    Grain: 1 row per player (latest snapshot assumed)
-    
-    Derived fields:
-    - total_xp: sum of all skill XP
-    - avg_level: mean level across skills
-    - maxed_skills_count: count of skills at 99+ (assuming maxed at 99)
-    - top_skill: skill with highest XP
-    - weakest_skill: skill with lowest XP
-    - top_activity: activity with highest #
-    - weakest_activity: acitivty with lowest #
-    - overall_rank: player's overall rank (if available)
+    Extract: Player-Level Aggregates (Core Gold Table) - Vectorized
+    Grain: 1 row per player
     '''
     logging.info("Extracting Player-Level Aggregates...")
     
-    # Validate required columns
-    required_cols = ['player_id', 'value', 'data_category_name']
+    required_cols = ['player_id', 'value', 'metric']
     if not all(col in df.columns for col in required_cols):
         logging.warning(f"Missing required columns. Available: {df.columns.tolist()}")
         return pd.DataFrame()
     
-    aggregates = []
-    df = df[df['player_id'].notna()]
-    df = df[df["metric"] != "overall"] # drop overall rows b/c they mess with data as its already an aggregation
-
-    for player_id in df['player_id'].unique():
-        player_data = df[df['player_id'] == player_id]
-        if player_data.empty:
-            continue
-        first_row = player_data.iloc[0]
-        total_xp = player_data['value'].sum()
-        
-        # Get average level and maxed count from calculated levels
-        if 'level' in df.columns:
-            level_data = player_data[player_data['level'].notna()]
-            avg_level = level_data['level'].mean() if not level_data.empty else 0
-            maxed_count = len(level_data[level_data['level'] >= 99])
-            rank_data = player_data[player_data['rank'].notna()]
-            avg_rank = rank_data['rank'].mean() if not rank_data.empty else 0
-        else:
-            avg_level = 0
-            maxed_count = 0
-            avg_rank = 0
-        
-        # Find top and weakest skills
-
-        # Only operate on relevant rows
-        mask = df['metric'].apply(check_metric_has_level)
-        # Convert XP → level in a vectorized way
-        #df.loc[mask, 'level'] = df.loc[mask, 'value'].astype(int).apply(calculate_level_from_xp)
-        top_skill = 'unknown'
-        weakest_skill = 'unknown'
-        top_activity = 'unknown'
-        weakest_activity = 'unknown'
-
-        if not player_data.empty:
-            player_data_skills = player_data.loc[mask, 'value']
-            if not player_data_skills.empty:
-                top_skill_idx = player_data_skills.idxmax()
-                weakest_skill_idx = player_data_skills.idxmin()
-                top_skill = player_data.loc[top_skill_idx, 'metric']
-                weakest_skill = player_data.loc[weakest_skill_idx, 'metric']
-
-            player_data_activities = player_data.loc[~mask, 'value']
-            if not player_data_activities.empty:
-                top_activity_idx = player_data_activities.idxmax()
-                weakest_activity_idx = player_data_activities.idxmin()
-                top_activity = player_data.loc[top_activity_idx, 'metric']
-                weakest_activity = player_data.loc[weakest_activity_idx, 'metric']
-        
-        agg_row = {
-            'player_id': player_id,
-            'username': first_row['username'] if 'username' in df.columns else 'unknown',
-            'display_name': first_row['display_name'] if 'display_name' in df.columns else 'unknown',
-            'total_xp': total_xp,
-            'avg_level': avg_level,
-            'maxed_skills_count': maxed_count,
-            'top_skill': top_skill,
-            'weakest_skill': weakest_skill,
-            'top_activity': top_activity,
-            'weakest_activity': weakest_activity,
-            'overall_rank': avg_rank,
-            #'snapshot_date': first_row['snapshot_ts'] if 'snapshot_ts' in df.columns else None
-        }
-        #print(agg_row)
-        aggregates.append(agg_row)
+    df = df[df['player_id'].notna()].copy()
+    df = df[df["metric"] != "overall"]
     
-    result_df = pd.DataFrame(aggregates)
+    # Vectorized aggregations using groupby
+    agg_dict = {
+        'value': 'sum',
+        'username': 'first',
+        'display_name': 'first',
+        'rank': 'mean'
+    }
+    
+    result_df = df.groupby('player_id').agg(agg_dict).reset_index()
+    result_df.rename(columns={'value': 'total_xp', 'rank': 'overall_rank'}, inplace=True)
+    
+
+    if 'level' in df.columns:
+        level_df = df[df['level'].notna()].copy()
+
+        # Average level per player
+        avg_level_df = (
+            level_df.groupby('player_id')['level']
+            .mean()
+            .reset_index(name='avg_level')
+        )
+
+        # Count unique skills maxed (level >= 99) per player
+        maxed_skills_df = (
+            level_df[level_df['level'] >= 99]
+            .groupby('player_id')['metric']
+            .nunique()
+            .reset_index(name='maxed_skills_count')
+        )
+    # Merge stats
+        level_stats = avg_level_df.merge(maxed_skills_df, on='player_id', how='left')
+        level_stats['maxed_skills_count'] = level_stats['maxed_skills_count'].fillna(0)
+
+        result_df = result_df.merge(level_stats, on='player_id', how='left')
+        result_df[['avg_level', 'maxed_skills_count']] = result_df[['avg_level', 'maxed_skills_count']].fillna(0)
+    else:
+        result_df['avg_level'] = 0
+        result_df['maxed_skills_count'] = 0
+
+    
+    # Find top/weakest skills and activities per player
+    skill_mask = df['metric'].isin(default_filters['skill_names'])
+    
+    # Top and weakest skills
+    skill_df = df[skill_mask].copy()
+    if not skill_df.empty:
+        top_skills_idx = skill_df.groupby('player_id')['value'].idxmax()
+        weakest_skills_idx = skill_df.groupby('player_id')['value'].idxmin()
+        
+        top_skills = skill_df.loc[top_skills_idx, ['player_id', 'metric']].rename(columns={'metric': 'top_skill'}).reset_index(drop=True)
+        weakest_skills = skill_df.loc[weakest_skills_idx, ['player_id', 'metric']].rename(columns={'metric': 'weakest_skill'}).reset_index(drop=True)
+        
+        result_df = result_df.merge(top_skills, on='player_id', how='left')
+        result_df = result_df.merge(weakest_skills, on='player_id', how='left')
+    else:
+        result_df['top_skill'] = 'unknown'
+        result_df['weakest_skill'] = 'unknown'
+    
+    # Top and weakest activities (non-skills)
+    activity_df = df[~skill_mask].copy()
+    if not activity_df.empty:
+        top_activities_idx = activity_df.groupby('player_id')['value'].idxmax()
+        weakest_activities_idx = activity_df.groupby('player_id')['value'].idxmin()
+        
+        top_activities = activity_df.loc[top_activities_idx, ['player_id', 'metric']].rename(columns={'metric': 'top_activity'}).reset_index(drop=True)
+        weakest_activities = activity_df.loc[weakest_activities_idx, ['player_id', 'metric']].rename(columns={'metric': 'weakest_activity'}).reset_index(drop=True)
+        
+        result_df = result_df.merge(top_activities, on='player_id', how='left')
+        result_df = result_df.merge(weakest_activities, on='player_id', how='left')
+    else:
+        result_df['top_activity'] = 'unknown'
+        result_df['weakest_activity'] = 'unknown'
+    
+    # Fill any missing values
+    result_df[['top_skill', 'weakest_skill', 'top_activity', 'weakest_activity']] = \
+        result_df[['top_skill', 'weakest_skill', 'top_activity', 'weakest_activity']].fillna('unknown')
+    
     logging.info(f"Created {len(result_df)} player aggregates")
     return result_df
 
 
 def extract_player_progression(df):
+    '''
+    Extract: Player Progression (Time-Series Gold) - Vectorized
+    Grain: (player_id, snapshot_ts, metric)
+    '''
     logging.info("Extracting Player Progression...")
 
     required_cols = ['player_id', 'value', 'snapshot_ts', 'metric']
@@ -189,43 +205,28 @@ def extract_player_progression(df):
         logging.warning("No skill data available for progression")
         return pd.DataFrame()
 
-    progression = []
+    # Vectorized approach: sort and use groupby + shift
+    skill_df = skill_df.sort_values(['player_id', 'metric', 'snapshot_ts']).reset_index(drop=True)
+    
+    # Calculate deltas using groupby and shift
+    skill_df['xp_gained'] = skill_df.groupby(['player_id', 'metric'])['value'].diff().fillna(0)
+    skill_df['level_gained'] = skill_df.groupby(['player_id', 'metric'])['level'].diff().fillna(0)
+    
+    # Calculate growth rate vectorized
+    prev_xp = skill_df.groupby(['player_id', 'metric'])['value'].shift(1)
+    skill_df['xp_growth_rate'] = np.where(
+        prev_xp > 0,
+        (skill_df['xp_gained'] / prev_xp) * 100,
+        0
+    )
+    
+    # Select and rename columns
+    result_df = skill_df[[
+        'player_id', 'username', 'snapshot_ts', 'metric', 'value', 'level',
+        'xp_gained', 'level_gained', 'xp_growth_rate'
+    ]].copy()
+    result_df.rename(columns={'metric': 'skill', 'value': 'total_xp'}, inplace=True)
 
-    # group by player AND skill
-    for (player_id, skill), group in skill_df.groupby(['player_id', 'metric']):
-        group = group.sort_values('snapshot_ts').reset_index(drop=True)
-
-        for idx in range(len(group)):
-            row = group.iloc[idx]
-
-            xp_gained = 0
-            level_gained = 0
-            xp_growth_rate = 0
-
-            if idx > 0:
-                prev_row = group.iloc[idx - 1]
-
-                xp_gained = row['value'] - prev_row['value']
-
-                if 'level' in row and pd.notna(row['level']) and pd.notna(prev_row.get('level')):
-                    level_gained = row['level'] - prev_row['level']
-
-                if prev_row['value'] > 0:
-                    xp_growth_rate = (xp_gained / prev_row['value']) * 100
-
-            progression.append({
-                'player_id': player_id,
-                'username': row.get('username', 'unknown'),
-                'snapshot_ts': row['snapshot_ts'],
-                'skill': skill,
-                'total_xp': row['value'],
-                'level': row.get('level'),
-                'xp_gained': xp_gained,
-                'level_gained': level_gained,
-                'xp_growth_rate': xp_growth_rate
-            })
-
-    result_df = pd.DataFrame(progression)
     logging.info(f"Created {len(result_df)} progression records")
     return result_df
 
@@ -257,36 +258,33 @@ def extract_skill_level_aggregates(df):
         logging.warning("No skill data for skill aggregates")
         return pd.DataFrame()
     
-    skill_aggregates = []
+    # Vectorized groupby aggregation
+    skill_agg = skill_df.groupby('metric')['value'].agg([
+        ('avg_xp_per_skill', 'mean'),
+        ('median_xp', 'median'),
+        ('xp_std_dev', 'std')
+    ]).reset_index()
+    skill_agg.rename(columns={'metric': 'skill'}, inplace=True)
     
-    for skill in skill_df['metric'].unique():
-        skill_data = skill_df[skill_df['metric'] == skill]
-        
-        avg_xp = skill_data['value'].mean()
-        median_xp = skill_data['value'].median()
-        p99_xp = skill_data['value'].quantile(0.99)
-        player_count = skill_data['player_id'].nunique()
-        std_xp = skill_data['value'].std()
-        #snapshot_date = skill_data['snapshot_ts']
-        
-        avg_level = 0
-        if 'level' in skill_data.columns:
-            level_data = skill_data[skill_data['level'].notna()]
-            avg_level = level_data['level'].mean() if not level_data.empty else 0
-        
-        skill_row = {
-            'skill': skill,
-            'avg_xp_per_skill': avg_xp,
-            'median_xp': median_xp,
-            'top_1_percent_xp': p99_xp,
-            'player_count': player_count,
-            'xp_std_dev': std_xp,
-            'avg_level': avg_level,
-            #'snapshot_date': snapshot_date
-        }
-        skill_aggregates.append(skill_row)
+    # Add player count and percentile  
+    player_counts = skill_df.groupby('metric')['player_id'].nunique().reset_index()
+    player_counts.rename(columns={'metric': 'skill', 'player_id': 'player_count'}, inplace=True)
+    skill_agg = skill_agg.merge(player_counts, on='skill', how='left')
     
-    result_df = pd.DataFrame(skill_aggregates)
+    p99_xp = skill_df.groupby('metric')['value'].quantile(0.99).reset_index()
+    p99_xp.rename(columns={'metric': 'skill', 'value': 'top_1_percent_xp'}, inplace=True)
+    skill_agg = skill_agg.merge(p99_xp, on='skill', how='left')
+    
+    # Add average level if available
+    if 'level' in skill_df.columns:
+        level_agg = skill_df[skill_df['level'].notna()].groupby('metric')['level'].mean().reset_index()
+        level_agg.rename(columns={'metric': 'skill', 'level': 'avg_level'}, inplace=True)
+        skill_agg = skill_agg.merge(level_agg, on='skill', how='left')
+        skill_agg['avg_level'] = skill_agg['avg_level'].fillna(0)
+    else:
+        skill_agg['avg_level'] = 0
+    
+    result_df = skill_agg
     logging.info(f"Created {len(result_df)} skill aggregates")
     return result_df
 
@@ -312,37 +310,40 @@ def extract_leaderboard_snapshots(df, top_n=100):
         logging.warning("No skill data for leaderboards")
         return pd.DataFrame()
     
-    leaderboards = []
-    
-    for skill in skill_df['metric'].unique():
-        skill_data = skill_df[skill_df['metric'] == skill].copy()
-        
-        # Sort by XP descending and get top N
-        cols_to_get = ['player_id', 'username', 'value', 'rank']
-        if 'level' in skill_data.columns:
-            cols_to_get.append('level')
-        
-        top_players = skill_data.nlargest(top_n, 'value')[cols_to_get].reset_index(drop=True)
-        
-        top_players['leaderboard_rank'] = range(1, len(top_players) + 1)
-        top_players['skill'] = skill
-        
-        leaderboards.append(top_players)
-    
-    result_df = pd.concat(leaderboards, ignore_index=True) if leaderboards else pd.DataFrame()
+    # Vectorized leaderboard extraction
+    cols_to_get = ['player_id', 'username', 'value', 'rank', 'metric']
+    if 'level' in skill_df.columns:
+        cols_to_get.append('level')
+   
+    # Sort so the best rows per skill come first
+    skill_df = skill_df.sort_values(
+        by=['metric', 'value'],
+        ascending=[True, False]
+    )
+    # Take top N rows per skill
+    result_df = (
+        skill_df.groupby('metric', group_keys=False)
+        .head(top_n)
+        .copy()
+    )
+    # Keep only desired columns
+    result_df = result_df[cols_to_get]
+
+    # Add leaderboard rank within each skill
+    result_df['leaderboard_rank'] = result_df.groupby('metric').cumcount() + 1
+
+    # Rename metric -> skill
+    result_df.rename(columns={'metric': 'skill'}, inplace=True)
+
     logging.info(f"Created leaderboard data for {len(result_df)} entries")
     return result_df
 
 
+
 def extract_player_segmentation(df):
     '''
-    Extract: Player Segmentation Table
+    Extract: Player Segmentation Table - Vectorized
     Grain: player
-    
-    Derived classifications:
-    - player_type: "combat", "skiller", "balanced"
-    - activity_tier: "casual", "active", "hardcore"
-    - progress_stage: "early", "mid", "late", "endgame"
     '''
     logging.info("Extracting Player Segmentation...")
     
@@ -358,75 +359,66 @@ def extract_player_segmentation(df):
         logging.warning("No skill data for segmentation")
         return pd.DataFrame()
     
-    segmentation = []
-    
-    # Define XP thresholds for activity tiers
+    # Define thresholds
     casual_threshold = 1_000_000      # 1M total XP
     active_threshold = 10_000_000     # 10M total XP
-    
-    # Define level thresholds for progress stages
     early_level = 30
     mid_level = 60
     late_level = 85
-    
     combat_skills = ['attack', 'strength', 'defence', 'hitpoints', 'ranged', 'magic']
     
-    for player_id in skill_df['player_id'].unique():
-        player_data = skill_df[skill_df['player_id'] == player_id]
-        
-        total_xp = player_data['value'].sum()
-        
-        # Get average level from calculated levels
-        avg_level = 0
-        if 'level' in skill_df.columns:
-            level_data = player_data[player_data['level'].notna()]
-            avg_level = level_data['level'].mean() if not level_data.empty else 0
-        
-        # Classify player type
-        combat_xp = player_data[player_data['metric'].isin(combat_skills)]['value'].sum()
-        skilling_xp = total_xp - combat_xp
-        
-        if total_xp > 0:
-            combat_ratio = combat_xp / total_xp
-            if combat_ratio > 0.6:
-                player_type = "combat-focused"
-            elif combat_ratio < 0.4:
-                player_type = "skiller"
-            else:
-                player_type = "balanced"
-        else:
-            player_type = "new"
-        
-        # Classify activity tier
-        if total_xp < casual_threshold:
-            activity_tier = "casual"
-        elif total_xp < active_threshold:
-            activity_tier = "active"
-        else:
-            activity_tier = "hardcore"
-        
-        # Classify progress stage
-        if avg_level < early_level:
-            progress_stage = "early"
-        elif avg_level < mid_level:
-            progress_stage = "mid"
-        elif avg_level < late_level:
-            progress_stage = "late"
-        else:
-            progress_stage = "endgame"
-        
-        seg_row = {
-            'player_id': player_id,
-            'username': player_data['username'].iloc[0] if 'username' in df.columns else 'unknown',
-            'player_type': player_type,
-            'activity_tier': activity_tier,
-            'progress_stage': progress_stage,
-            'total_xp': total_xp,
-            'avg_level': avg_level
-        }
-        segmentation.append(seg_row)
+    # Vectorized aggregations per player
+    player_agg = skill_df.groupby('player_id').agg({
+        'value': 'sum',
+        'username': 'first'
+    }).reset_index()
+    player_agg.rename(columns={'value': 'total_xp'}, inplace=True)
     
-    result_df = pd.DataFrame(segmentation)
+    # Calculate average levels
+    if 'level' in skill_df.columns:
+        level_agg = skill_df[skill_df['level'].notna()].groupby('player_id')['level'].mean().reset_index()
+        level_agg.rename(columns={'level': 'avg_level'}, inplace=True)
+        player_agg = player_agg.merge(level_agg, on='player_id', how='left')
+        player_agg['avg_level'] = player_agg['avg_level'].fillna(0)
+    else:
+        player_agg['avg_level'] = 0
+    
+    # Calculate combat XP ratio per player using merge with a combat skill filter
+    combat_df = skill_df[skill_df['metric'].isin(combat_skills)].groupby('player_id')['value'].sum().reset_index()
+    combat_df.rename(columns={'value': 'combat_xp'}, inplace=True)
+    player_agg = player_agg.merge(combat_df, on='player_id', how='left')
+    player_agg['combat_xp'] = player_agg['combat_xp'].fillna(0)
+    
+    # Vectorized player type classification
+    combat_ratio = player_agg['combat_xp'] / player_agg['total_xp'].clip(lower=1)
+    player_agg['player_type'] = np.select(
+        [combat_ratio > 0.6, combat_ratio < 0.4],
+        ['combat-focused', 'skiller'],
+        default='balanced'
+    )
+    player_agg['player_type'] = np.where(player_agg['total_xp'] == 0, 'new', player_agg['player_type'])
+    
+    # Vectorized activity tier classification
+    player_agg['activity_tier'] = np.select(
+        [player_agg['total_xp'] < casual_threshold, player_agg['total_xp'] < active_threshold],
+        ['casual', 'active'],
+        default='hardcore'
+    )
+    
+    # Vectorized progress stage classification
+    player_agg['progress_stage'] = np.select(
+        [player_agg['avg_level'] < early_level, 
+         player_agg['avg_level'] < mid_level, 
+         player_agg['avg_level'] < late_level],
+        ['early', 'mid', 'late'],
+        default='endgame'
+    )
+    
+    # Select final columns
+    result_df = player_agg[[
+        'player_id', 'username', 'player_type', 'activity_tier', 'progress_stage', 'total_xp', 'avg_level'
+    ]]
+    
     logging.info(f"Segmented {len(result_df)} players")
     return result_df
 
@@ -455,36 +447,27 @@ def extract_skill_efficiency_metrics(df):
         logging.warning("No skill data for efficiency metrics")
         return pd.DataFrame()
     
-    efficiency = []
+    # Vectorized efficiency calculation
+    result_df = skill_df.groupby(['player_id', 'metric']).agg({
+        'value': 'first',
+        'level': 'first'
+    }).reset_index()
     
-    for player_id in skill_df['player_id'].unique():
-        player_data = skill_df[skill_df['player_id'] == player_id]
-        
-        for skill in player_data['metric'].unique():
-            skill_data = player_data[player_data['metric'] == skill]
-            
-            xp = skill_data['value'].iloc[0]
-            level = skill_data['level'].iloc[0] if 'level' in skill_data.columns and pd.notna(skill_data['level'].iloc[0]) else 1
-            
-            # Efficiency: XP per level
-            xp_per_level = xp / max(level, 1)
-            xp_to_next = max(0, (level + 1) * xp_per_level - xp)
-            
-            eff_row = {
-                'player_id': player_id,
-                'skill': skill,
-                'xp': xp,
-                'level': level,
-                'xp_per_level': xp_per_level,
-                'xp_to_next_level': xp_to_next
-            }
-            efficiency.append(eff_row)
+    # Fill missing levels with 1
+    result_df['level'] = result_df['level'].fillna(1).astype(int)
+    result_df['level'] = result_df['level'].clip(lower=1)
     
-    result_df = pd.DataFrame(efficiency)
+    # Vectorized efficiency calculations
+    result_df['xp_per_level'] = result_df['value'] / result_df['level']
+    result_df['xp_to_next_level'] = ((result_df['level'] + 1) * result_df['xp_per_level'] - result_df['value']).clip(lower=0)
     
     # Calculate percentile for each skill
-    if 'xp_per_level' in result_df.columns:
-        result_df['efficiency_percentile'] = result_df.groupby('skill')['xp_per_level'].rank(pct=True) * 100
+    result_df['efficiency_percentile'] = result_df.groupby('metric')['xp_per_level'].rank(pct=True) * 100
+    
+    # Rename and select columns
+    result_df = result_df.rename(columns={'metric': 'skill', 'value': 'xp'})[
+        ['player_id', 'skill', 'xp', 'level', 'xp_per_level', 'xp_to_next_level', 'efficiency_percentile']
+    ]
     
     logging.info(f"Created efficiency metrics for {len(result_df)} skill-player combinations")
     return result_df
@@ -542,16 +525,19 @@ def extract_wide_format_table(df):
         
         wide_xp = wide_xp.merge(wide_level, on='player_id', how='left')
     
-    # Calculate combat level for each player
+    # Calculate combat level for each player (vectorized)
     combat_skills = ['attack', 'strength', 'defence', 'hitpoints', 'prayer', 'ranged', 'magic']
     combat_cols = [f"{skill}_xp" for skill in combat_skills if f"{skill}_xp" in wide_xp.columns]
     
     if len(combat_cols) == len(combat_skills):
-        def calc_combat_for_row(row):
-            xp_values = [int(row[col]) if pd.notna(row[col]) else 0 for col in combat_cols]
-            return combat_level_from_xp(*xp_values)
+        # Vectorize combat level calculation with np.vectorize
+        combat_level_vec = np.vectorize(combat_level_from_xp)
         
-        wide_xp['combat_level'] = wide_xp.apply(calc_combat_for_row, axis=1)
+        # Extract XP values as arrays and fill NaN with 0
+        combat_xp_arrays = [wide_xp[col].fillna(0).astype(int).values for col in combat_cols]
+        
+        # Apply vectorized function
+        wide_xp['combat_level'] = combat_level_vec(*combat_xp_arrays)
         logging.info("Added combat level calculations to wide format")
     else:
         logging.warning(f"Missing some combat skills for combat level calculation. Found: {combat_cols}")
@@ -581,39 +567,21 @@ def extract_ranking_change_table(df):
         logging.warning("No skill data for ranking changes")
         return pd.DataFrame()
     
-    ranking_changes = []
+    # Vectorized rank change calculation
+    skill_df = skill_df.sort_values(['player_id', 'metric', 'snapshot_ts']).reset_index(drop=True)
     
-    # Sort by player, skill, and timestamp
-    skill_df_sorted = skill_df.sort_values(['player_id', 'metric', 'snapshot_ts'])
+    # Calculate rank changes using groupby + shift
+    skill_df['rank_change'] = skill_df.groupby(['player_id', 'metric'])['rank'].shift(1) - skill_df['rank']
     
-    for player_id in skill_df_sorted['player_id'].unique():
-        for skill in skill_df_sorted['metric'].unique():
-            player_skill_data = skill_df_sorted[
-                (skill_df_sorted['player_id'] == player_id) &
-                (skill_df_sorted['metric'] == skill)
-            ].reset_index(drop=True)
-            
-            if len(player_skill_data) < 2:
-                continue
-            
-            for idx in range(1, len(player_skill_data)):
-                prev_row = player_skill_data.iloc[idx - 1]
-                curr_row = player_skill_data.iloc[idx]
-                
-                rank_change = int(prev_row['rank']) - int(curr_row['rank']) if 'rank' in prev_row else 0
-                
-                change_row = {
-                    'player_id': player_id,
-                    'skill': skill,
-                    'snapshot_ts': curr_row['snapshot_ts'],
-                    'rank': curr_row['rank'],
-                    'rank_change': rank_change,
-                    'xp': curr_row['value'],
-                    'level': curr_row['level'] if 'level' in curr_row and pd.notna(curr_row['level']) else None
-                }
-                ranking_changes.append(change_row)
+    # Remove rows where rank_change is NaN (first occurrence per group)
+    result_df = skill_df[skill_df['rank_change'].notna()].copy()
     
-    result_df = pd.DataFrame(ranking_changes)
+    # Select and rename columns
+    result_df = result_df[[
+        'player_id', 'metric', 'snapshot_ts', 'rank', 'rank_change', 'value', 'level'
+    ]].copy()
+    result_df.rename(columns={'metric': 'skill', 'value': 'xp'}, inplace=True)
+    result_df['rank_change'] = result_df['rank_change'].astype(int)
     logging.info(f"Created {len(result_df)} ranking change records")
     return result_df
 
@@ -651,9 +619,9 @@ def generate_gold_parquets(input_directory, output_directory):
         #logging.info(f"Columns: {df.columns.tolist()}")
     
     # Step 1.5: Calculate levels from XP for all skill rows
-        df = add_calculated_levels(df)
-        #logging.info(f"Data shape after level calculation: {df.shape}")
-    
+        if 'level' not in df.columns:
+            logging.info('Levels not yet calculated for snapshots, calculating now.')
+            df = add_calculated_levels(df)
         # Step 2: Run extraction methods
         extraction_results = {}
         
@@ -698,7 +666,6 @@ def generate_gold_parquets(input_directory, output_directory):
                 on='player_id',
                 how='left'
             )
-            
             output_file = os.path.join(output_directory, f"gold_main_players_{timestamp}_private.parquet")
             gold_table.to_parquet(output_file, index=False, engine="pyarrow", compression="snappy")
             logging.info(f"Saved main gold table: {output_file} ({len(gold_table)} rows)") 
