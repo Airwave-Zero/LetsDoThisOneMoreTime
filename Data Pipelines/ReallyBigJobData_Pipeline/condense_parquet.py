@@ -35,9 +35,12 @@ def estimate_bytes_per_row(folder_path, sample_files=5, sample_rows=5000):
     logging.info(f"Sampling {len(sampled_files)} files for byte estimation...")
     samples = []
     for f in sampled_files:
-        df = pd.read_parquet(os.path.join(folder_path, f))
-        if not df.empty:
-            samples.append(df.head(sample_rows))
+        try:
+            df = pd.read_parquet(os.path.join(folder_path, f))
+            if not df.empty:
+                samples.append(df.head(sample_rows))
+        except Exception as e:
+            logging.info(e)
 
     sample_df = pd.concat(samples, ignore_index=True)
 
@@ -140,9 +143,9 @@ def process_and_chunk_parquets(folder_path, job_board_folder_name, output_path, 
             df = pd.read_parquet(file_path)
             
             # uncomment these if running on bronze data, aka for creating partition folders
-            #year, _ , crawl_name = get_snapshot_info_from_name(file)
-            #df['snapshot_year'] = year
-            #df['snapshot_crawl_name'] = crawl_name
+            year, _ , crawl_name = get_snapshot_info_from_name(file)
+            df['snapshot_year'] = year
+            df['snapshot_crawl_name'] = crawl_name
         except Exception as e:
             logging.error(f"Failed to read {file}: {e}")
             continue
@@ -175,8 +178,8 @@ def process_and_chunk_parquets(folder_path, job_board_folder_name, output_path, 
     # Write any remaining data
     if buffer_chunks:
         final_df = pd.concat(buffer_chunks, ignore_index=True)
-        #final_df['snapshot_year'] = year
-        #final_df['snapshot_crawl_name'] = crawl_name
+        final_df['snapshot_year'] = year
+        final_df['snapshot_crawl_name'] = crawl_name
 
         output_file = os.path.join(output_path, f"combined_{job_board_folder_name}_part{part_num}.parquet")
         write_df_to_parquet(final_df, output_file)
@@ -209,11 +212,11 @@ def main():
     
     # Step 1) create the folder structure (year, job_board, raw_silver, combined_silver) if it doesn't already exist
     # 1.1) move the cleaned parquet files into the raw_silver folder (and move any empty files into an empty folder)
-    # create_folder_partitions(snapshots_cleaned_parquet_dir)
+    #create_folder_partitions(snapshots_cleaned_parquet_dir)
 
     # Step 2) now go through every nested folder, read in all the cleaned_*.parquet files, add snapshot information column, and combine them into one parquet file per job board (with suffix _combined.parquet and split into parts if file size is > 500 mb)
-    #combine_parquets_within_partitions(snapshots_cleaned_parquet_dir)
-    combine_parquets_within_partitions(gold_extracted_parquet_dir)
+    combine_parquets_within_partitions(snapshots_cleaned_parquet_dir)
+    #combine_parquets_within_partitions(gold_extracted_parquet_dir)
 
 if __name__ == "__main__":
     main()

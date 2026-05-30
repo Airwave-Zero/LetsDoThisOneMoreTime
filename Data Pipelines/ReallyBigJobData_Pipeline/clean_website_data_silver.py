@@ -20,6 +20,39 @@ logging.basicConfig(
 )
 
 ########### HELPER FUNCTIONS ############
+def normalize_company_name(name: str) -> str:
+    """Normalize company/website name for consistent display.
+    
+    Rules:
+      - If first character is a letter, capitalize it
+      - If starts with a number, capitalize the first letter after the number
+      - Handle edge cases (empty strings, None)
+    
+    Examples:
+      - "apple" → "Apple"
+      - "3m" → "3M"
+      - "123abc" → "123Abc"
+      - "ashbyhq" → "Ashbyhq"
+      - "greenhouse" → "Greenhouse"
+      - "lever" → "Lever"
+    """
+    if not name or not isinstance(name, str):
+        return name
+    
+    name = name.strip()
+    if not name:
+        return name
+    
+    # Find the first alphabetic character
+    for i, char in enumerate(name):
+        if char.isalpha():
+            # Capitalize that character and return
+            return name[:i] + char.upper() + name[i+1:]
+    
+    # If no alphabetic character found (all numbers/symbols), return as-is
+    return name
+
+
 def extract_job_id(url):
     # Example URLs to parse: https://boards.greenhouse.io/10xgenomics/jobs/5361076
     # Example 2: https://boards.greenhouse.io/10xgenomics/jobs/5515988?gh_jid=5515988&utm_source=Venrock+job+board&utm_medium=getro.com&gh_src=Venrock+job+board
@@ -71,8 +104,8 @@ def extract_all_info(df: pd.DataFrame, cleaned_file_name:str) -> List[Dict]:
         
         job_info = {
             'job_id': job_id,
-            'company_name': company,
-            'job_source': job_source,
+            'company_name': normalize_company_name(company) if company else None,
+            'job_source': normalize_company_name(job_source) if job_source else None,
             'raw_html': raw_html,
             'description': description,
             'timestamp': timestamp,

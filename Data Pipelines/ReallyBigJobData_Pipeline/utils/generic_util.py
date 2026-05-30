@@ -1,5 +1,4 @@
 # This file is for generic functions that can be re-used across files
-from utils import project_paths
 import pandas as pd
 import requests
 import time
@@ -25,7 +24,7 @@ job_sites_with_regex = [
 TECHNICAL_JOB_TITLE_KEYWORDS = {
     'engineer', 'developer', 'scientist', 'analyst', 'manager',
     'architect', 'designer', 'consultant', 'specialist', 'coordinator',
-    'lead', 'senior', 'junior', 'principal', 'director'
+    'lead', 'senior', 'junior', 'principal', 'director', 'intern'
 }
 
 # should break this down by domain / skillset e.g. backend, frontend, etc.
@@ -43,22 +42,39 @@ SOFTWARE_KEYWORDS = {
 
 SECTION_PATTERNS = {
     "benefits": [
-        "benefits", "what we offer", "perks"
+        "benefits", "perks", "we offer", "compensation", "salary",
+        "health insurance", "401k", "pto", "paid time off", "bonus", 
+        "equity", "stock options", "retirement", "wellness", "parental leave",
+        "commuter benefit", "professional development", "tuition reimbursement"
     ],
     "overview": [
-        "about the role", "role overview", "about this role"
-    ],
-    "preferred_qualifications": [
-        "preferred", "nice to have", "bonus", "preferred qualifications"
-    ],
+        "about the role", "this role", "you will be part of",
+        "join our team", "position overview", "role overview",
+        "what you'll do", "what you will do", "about this position"
+    ],    
+    "nice_to_have_skills": [
+        "nice to have", "bonus", "preferred", "plus", "good to have",
+        "if you also have", "additional", "helpful", "would be great"
+    ],    
     "requirements": [
-        "requirements", "who you are", "what we're looking for", "what you need to succeed",
-        "minimum requirements", "qualifications", "skills required", "required"
+        "requirements", "must", "required", "need", "minimum", "experience with",
+        "proficient in", "strong knowledge", "familiar with", "understanding of",
+        "ability to", "qualifications", "we need", "we're looking for",
+        "essential", "prerequisite"
     ],
     "responsibilities": [
-        "responsibilities", "what you will do", "what you'll do"
-    ]
+        "responsibilities", "you will", "you'll", "responsible for", "build", 
+        "develop", "design", "implement", "maintain", "work with", "own", "lead",
+        "collaborate", "manage", "create", "oversee", "drive", "execute"
+    ],
 }
+
+YOE_REGEX = re.compile(r'(\d+)\+?\s*(years|yrs).*?(experience)', re.I)
+
+DEGREE_REGEX = re.compile(r"(bachelor|master|phd|bs|ms)", re.I)
+
+SALARY_REGEX = re.compile(r"\$[\d,]+(?:\s*-\s*\$[\d,]+)?")
+
 
 SENIORITY_LEVEL_PATTERNS = {
     'entry-level': r'entry[- ]level|junior|intern|graduate',
@@ -82,16 +98,128 @@ JOB_COMMON_WORDS = {
     'job', 'position', 'role', 'we', 'our', 'your', 'company', 'team'
 }
 
+NOISE_WORDS = ["apply", "resume", "email", "phone"]
+
+
+SCORING_RULES = {
+    # positive signals
+    "responsibilities": 2,
+    "requirements": 2,
+    "qualifications": 2,
+    "what you'll do": 2,
+    "what you will do": 2,
+    "who you are": 2,
+    "additional skills": 1,
+    "benefits": 1,
+}
 def clean_text(text):
     return re.sub(r"\s+", " ", text).strip()
+
 def classify_section(text):
+    """Classify a line into a section category with improved matching."""
     t = text.lower()
+    best_match = None
+    best_score = 0
+    
     for section, patterns in SECTION_PATTERNS.items():
         for p in patterns:
             if p in t:
-                return section
-    return None
+                # Boost score for exact phrase matches at start
+                if t.startswith(p):
+                    score = 3
+                else:
+                    score = 1
+                if score > best_score:
+                    best_score = score
+                    best_match = section
+    
+    return best_match
 
+def split_lines(text):
+    # Split aggressively but preserve meaningful chunks
+    return [clean_text(x) for x in re.split(r"\n+|\r+|\.\s+", text) if clean_text(x)]
+
+def compute_relevance_score(text):
+    text_lower = text.lower()
+    score = 0
+    for key, val in SCORING_RULES.items():
+        if key in text_lower:
+            score += val
+    return score
+
+def compute_confidence(result):
+    """Calculate confidence score for extraction quality."""
+    score = 0
+
+    if result.get("title"):
+        score += 1
+    if result.get("company"):
+        score += 1
+    if result.get("location"):
+        score += 1
+
+    # Check responsibilities
+    resp = result.get("responsibilities", "")
+    resp_len = len(resp.split()) if isinstance(resp, str) else sum(len(item.split()) for item in (resp or []))
+    if resp_len > 20:
+        score += 2
+
+    # Check requirements  
+    req = result.get("requirements", "")
+    req_len = len(req.split()) if isinstance(req, str) else sum(len(item.split()) for item in (req or []))
+    if req_len > 20:
+        score += 2
+        
+    if result.get("benefits"):
+        score += 1
+
+    return score
+
+def classify_line_with_confidence(line):
+    t = line.lower()
+    scores = {k: 0 for k in SECTION_PATTERNS}
+
+    for category, patterns in SECTION_PATTERNS.items():
+        for p in patterns:
+            if p in t:
+                scores[category] += 1
+
+    # heuristic boosts
+    if t.startswith(("•", "-", "*")):
+        if any(w in t for w in ["build", "develop", "design", "implement", "create"]):
+            scores["responsibilities"] += 2
+        if any(w in t for w in ["experience", "years", "degree", "knowledge"]):
+            scores["requirements"] += 2
+        if any(w in t for w in ["nice", "preferred", "bonus", "helpful"]):
+            scores["nice_to_have_skills"] += 2
+
+    best = max(scores, key=scores.get)
+    total = sum(scores.values())
+
+    confidence = scores[best] / total if total > 0 else 0
+
+    return best if confidence > 0 else "other", confidence
+
+
+def classify_multi_label(line):
+    t = line.lower()
+    matched = []
+
+    for category, patterns in SECTION_PATTERNS.items():
+        if any(p in t for p in patterns):
+            matched.append(category)
+
+    return matched if matched else ["other"]
+
+def extract_job_type(text):
+    """Extract job type (full-time, part-time, etc.) from text."""
+    if not text:
+        return None
+    text_lower = text.lower()
+    for job_type, pattern in JOB_TYPE_PATTERNS.items():
+        if re.search(pattern, text_lower):
+            return job_type
+    return None
 
 def fetch(url, headers=None, stream=False, retries=3, request_delay=1, retry_delay=10, show_logs=True):
     # Simple URL fetch request, allow multiple retries with long waits due to 
