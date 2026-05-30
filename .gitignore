@@ -9,6 +9,7 @@ cleaned_parquet_private/
 *_secret.*
 *.pickle
 *.env
+*.csv
 *.log
 .tmp*
 .vscode/
